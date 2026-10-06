@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Кіру / Тіркелу — ToyDuman</title>
+
+  <!-- Supabase JS кітапханасы -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: #0b0c10; color: #c5c6c7; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+    
+    .auth-card {
+      width: 100%;
+      max-width: 400px;
+      background: #1f2833;
+      border: 1px solid #2f3e46;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .logo { text-align: center; font-size: 1.6rem; font-weight: 800; color: #fff; letter-spacing: 1px; }
+    .logo span { color: #66fcf1; }
+
+    .lang-switcher { display: flex; justify-content: center; gap: 6px; margin-bottom: 6px; }
+    .lang-btn { background: #0b0c10; border: 1px solid #334; color: #888; padding: 4px 12px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 700; }
+    .lang-btn.active { background: #66fcf1; color: #0b0c10; border-color: #66fcf1; }
+
+    h2 { font-size: 1.25rem; color: #fff; text-align: center; }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    label { font-size: 0.85rem; color: #aaa; }
+    input {
+      background: #0b0c10;
+      border: 1px solid #45a29e;
+      border-radius: 10px;
+      padding: 12px;
+      color: #fff;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .btn {
+      background: #66fcf1;
+      color: #0b0c10;
+      border: none;
+      padding: 14px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 6px;
+      transition: 0.2s;
+    }
+    .btn:active { transform: scale(0.98); }
+
+    .toggle-text { font-size: 0.85rem; text-align: center; color: #888; cursor: pointer; margin-top: 4px; }
+    .toggle-text span { color: #66fcf1; text-decoration: underline; }
+
+    .msg { font-size: 0.85rem; text-align: center; display: none; padding: 10px; border-radius: 8px; }
+    .msg.error { background: rgba(230, 57, 70, 0.2); color: #ff6b6b; border: 1px solid #ff6b6b; }
+    .msg.success { background: rgba(102, 252, 241, 0.2); color: #66fcf1; border: 1px solid #66fcf1; }
+  </style>
+</head>
+<body>
+
+  <div class="auth-card">
+    <div class="logo">TOY<span>DUMAN</span></div>
+    
+    <div class="lang-switcher">
+      <button class="lang-btn active" id="btn-kz" onclick="setLang('kz')">KZ</button>
+      <button class="lang-btn" id="btn-ru" onclick="setLang('ru')">RU</button>
+    </div>
+
+    <h2 id="card-title">Жеке кабинетке кіру</h2>
+
+    <div class="msg" id="alert-box"></div>
+
+    <div class="form-group">
+      <label id="lbl-email">Электронды пошта (Email):</label>
+      <input type="email" id="email" placeholder="example@mail.com">
+    </div>
+
+    <div class="form-group">
+      <label id="lbl-pass">Құпиясөз (Пароль):</label>
+      <input type="password" id="password" placeholder="Кемінде 6 таңба">
+    </div>
+
+    <button class="btn" id="btn-submit" onclick="handleAuth()">Кіру</button>
+
+    <div class="toggle-text" id="toggle-mode" onclick="toggleAuthMode()">
+      Аккаунтыңыз жоқ па? <span id="toggle-action">Тіркелу</span>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://heuqifmvwrzkvtcarrdt.supabase.co";
+    const SUPABASE_KEY = "Sb_publishable_cOyPl30aOSb6pdxCRfRNQA_Tn6dBaZg";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let isLoginMode = true;
+    let curLang = localStorage.getItem('toyduman_lang') || 'kz';
+
+    const texts = {
+      kz: {
+        loginTitle: "Жеке кабинетке кіру",
+        registerTitle: "Жаңа аккаунт ашу",
+        lblEmail: "Электронды пошта (Email):",
+        lblPass: "Құпиясөз (Пароль):",
+        btnLogin: "Кіру",
+        btnRegister: "Тіркелу",
+        toggleToReg: "Аккаунтыңыз жоқ па? <span>Тіркелу</span>",
+        toggleToLog: "Аккаунтыңыз бар ма? <span>Кіру</span>",
+        fillAll: "Барлық жолдарды толтырыңыз!",
+        regSuccess: "Тіркелу сәтті өтті! Кабинетке өтуде...",
+        passShort: "Пароль кемінде 6 таңбадан тұруы керек!"
+      },
+      ru: {
+        loginTitle: "Вход в личный кабинет",
+        registerTitle: "Регистрация аккаунта",
+        lblEmail: "Электронная почта (Email):",
+        lblPass: "Пароль:",
+        btnLogin: "Войти",
+        btnRegister: "Зарегистрироваться",
+        toggleToReg: "Нет аккаунта? <span>Регистрация</span>",
+        toggleToLog: "Уже есть аккаунт? <span>Войти</span>",
+        fillAll: "Заполните все поля!",
+        regSuccess: "Регистрация успешна! Переход в кабинет...",
+        passShort: "Пароль должен быть не менее 6 символов!"
+      }
+    };
+
+    function setLang(lang) {
+      curLang = lang;
+      localStorage.setItem('toyduman_lang', lang);
+      document.getElementById('btn-kz').classList.toggle('active', lang === 'kz');
+      document.getElementById('btn-ru').classList.toggle('active', lang === 'ru');
+
+      const t = texts[lang];
+      document.getElementById('lbl-email').innerText = t.lblEmail;
+      document.getElementById('lbl-pass').innerText = t.lblPass;
+
+      if (isLoginMode) {
+        document.getElementById('card-title').innerText = t.loginTitle;
+        document.getElementById('btn-submit').innerText = t.btnLogin;
+        document.getElementById('toggle-mode').innerHTML = t.toggleToReg;
+      } else {
+        document.getElementById('card-title').innerText = t.registerTitle;
+        document.getElementById('btn-submit').innerText = t.btnRegister;
+        document.getElementById('toggle-mode').innerHTML = t.toggleToLog;
+      }
+    }
+
+    function toggleAuthMode() {
+      isLoginMode = !isLoginMode;
+      setLang(curLang);
+      hideAlert();
+    }
+
+    function showAlert(text, type) {
+      const box = document.getElementById('alert-box');
+      box.className = `msg ${type}`;
+      box.innerText = text;
+      box.style.display = 'block';
+    }
+
+    function hideAlert() {
+      document.getElementById('alert-box').style.display = 'none';
+    }
+
+    async function handleAuth() {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const t = texts[curLang];
+
+      if (!email || !password) {
+        showAlert(t.fillAll, 'error');
+        return;
+      }
+
+      if (password.length < 6) {
+        showAlert(t.passShort, 'error');
+        return;
+      }
+
+      const btn = document.getElementById('btn-submit');
+      btn.disabled = true;
+      btn.style.opacity = '0.6';
+
+      try {
+        if (isLoginMode) {
+          // Кіру
+          const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email: email,
+            password: password
+          });
+          if (error) throw error;
+          window.location.href = "dashboard.html";
+        } else {
+          // Тіркелу
+          const { data, error } = await supabaseClient.auth.signUp({
+            email: email,
+            password: password
+          });
+          if (error) throw error;
+          showAlert(t.regSuccess, 'success');
+          setTimeout(() => {
+            window.location.href = "dashboard.html";
+          }, 1500);
+        }
+      } catch (err) {
+        showAlert(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+      }
+    }
+
+    // Тілді қосу
+    setLang(curLang);
+  </script>
+</body>
+</html>
