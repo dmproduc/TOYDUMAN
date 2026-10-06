@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Той Альбомы — Басқару Панелі</title>
+
+  <!-- Supabase және ZIP жүктеу кітапханалары -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: #0b0c10; color: #c5c6c7; min-height: 100vh; padding: 24px 16px; display: flex; flex-direction: column; align-items: center; }
+    .container { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 20px; }
+
+    header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; border-bottom: 1px solid #1f2833; padding-bottom: 16px; }
+    h1 { font-size: 1.5rem; color: #fff; }
+    
+    .actions { display: flex; gap: 10px; }
+    .btn { background: #66fcf1; color: #0b0c10; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
+    .btn:hover { background: #45a29e; }
+    .btn-secondary { background: #1f2833; color: #fff; border: 1px solid #45a29e; }
+
+    .stats { font-size: 0.9rem; color: #888; }
+
+    /* Торлы галерея */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+    .card { background: #1f2833; border: 1px solid #2f3e46; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; position: relative; }
+    .card img { width: 100%; aspect-ratio: 1; object-fit: cover; background: #000; }
+    
+    .card-body { padding: 12px; display: flex; flex-direction: column; gap: 6px; flex-grow: 1; }
+    .card-wish { font-size: 0.85rem; color: #fff; font-style: italic; }
+    .card-author { font-size: 0.75rem; color: #66fcf1; font-weight: 600; text-align: right; }
+
+    .btn-delete { background: rgba(230, 57, 70, 0.85); color: #fff; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; align-self: flex-start; margin-top: auto; }
+    .empty-state { text-align: center; padding: 60px 20px; color: #666; font-size: 1.1rem; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div>
+        <h1 id="event-title">Той альбомы</h1>
+        <div class="stats" id="photo-count">Фотолар жүктелуде...</div>
+      </div>
+      <div class="actions">
+        <a href="dashboard.html" class="btn btn-secondary">Кабинетке қайту</a>
+        <button class="btn" id="btn-download" onclick="downloadAllZip()">📦 Барлығын ZIP-пен жүктеу</button>
+      </div>
+    </header>
+
+    <div class="grid" id="gallery-grid"></div>
+    <div class="empty-state" id="empty-state" style="display: none;">Бұл тойға әзірге ешқандай фото жүктелмеген 📷</div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://heuqifmvwrzkvtcarrdt.supabase.co";
+    const SUPABASE_KEY = "Sb_publishable_cOyPl30aOSb6pdxCRfRNQA_Tn6dBaZg";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const eventSlug = urlParams.get('slug');
+
+    let currentEvent = null;
+    let photosList = [];
+
+    async function initGallery() {
+      if (!eventSlug) {
+        document.getElementById('event-title').innerText = "Той табылмады";
+        return;
+      }
+
+      // 1. Той мәліметін алу
+      const { data: eventData } = await supabaseClient
+        .from('events')
+        .select('*')
+        .eq('slug', eventSlug)
+        .single();
+
+      if (!eventData) {
+        document.getElementById('event-title').innerText = "Той табылмады";
+        return;
+      }
+
+      currentEvent = eventData;
+      document.getElementById('event-title').innerText = `${eventData.title} — Альбом`;
+
+      // 2. Фотоларды алу
+      loadPhotos();
+    }
+
+    async function loadPhotos() {
+      const { data, error } = await supabaseClient
+        .from('event_photos')
+        .select('*')
+        .eq('event_id', currentEvent.id)
+        .order('created_at', { ascending: false });
+
+      const grid = document.getElementById('gallery-grid');
+      const emptyState = document.getElementById('empty-state');
+      grid.innerHTML = '';
+
+      if (!data || data.length === 0) {
+        emptyState.style.display = 'block';
+        document.getElementById('photo-count').innerText = "Жалпы: 0 фото";
+        return;
+      }
+
+      emptyState.style.display = 'none';
+      photosList = data;
+      document.getElementById('photo-count').innerText = `Жалпы: ${data.length} фото сақталды`;
+
+      data.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <img src="${item.photo_url}" loading="lazy">
+          <div class="card-body">
+            <div class="card-wish">«${item.wish_text || ''}»</div>
+            <div class="card-author">— ${item.guest_name || 'Қонақ'}</div>
+            <button class="btn-delete" onclick="deletePhoto('${item.id}')">Жою 🗑️</button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // Фотоны өшіру
+    async function deletePhoto(photoId) {
+      if (!confirm("Бұл фотоны өшіргіңіз келетініне сенімдісіз бе?")) return;
+
+      const { error } = await supabaseClient
+        .from('event_photos')
+        .delete()
+        .eq('id', photoId);
+
+      if (error) {
+        alert("Қате: " + error.message);
+      } else {
+        loadPhotos();
+      }
+    }
+
+    // Барлық фотоларды ZIP файлға жинап жүктеп беру
+    async function downloadAllZip() {
+      if (photosList.length === 0) {
+        alert("Жүктейтін фото жоқ!");
+        return;
+      }
+
+      const btn = document.getElementById('btn-download');
+      btn.innerText = "Архив дайындалуда... ⏳";
+      btn.disabled = true;
+
+      const zip = new JSZip();
+      const folder = zip.folder(currentEvent.slug || "wedding-photos");
+
+      try {
+        for (let i = 0; i < photosList.length; i++) {
+          const item = photosList[i];
+          const response = await fetch(item.photo_url);
+          const blob = await response.blob();
+          const fileName = `${i + 1}_${item.guest_name || 'guest'}.jpg`;
+          folder.file(fileName, blob);
+        }
+
+        const content = await zip.generateAsync({ type: "blob" });
+        saveAs(content, `${currentEvent.slug}_photos.zip`);
+      } catch (err) {
+        alert("Жүктеу кезінде қате кетті: " + err.message);
+      } finally {
+        btn.innerText = "📦 Барлығын ZIP-пен жүктеу";
+        btn.disabled = false;
+      }
+    }
+
+    initGallery();
+  </script>
+</body>
+</html>
