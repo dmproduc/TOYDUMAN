@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Кіру / Тіркелу — ToyDuman</title>
 
-  <!-- Supabase JS кітапханасы -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Supabase JS кітапханасы (жаңа кілттерді қолдайтын ресми нұсқасы) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -101,7 +101,7 @@
 
   <script>
     const SUPABASE_URL = "https://heuqifmvwrzkvtcarrdt.supabase.co";
-    const SUPABASE_KEY = "Sb_publishable_cOyPl30aOSb6pdxCRfRNQA_Tn6dBaZg";
+    const SUPABASE_KEY = "sb_publishable_cOyPl30aOSb6pdxCRfRNQA_Tn6dBaZg";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let isLoginMode = true;
@@ -195,7 +195,6 @@
 
       try {
         if (isLoginMode) {
-          // Кіру
           const { data, error } = await supabaseClient.auth.signInWithPassword({
             email: email,
             password: password
@@ -203,7 +202,6 @@
           if (error) throw error;
           window.location.href = "dashboard.html";
         } else {
-          // Тіркелу
           const { data, error } = await supabaseClient.auth.signUp({
             email: email,
             password: password
@@ -222,7 +220,6 @@
       }
     }
 
-    // Тілді қосу
     setLang(curLang);
   </script>
 </body>
