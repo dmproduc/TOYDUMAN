@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Той Камерасы — ToyDuman</title>
+  
+  <!-- Supabase JS кітапханасы -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: #0f0f11; color: #ffffff; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding-bottom: 50px; }
+    .app-container { width: 100%; max-width: 440px; padding: 20px; display: flex; flex-direction: column; gap: 18px; }
+
+    /* Тіл ауыстырғыш */
+    .lang-switcher { display: flex; justify-content: flex-end; gap: 8px; }
+    .lang-btn { background: #1e1e24; border: 1px solid #383842; color: #888; padding: 6px 14px; border-radius: 12px; font-size: 0.8rem; font-weight: 700; cursor: pointer; }
+    .lang-btn.active { background: #ffffff; color: #000000; border-color: #ffffff; }
+
+    /* Шапка */
+    header { text-align: center; }
+    header h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: 0.5px; }
+    header p { font-size: 0.85rem; color: #999; margin-top: 6px; }
+
+    /* Камера блогы */
+    .camera-card {
+      background: #1a1a1e;
+      border-radius: 24px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 1px solid #2d2d35;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+    }
+
+    .viewfinder {
+      width: 100%;
+      height: 240px;
+      background: #000;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border: 1px dashed #444;
+      position: relative;
+    }
+    .viewfinder img { width: 100%; height: 100%; object-fit: cover; }
+    .viewfinder-placeholder { color: #777; font-size: 0.9rem; text-align: center; padding: 12px; }
+
+    .counter-badge {
+      margin-top: 14px;
+      background: #25252b;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #ffb703;
+      border: 1px solid #383842;
+    }
+
+    /* Форма */
+    .input-group { width: 100%; margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+    .input-field {
+      width: 100%;
+      background: #25252b;
+      border: 1px solid #383842;
+      border-radius: 12px;
+      padding: 12px 14px;
+      color: #fff;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    .input-field::placeholder { color: #777; }
+
+    .btn-capture {
+      margin-top: 10px;
+      width: 100%;
+      background: #ffffff;
+      color: #000000;
+      border: none;
+      padding: 14px;
+      border-radius: 14px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      display: block;
+    }
+    .btn-capture:active { transform: scale(0.98); }
+    #camera-input { display: none; }
+
+    .status-msg { font-size: 0.85rem; color: #ffb703; margin-top: 8px; display: none; text-align: center; }
+
+    /* Полароид лентасы */
+    .gallery-title { font-size: 1.15rem; font-weight: 700; margin-top: 15px; }
+    .gallery-feed { display: flex; flex-direction: column; gap: 20px; margin-top: 14px; }
+
+    .polaroid-card {
+      background: #ffffff;
+      color: #111;
+      padding: 14px 14px 20px 14px;
+      border-radius: 6px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+    }
+    .polaroid-img {
+      width: 100%;
+      aspect-ratio: 1;
+      background: #eee;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .polaroid-img img { width: 100%; height: 100%; object-fit: cover; }
+
+    .polaroid-text { margin-top: 12px; font-size: 0.95rem; font-family: "Georgia", serif; line-height: 1.4; }
+    .polaroid-author { margin-top: 6px; font-size: 0.8rem; color: #666; text-align: right; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <div class="lang-switcher">
+      <button class="lang-btn active" id="btn-kz" onclick="setLanguage('kz')">KZ</button>
+      <button class="lang-btn" id="btn-ru" onclick="setLanguage('ru')">RU</button>
+    </div>
+
+    <header>
+      <h1 id="event-header-title">Тойды жүктеу...</h1>
+      <p id="header-desc">Үйлену тойы • Сәтті сәттер мен ақ тілектер ✨</p>
+    </header>
+
+    <div class="camera-card">
+      <div class="viewfinder" id="viewfinder">
+        <div class="viewfinder-placeholder" id="placeholder-text">Камера арқылы түсіріңіз немесе галереядан таңдаңыз</div>
+      </div>
+
+      <div class="counter-badge" id="counter">25 кадр қалды</div>
+
+      <div class="input-group">
+        <input type="text" id="guest-name" class="input-field" placeholder="Есіміңіз (мысалы: Айдос)">
+        <input type="text" id="guest-wish" class="input-field" placeholder="Жас жұбайларға ақ тілегіңіз...">
+      </div>
+
+      <div class="status-msg" id="status-msg">Бұлтқа жүктелуде... Күте тұрыңыз ⏳</div>
+
+      <label for="camera-input" class="btn-capture" id="btn-label">📸 Фото түсіру & Қосу</label>
+      <input type="file" id="camera-input" accept="image/*" capture="environment">
+    </div>
+
+    <div>
+      <div class="gallery-title" id="gallery-title">Той естеліктері (Лента)</div>
+      <div class="gallery-feed" id="gallery"></div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://heuqifmvwrzkvtcarrdt.supabase.co";
+    const SUPABASE_KEY = "Sb_publishable_cOyPl30aOSb6pdxCRfRNQA_Tn6dBaZg";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const translations = {
+      kz: {
+        desc: "Үйлену тойы • Сәтті сәттер мен ақ тілектер ✨",
+        placeholder: "Камера арқылы түсіріңіз немесе галереядан таңдаңыз",
+        shotsLeft: "кадр қалды",
+        namePlaceholder: "Есіміңіз (мысалы: Айдос)",
+        wishPlaceholder: "Жас жұбайларға ақ тілегіңіз...",
+        uploading: "Бұлтқа жүктелуде... Күте тұрыңыз ⏳",
+        btnCapture: "📸 Фото түсіру & Қосу",
+        btnLimit: "Кадрлар аяқталды 🛑",
+        galleryTitle: "Той естеліктері (Лента)",
+        defaultName: "Қонақ",
+        defaultWish: "Бақытты болыңыздар!",
+        successMsg: "Сәтті жүктелді! ✅",
+        notFound: "Той табылмады немесе жабық 😔"
+      },
+      ru: {
+        desc: "Свадебное торжество • Лучшие моменты и пожелания ✨",
+        placeholder: "Сделайте фото на камеру или выберите из галереи",
+        shotsLeft: "кадров осталось",
+        namePlaceholder: "Ваше имя (например: Айдос)",
+        wishPlaceholder: "Тёплые пожелания молодожёнам...",
+        uploading: "Загрузка в облако... Подождите ⏳",
+        btnCapture: "📸 Сделать фото & Добавить",
+        btnLimit: "Кадры закончились 🛑",
+        galleryTitle: "Воспоминания со свадьбы (Лента)",
+        defaultName: "Гость",
+        defaultWish: "Будьте счастливы!",
+        successMsg: "Успешно загружено! ✅",
+        notFound: "Событие не найдено или закрыто 😔"
+      }
+    };
+
+    let currentLang = 'kz';
+    let currentEvent = null;
+    let remainingShots = 25;
+
+    // URL сілтемеден slug-ты алу (?slug=askar-asel)
+    const urlParams = new URLSearchParams(window.location.search);
+    const eventSlug = urlParams.get('slug');
+
+    const btnKz = document.getElementById('btn-kz');
+    const btnRu = document.getElementById('btn-ru');
+    const eventHeaderTitle = document.getElementById('event-header-title');
+    const headerDesc = document.getElementById('header-desc');
+    const placeholderText = document.getElementById('placeholder-text');
+    const guestNameInput = document.getElementById('guest-name');
+    const guestWishInput = document.getElementById('guest-wish');
+    const galleryTitle = document.getElementById('gallery-title');
+    const cameraInput = document.getElementById('camera-input');
+    const gallery = document.getElementById('gallery');
+    const viewfinder = document.getElementById('viewfinder');
+    const counter = document.getElementById('counter');
+    const statusMsg = document.getElementById('status-msg');
+    const btnLabel = document.getElementById('btn-label');
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      btnKz.classList.toggle('active', lang === 'kz');
+      btnRu.classList.toggle('active', lang === 'ru');
+
+      const t = translations[lang];
+      headerDesc.innerText = t.desc;
+      if (viewfinder.querySelector('.viewfinder-placeholder')) {
+        placeholderText.innerText = t.placeholder;
+      }
+      guestNameInput.placeholder = t.namePlaceholder;
+      guestWishInput.placeholder = t.wishPlaceholder;
+      galleryTitle.innerText = t.galleryTitle;
+      updateCounter();
+    }
+
+    function updateCounter() {
+      const t = translations[currentLang];
+      counter.innerText = `${remainingShots} ${t.shotsLeft}`;
+      if (remainingShots <= 0) {
+        btnLabel.innerText = t.btnLimit;
+        btnLabel.style.opacity = "0.5";
+        cameraInput.disabled = true;
+      } else {
+        btnLabel.innerText = t.btnCapture;
+      }
+    }
+
+    // Тойды базадан жүктеу
+    async function initEvent() {
+      if (!eventSlug) {
+        eventHeaderTitle.innerText = "Той көрсетілмеген";
+        return;
+      }
+
+      const { data, error } = await supabaseClient
+        .from('events')
+        .select('*')
+        .eq('slug', eventSlug)
+        .single();
+
+      if (error || !data) {
+        eventHeaderTitle.innerText = translations[currentLang].notFound;
+        document.querySelector('.camera-card').style.display = 'none';
+        return;
+      }
+
+      currentEvent = data;
+      eventHeaderTitle.innerText = data.title;
+      
+      // Лимитті сақтау
+      const storageKey = `toicam_shots_${data.id}`;
+      remainingShots = parseInt(localStorage.getItem(storageKey) || data.shot_limit.toString());
+      setLanguage(currentLang);
+
+      loadFeed();
+    }
+
+    // Фотоларды шығару
+    async function loadFeed() {
+      if (!currentEvent) return;
+      const { data, error } = await supabaseClient
+        .from('event_photos')
+        .select('*')
+        .eq('event_id', currentEvent.id)
+        .order('created_at', { ascending: false });
+
+      if (data) {
+        gallery.innerHTML = '';
+        data.forEach(item => {
+          renderCard(item.photo_url, item.wish_text, item.guest_name);
+        });
+      }
+    }
+
+    function renderCard(url, wish, name) {
+      const card = document.createElement('div');
+      card.className = 'polaroid-card';
+      card.innerHTML = `
+        <div class="polaroid-img"><img src="${url}"></div>
+        <div class="polaroid-text">«${wish}»</div>
+        <div class="polaroid-author">— ${name}</div>
+      `;
+      gallery.appendChild(card);
+    }
+
+    initEvent();
+
+    // Фото түсіргенде
+    cameraInput.addEventListener('change', async function(event) {
+      const file = event.target.files[0];
+      const t = translations[currentLang];
+      if (!file || !currentEvent || remainingShots <= 0) return;
+
+      const name = guestNameInput.value.trim() || t.defaultName;
+      const wish = guestWishInput.value.trim() || t.defaultWish;
+
+      statusMsg.style.display = 'block';
+      statusMsg.innerText = t.uploading;
+
+      try {
+        const fileExt = file.name.split('.').pop() || 'jpg';
+        const fileName = `${currentEvent.slug}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+
+        // Storage-ке жүктеу
+        const { data: uploadData, error: uploadError } = await supabaseClient
+          .storage
+          .from('wedding-photos')
+          .upload(fileName, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data: publicUrlData } = supabaseClient
+          .storage
+          .from('wedding-photos')
+          .getPublicUrl(fileName);
+
+        const photoUrl = publicUrlData.publicUrl;
+
+        // Кестеге қосу
+        const { error: insertError } = await supabaseClient
+          .from('event_photos')
+          .insert([{
+            event_id: currentEvent.id,
+            photo_url: photoUrl,
+            guest_name: name,
+            wish_text: wish,
+            lang: currentLang
+          }]);
+
+        if (insertError) throw insertError;
+
+        viewfinder.innerHTML = `<img src="${photoUrl}">`;
+        
+        const newCard = document.createElement('div');
+        newCard.className = 'polaroid-card';
+        newCard.innerHTML = `
+          <div class="polaroid-img"><img src="${photoUrl}"></div>
+          <div class="polaroid-text">«${wish}»</div>
+          <div class="polaroid-author">— ${name}</div>
+        `;
+        gallery.prepend(newCard);
+
+        remainingShots--;
+        localStorage.setItem(`toicam_shots_${currentEvent.id}`, remainingShots.toString());
+        updateCounter();
+
+        guestWishInput.value = '';
+        statusMsg.innerText = t.successMsg;
+        setTimeout(() => { statusMsg.style.display = 'none'; }, 3000);
+
+      } catch (err) {
+        console.error(err);
+        alert("Қате / Ошибка: " + err.message);
+        statusMsg.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>
