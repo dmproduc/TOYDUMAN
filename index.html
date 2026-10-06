@@ -2,378 +2,212 @@
 <html lang="kk">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Amir & Zhanna — Wedding Cam</title>
-  
-  <!-- Supabase JS кітапханасы -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ToyDuman — Тойларға арналған сандық ретро-камера & қонақтар альбомы</title>
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: #0f0f11; color: #ffffff; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding-bottom: 50px; }
-    
-    .app-container { width: 100%; max-width: 440px; padding: 20px; display: flex; flex-direction: column; gap: 18px; }
-    
-    /* Тіл ауыстырғыш (KZ / RU) */
-    .lang-switcher {
+    body { background-color: #0b0c10; color: #c5c6c7; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+
+    /* Навигация */
+    nav {
+      width: 100%;
+      max-width: 1100px;
+      padding: 24px 20px;
       display: flex;
-      justify-content: flex-end;
-      gap: 8px;
+      justify-content: space-between;
+      align-items: center;
     }
-    .lang-btn {
-      background: #1e1e24;
-      border: 1px solid #383842;
-      color: #888;
-      padding: 6px 14px;
-      border-radius: 12px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      cursor: pointer;
+    .logo { font-size: 1.6rem; font-weight: 800; color: #fff; letter-spacing: 1px; }
+    .logo span { color: #66fcf1; }
+
+    .nav-right { display: flex; align-items: center; gap: 14px; }
+    .lang-btns { display: flex; gap: 4px; background: #1f2833; padding: 4px; border-radius: 10px; border: 1px solid #334; }
+    .lang-btn { background: transparent; border: none; color: #888; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 700; }
+    .lang-btn.active { background: #66fcf1; color: #0b0c10; }
+
+    .btn-nav {
+      background: #45a29e;
+      color: #fff;
+      text-decoration: none;
+      padding: 8px 18px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
       transition: 0.2s;
     }
-    .lang-btn.active {
-      background: #ffffff;
-      color: #000000;
-      border-color: #ffffff;
-    }
+    .btn-nav:hover { background: #66fcf1; color: #0b0c10; }
 
-    /* Шапка */
-    header { text-align: center; }
-    header h1 { font-size: 1.55rem; font-weight: 700; letter-spacing: 0.5px; }
-    header p { font-size: 0.85rem; color: #999; margin-top: 6px; }
-
-    /* Камера блогы */
-    .camera-card {
-      background: #1a1a1e;
-      border-radius: 24px;
-      padding: 20px;
+    /* Hero бөлімі */
+    .hero {
+      width: 100%;
+      max-width: 800px;
+      padding: 60px 20px 40px;
+      text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
-      border: 1px solid #2d2d35;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+      gap: 20px;
     }
-
-    .viewfinder {
-      width: 100%;
-      height: 240px;
-      background: #000;
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      border: 1px dashed #444;
-      position: relative;
-    }
-
-    .viewfinder img { width: 100%; height: 100%; object-fit: cover; }
-    .viewfinder-placeholder { color: #777; font-size: 0.9rem; text-align: center; padding: 12px; }
-
-    .counter-badge {
-      margin-top: 14px;
-      background: #25252b;
+    .badge {
+      background: rgba(102, 252, 241, 0.1);
+      color: #66fcf1;
+      border: 1px solid #45a29e;
       padding: 6px 16px;
       border-radius: 20px;
       font-size: 0.85rem;
       font-weight: 600;
-      color: #ffb703;
-      border: 1px solid #383842;
     }
+    h1 { font-size: 2.6rem; line-height: 1.25; color: #ffffff; font-weight: 800; }
+    h1 span { color: #66fcf1; }
+    .hero p { font-size: 1.1rem; line-height: 1.6; color: #99a2ad; max-width: 620px; }
 
-    /* Енгізу өрістері */
-    .input-group { width: 100%; margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
-    .input-field {
-      width: 100%;
-      background: #25252b;
-      border: 1px solid #383842;
-      border-radius: 12px;
-      padding: 12px 14px;
-      color: #fff;
-      font-size: 0.9rem;
-      outline: none;
-    }
-    .input-field::placeholder { color: #777; }
-
-    .btn-capture {
+    .cta-btn {
       margin-top: 10px;
-      width: 100%;
-      background: #ffffff;
-      color: #000000;
-      border: none;
-      padding: 14px;
+      background: #66fcf1;
+      color: #0b0c10;
+      text-decoration: none;
+      padding: 16px 36px;
       border-radius: 14px;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      text-align: center;
-      display: block;
+      font-size: 1.1rem;
+      font-weight: 800;
+      box-shadow: 0 8px 24px rgba(102, 252, 241, 0.25);
+      transition: transform 0.2s, background 0.2s;
     }
-    .btn-capture:active { transform: scale(0.98); }
-    #camera-input { display: none; }
+    .cta-btn:active { transform: scale(0.97); }
 
-    /* Хабарлама */
-    .status-msg { font-size: 0.85rem; color: #ffb703; margin-top: 8px; display: none; text-align: center; }
-
-    /* Галерея лентасы */
-    .gallery-title { font-size: 1.15rem; font-weight: 700; margin-top: 15px; }
-    .gallery-feed { display: flex; flex-direction: column; gap: 20px; margin-top: 14px; }
-
-    .polaroid-card {
-      background: #ffffff;
-      color: #111;
-      padding: 14px 14px 20px 14px;
-      border-radius: 6px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    /* Қалай жұмыс істейді (Мүмкіндіктер) */
+    .features {
+      width: 100%;
+      max-width: 1000px;
+      padding: 40px 20px 80px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .feature-card {
+      background: #1f2833;
+      border: 1px solid #2f3e46;
+      border-radius: 18px;
+      padding: 26px;
       display: flex;
       flex-direction: column;
+      gap: 12px;
     }
+    .feature-icon { font-size: 2rem; }
+    .feature-card h3 { color: #fff; font-size: 1.15rem; }
+    .feature-card p { font-size: 0.9rem; color: #8d99ae; line-height: 1.5; }
 
-    .polaroid-img {
+    footer {
       width: 100%;
-      aspect-ratio: 1;
-      background: #eee;
-      border-radius: 4px;
-      overflow: hidden;
-    }
-    .polaroid-img img { width: 100%; height: 100%; object-fit: cover; }
-
-    .polaroid-text {
-      margin-top: 12px;
-      font-size: 0.95rem;
-      font-family: "Georgia", serif;
-      line-height: 1.4;
-    }
-    .polaroid-author {
-      margin-top: 6px;
-      font-size: 0.8rem;
-      color: #666;
-      text-align: right;
-      font-weight: 600;
+      text-align: center;
+      padding: 24px;
+      border-top: 1px solid #1f2833;
+      font-size: 0.85rem;
+      color: #556;
+      margin-top: auto;
     }
   </style>
 </head>
 <body>
 
-  <div class="app-container">
-    <!-- Тілді таңдау түймелері -->
-    <div class="lang-switcher">
-      <button class="lang-btn active" id="btn-kz" onclick="setLanguage('kz')">KZ</button>
-      <button class="lang-btn" id="btn-ru" onclick="setLanguage('ru')">RU</button>
-    </div>
-
-    <header>
-      <h1>Amir & Zhanna</h1>
-      <p id="header-desc">Үйлену тойы • Сәтті сәттер мен ақ тілектер ✨</p>
-    </header>
-
-    <div class="camera-card">
-      <div class="viewfinder" id="viewfinder">
-        <div class="viewfinder-placeholder" id="placeholder-text">Камера арқылы түсіріңіз немесе галереядан таңдаңыз</div>
+  <nav>
+    <div class="logo">TOY<span>DUMAN</span></div>
+    <div class="nav-right">
+      <div class="lang-btns">
+        <button class="lang-btn active" id="btn-kz" onclick="setLang('kz')">KZ</button>
+        <button class="lang-btn" id="btn-ru" onclick="setLang('ru')">RU</button>
       </div>
+      <a href="dashboard.html" class="btn-nav" id="nav-login">Кабинет</a>
+    </div>
+  </nav>
 
-      <div class="counter-badge" id="counter">25 кадр қалды</div>
+  <section class="hero">
+    <div class="badge" id="hero-badge">📸 Сандық полароид фотоальбом</div>
+    <h1 id="hero-title">Тойыңыздың шынайы сәттерін <span>бір жерге жинаңыз</span></h1>
+    <p id="hero-desc">Қонақтар үстелдегі QR-кодты сканерлейді, ретро-камерамен ерекше кадрлар түсіреді және жас жұбайларға ақ тілектерін қалдырады. Ешқандай қосымша жүктеудің қажеті жоқ!</p>
+    <a href="dashboard.html" class="cta-btn" id="hero-cta">🚀 Той құру (QR алу)</a>
+  </section>
 
-      <div class="input-group">
-        <input type="text" id="guest-name" class="input-field" placeholder="Есіміңіз (мысалы: Айдос)">
-        <input type="text" id="guest-wish" class="input-field" placeholder="Жас жұбайларға ақ тілегіңіз...">
-      </div>
-
-      <div class="status-msg" id="status-msg">Бұлтқа жүктелуде... Күте тұрыңыз ⏳</div>
-
-      <label for="camera-input" class="btn-capture" id="btn-label">📸 Фото түсіру & Қосу</label>
-      <input type="file" id="camera-input" accept="image/*" capture="environment">
+  <section class="features">
+    <div class="feature-card">
+      <div class="feature-icon">📲</div>
+      <h3 id="f1-title">Қолданбасыз (App-free)</h3>
+      <p id="f1-desc">Қонақтарға App Store немесе Google Play-ден ештеңе жүктеудің керегі жоқ. QR сканерлесе болғаны, камера бірден браузерде ашылады.</p>
     </div>
 
-    <div>
-      <div class="gallery-title" id="gallery-title">Той естеліктері (Лента)</div>
-      <div class="gallery-feed" id="gallery"></div>
+    <div class="feature-card">
+      <div class="feature-icon">🎞️</div>
+      <h3 id="f2-title">25 Кадр лимиті</h3>
+      <p id="f2-desc">Бір реттік ретро-камераның сезімі: қонақтар мағынасыз жүздеген селфи салмайды, тек ең құнды әрі жылы сәттерді түсіреді.</p>
     </div>
-  </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">✨</div>
+      <h3 id="f3-title">Ортақ естелік лентасы</h3>
+      <p id="f3-desc">Түсірілген әрбір фото полароид стиліндегі ашықхатқа айналып, қонақтың аты-жөні мен тілегімен бірге ортақ альбомға лезде түседі.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2026 ToyDuman. Барлық құқықтар қорғалған.</p>
+  </footer>
 
   <script>
-    // Supabase байланысы
-    const SUPABASE_URL = "https://heuqifmvwrzkvtcarrdt.supabase.co";
-    const SUPABASE_KEY = "Sb_publishable_cOyPl30aOSb6pdxCRfRNQA_Tn6dBaZg";
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    // Сөздік (Екі тілде)
-    const translations = {
+    const texts = {
       kz: {
-        desc: "Үйлену тойы • Сәтті сәттер мен ақ тілектер ✨",
-        placeholder: "Камера арқылы түсіріңіз немесе галереядан таңдаңыз",
-        shotsLeft: "кадр қалды",
-        namePlaceholder: "Есіміңіз (мысалы: Айдос)",
-        wishPlaceholder: "Жас жұбайларға ақ тілегіңіз...",
-        uploading: "Бұлтқа жүктелуде... Күте тұрыңыз ⏳",
-        btnCapture: "📸 Фото түсіру & Қосу",
-        btnLimit: "Кадрлар аяқталды 🛑",
-        galleryTitle: "Той естеліктері (Лента)",
-        defaultName: "Қонақ",
-        defaultWish: "Бақытты болыңыздар!",
-        successMsg: "Сәтті жүктелді! ✅",
-        alertLimit: "25 кадр толық аяқталды! Үлкен рақмет!"
+        badge: "📸 Сандық полароид фотоальбом",
+        title: "Тойыңыздың шынайы сәттерін <span>бір жерге жинаңыз</span>",
+        desc: "Қонақтар үстелдегі QR-кодты сканерлейді, ретро-камерамен ерекше кадрлар түсіреді және жас жұбайларға ақ тілектерін қалдырады. Ешқандай қосымша жүктеудің қажеті жоқ!",
+        cta: "🚀 Той құру (QR алу)",
+        login: "Кабинет",
+        f1Title: "Қолданбасыз (App-free)",
+        f1Desc: "Қонақтарға App Store немесе Google Play-ден ештеңе жүктеудің керегі жоқ. QR сканерлесе болғаны, камера бірден браузерде ашылады.",
+        f2Title: "25 Кадр лимиті",
+        f2Desc: "Бір реттік ретро-камераның сезімі: қонақтар мағынасыз жүздеген селфи салмайды, тек ең құнды әрі жылы сәттерді түсіреді.",
+        f3Title: "Ортақ естелік лентасы",
+        f3Desc: "Түсірілген әрбір фото полароид стиліндегі ашықхатқа айналып, қонақтың аты-жөні мен тілегімен бірге ортақ альбомға лезде түседі."
       },
       ru: {
-        desc: "Свадебное торжество • Лучшие моменты и пожелания ✨",
-        placeholder: "Сделайте фото на камеру или выберите из галереи",
-        shotsLeft: "кадров осталось",
-        namePlaceholder: "Ваше имя (например: Айдос)",
-        wishPlaceholder: "Тёплые пожелания молодожёнам...",
-        uploading: "Загрузка в облако... Подождите ⏳",
-        btnCapture: "📸 Сделать фото & Добавить",
-        btnLimit: "Кадры закончились 🛑",
-        galleryTitle: "Воспоминания со свадьбы (Лента)",
-        defaultName: "Гость",
-        defaultWish: "Будьте счастливы!",
-        successMsg: "Успешно загружено! ✅",
-        alertLimit: "Все 25 кадров использованы! Спасибо!"
+        badge: "📸 Цифровой полароид фотоальбом",
+        title: "Соберите живые моменты свадьбы <span>в одном месте</span>",
+        desc: "Гости сканируют QR-код на столе, делают памятные кадры на винтажную камеру и оставляют тёплые пожелания. Без скачивания приложений!",
+        cta: "🚀 Создать событие (Получить QR)",
+        login: "Кабинет",
+        f1Title: "Без приложений (App-free)",
+        f1Desc: "Гостям не нужно ничего скачивать из App Store или Google Play. Камера моментально запускается в обычном браузере.",
+        f2Title: "Лимит 25 кадров",
+        f2Desc: "Эффект плёночного одноразового фотоаппарата: гости не делают сотни дублей, а снимают только самые искренние моменты.",
+        f3Title: "Общая лента воспоминаний",
+        f3Desc: "Каждая фотография превращается в стильную полароид-карточку с пожеланием гостя и сразу появляется в общем альбоме."
       }
     };
 
-    let currentLang = localStorage.getItem('toicam_lang') || 'kz';
-    let remainingShots = parseInt(localStorage.getItem('toicam_shots') || "25");
+    let curLang = localStorage.getItem('toyduman_lang') || 'kz';
 
-    const btnKz = document.getElementById('btn-kz');
-    const btnRu = document.getElementById('btn-ru');
-    const headerDesc = document.getElementById('header-desc');
-    const placeholderText = document.getElementById('placeholder-text');
-    const guestNameInput = document.getElementById('guest-name');
-    const guestWishInput = document.getElementById('guest-wish');
-    const galleryTitle = document.getElementById('gallery-title');
-    const cameraInput = document.getElementById('camera-input');
-    const gallery = document.getElementById('gallery');
-    const viewfinder = document.getElementById('viewfinder');
-    const counter = document.getElementById('counter');
-    const statusMsg = document.getElementById('status-msg');
-    const btnLabel = document.getElementById('btn-label');
+    function setLang(l) {
+      curLang = l;
+      localStorage.setItem('toyduman_lang', l);
 
-    function setLanguage(lang) {
-      currentLang = lang;
-      localStorage.setItem('toicam_lang', lang);
+      document.getElementById('btn-kz').classList.toggle('active', l === 'kz');
+      document.getElementById('btn-ru').classList.toggle('active', l === 'ru');
 
-      btnKz.classList.toggle('active', lang === 'kz');
-      btnRu.classList.toggle('active', lang === 'ru');
+      const t = texts[l];
+      document.getElementById('hero-badge').innerText = t.badge;
+      document.getElementById('hero-title').innerHTML = t.title;
+      document.getElementById('hero-desc').innerText = t.desc;
+      document.getElementById('hero-cta').innerText = t.cta;
+      document.getElementById('nav-login').innerText = t.login;
 
-      const t = translations[lang];
-      headerDesc.innerText = t.desc;
-      if (viewfinder.querySelector('.viewfinder-placeholder')) {
-        placeholderText.innerText = t.placeholder;
-      }
-      guestNameInput.placeholder = t.namePlaceholder;
-      guestWishInput.placeholder = t.wishPlaceholder;
-      galleryTitle.innerText = t.galleryTitle;
-
-      updateCounter();
+      document.getElementById('f1-title').innerText = t.f1Title;
+      document.getElementById('f1-desc').innerText = t.f1Desc;
+      document.getElementById('f2-title').innerText = t.f2Title;
+      document.getElementById('f2-desc').innerText = t.f2Desc;
+      document.getElementById('f3-title').innerText = t.f3Title;
+      document.getElementById('f3-desc').innerText = t.f3Desc;
     }
 
-    function updateCounter() {
-      const t = translations[currentLang];
-      counter.innerText = `${remainingShots} ${t.shotsLeft}`;
-      if (remainingShots <= 0) {
-        btnLabel.innerText = t.btnLimit;
-        btnLabel.style.opacity = "0.5";
-        cameraInput.disabled = true;
-      } else {
-        btnLabel.innerText = t.btnCapture;
-      }
-    }
-
-    // Тілді бастапқы жүктеу
-    setLanguage(currentLang);
-
-    // Бұрын сақталған фотоларды лентаға шығару
-    async function loadFeed() {
-      const { data, error } = await supabaseClient
-        .from('wedding_posts')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (data) {
-        gallery.innerHTML = '';
-        data.forEach(item => {
-          renderCard(item.photo_url, item.wish_text, item.guest_name);
-        });
-      }
-    }
-
-    function renderCard(url, wish, name) {
-      const card = document.createElement('div');
-      card.className = 'polaroid-card';
-      card.innerHTML = `
-        <div class="polaroid-img"><img src="${url}"></div>
-        <div class="polaroid-text">«${wish}»</div>
-        <div class="polaroid-author">— ${name}</div>
-      `;
-      gallery.appendChild(card);
-    }
-
-    loadFeed();
-
-    // Фото таңдалғанда / түсірілгенде
-    cameraInput.addEventListener('change', async function(event) {
-      const file = event.target.files[0];
-      const t = translations[currentLang];
-
-      if (!file || remainingShots <= 0) return;
-
-      const name = guestNameInput.value.trim() || t.defaultName;
-      const wish = guestWishInput.value.trim() || t.defaultWish;
-
-      statusMsg.style.display = 'block';
-      statusMsg.innerText = t.uploading;
-
-      try {
-        const fileExt = file.name.split('.').pop() || 'jpg';
-        const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
-
-        const { data: uploadData, error: uploadError } = await supabaseClient
-          .storage
-          .from('wedding-photos')
-          .upload(fileName, file);
-
-        if (uploadError) throw uploadError;
-
-        const { data: publicUrlData } = supabaseClient
-          .storage
-          .from('wedding-photos')
-          .getPublicUrl(fileName);
-
-        const photoUrl = publicUrlData.publicUrl;
-
-        const { error: insertError } = await supabaseClient
-          .from('wedding_posts')
-          .insert([
-            { guest_name: name, wish_text: wish, photo_url: photoUrl }
-          ]);
-
-        if (insertError) throw insertError;
-
-        viewfinder.innerHTML = `<img src="${photoUrl}">`;
-        
-        const newCard = document.createElement('div');
-        newCard.className = 'polaroid-card';
-        newCard.innerHTML = `
-          <div class="polaroid-img"><img src="${photoUrl}"></div>
-          <div class="polaroid-text">«${wish}»</div>
-          <div class="polaroid-author">— ${name}</div>
-        `;
-        gallery.prepend(newCard);
-
-        remainingShots--;
-        localStorage.setItem('toicam_shots', remainingShots.toString());
-        updateCounter();
-
-        guestWishInput.value = '';
-        statusMsg.innerText = t.successMsg;
-        setTimeout(() => { statusMsg.style.display = 'none'; }, 3000);
-
-      } catch (err) {
-        console.error(err);
-        alert("Қате / Ошибка: " + err.message);
-        statusMsg.style.display = 'none';
-      }
-    });
+    setLang(curLang);
   </script>
 </body>
 </html>
