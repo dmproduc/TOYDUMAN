@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Той иесінің кабинеті — ToyDuman</title>
   
-  <!-- Supabase және QR-код кітапханалары -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Supabase және QR кітапханалары -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <style>
@@ -18,9 +18,11 @@
     .logo { font-size: 1.4rem; font-weight: 800; color: #fff; letter-spacing: 1px; }
     .logo span { color: #66fcf1; }
     
+    .right-menu { display: flex; align-items: center; gap: 10px; }
     .lang-btns { display: flex; gap: 6px; }
     .lang-btn { background: #1f2833; border: 1px solid #45a29e; color: #c5c6c7; padding: 4px 10px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
     .lang-btn.active { background: #66fcf1; color: #0b0c10; }
+    .btn-logout { background: transparent; border: 1px solid #ff4d4d; color: #ff4d4d; padding: 4px 10px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; }
 
     .card { background: #1f2833; border-radius: 16px; padding: 24px; border: 1px solid #2f3e46; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
     h2 { font-size: 1.2rem; color: #fff; margin-bottom: 16px; }
@@ -32,10 +34,10 @@
     .btn { background: #66fcf1; color: #0b0c10; border: none; padding: 14px; border-radius: 10px; font-weight: 700; cursor: pointer; text-align: center; width: 100%; font-size: 1rem; margin-top: 6px; }
     .btn:active { transform: scale(0.98); }
 
-    /* Панель нәтижесі (QR) */
     .event-result { display: none; margin-top: 20px; border-top: 1px dashed #45a29e; padding-top: 20px; text-align: center; }
     .qr-box { background: #fff; padding: 16px; border-radius: 16px; display: inline-block; margin: 15px 0; }
     .link-box { background: #0b0c10; padding: 12px; border-radius: 8px; word-break: break-all; font-size: 0.85rem; color: #66fcf1; border: 1px solid #333; margin-top: 10px; }
+    .btn-album { display: inline-block; margin-top: 12px; background: #45a29e; color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; }
   </style>
 </head>
 <body>
@@ -43,13 +45,15 @@
   <div class="container">
     <div class="top-bar">
       <div class="logo">TOY<span>DUMAN</span></div>
-      <div class="lang-btns">
-        <button class="lang-btn active" id="btn-kz" onclick="setLang('kz')">KZ</button>
-        <button class="lang-btn" id="btn-ru" onclick="setLang('ru')">RU</button>
+      <div class="right-menu">
+        <div class="lang-btns">
+          <button class="lang-btn active" id="btn-kz" onclick="setLang('kz')">KZ</button>
+          <button class="lang-btn" id="btn-ru" onclick="setLang('ru')">RU</button>
+        </div>
+        <button class="btn-logout" onclick="logout()">Шығу</button>
       </div>
     </div>
 
-    <!-- Тойды тіркеу / Басқару формасы -->
     <div class="card">
       <h2 id="title-text">Жаңа той құру</h2>
       
@@ -80,7 +84,6 @@
 
       <button class="btn" id="btn-submit" onclick="createEvent()">🎉 Тойды іске қосу & QR жасау</button>
 
-      <!-- Нәтиже және QR-код -->
       <div class="event-result" id="event-result">
         <h3 id="res-title" style="color: #66fcf1;">Той сәтті іске қосылды!</h3>
         <p id="res-desc" style="font-size: 0.85rem; margin-top: 6px;">Бұл QR-кодты үстелдерге қою үшін басып шығарыңыз:</p>
@@ -89,14 +92,37 @@
         
         <p style="font-size: 0.8rem; color: #aaa;" id="res-link-lbl">Қонақтарға арналған тікелей сілтеме:</p>
         <div class="link-box" id="event-url"></div>
+
+        <div style="margin-top: 15px;">
+          <a id="album-link" class="btn-album" href="#" target="_blank">🖼️ Фотоальбомды ашу (ZIP жүктеу)</a>
+        </div>
       </div>
     </div>
   </div>
 
   <script>
     const SUPABASE_URL = "https://heuqifmvwrzkvtcarrdt.supabase.co";
-    const SUPABASE_KEY = "Sb_publishable_cOyPl30aOSb6pdxCRfRNQA_Tn6dBaZg";
+    const SUPABASE_KEY = "sb_publishable_cOyPl30aOSb6pdxCRfRNQA_Tn6dBaZg";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let curUser = null;
+
+    // Пайдаланушының жүйеге кіргенін тексеру
+    async function checkUser() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) {
+        // Егер логин жасамаған болса, кіру бетіне жібереді
+        window.location.href = "auth.html";
+        return;
+      }
+      curUser = session.user;
+    }
+    checkUser();
+
+    async function logout() {
+      await supabaseClient.auth.signOut();
+      window.location.href = "auth.html";
+    }
 
     const texts = {
       kz: {
@@ -106,6 +132,7 @@
         lblDate: "Той өтетін күн:",
         lblLimit: "Бір қонаққа кадр лимиті:",
         btn: "🎉 Тойды іске қосу & QR жасау",
+        btnLoading: "Іске қосылуда... ⏳",
         resTitle: "Той сәтті іске қосылды!",
         resDesc: "Бұл QR-кодты үстелдерге қою үшін басып шығарыңыз:",
         resLink: "Қонақтарға арналған тікелей сілтеме:"
@@ -117,16 +144,18 @@
         lblDate: "Дата свадьбы:",
         lblLimit: "Лимит кадров на одного гостя:",
         btn: "🎉 Запустить событие & Создать QR",
+        btnLoading: "Создание... ⏳",
         resTitle: "Событие успешно создано!",
         resDesc: "Распечатайте этот QR-код для гостей на столы:",
         resLink: "Прямая ссылка для гостей:"
       }
     };
 
-    let curLang = 'kz';
+    let curLang = localStorage.getItem('toyduman_lang') || 'kz';
 
     function setLang(l) {
       curLang = l;
+      localStorage.setItem('toyduman_lang', l);
       document.getElementById('btn-kz').classList.toggle('active', l === 'kz');
       document.getElementById('btn-ru').classList.toggle('active', l === 'ru');
 
@@ -141,51 +170,61 @@
       document.getElementById('res-desc').innerText = t.resDesc;
       document.getElementById('res-link-lbl').innerText = t.resLink;
     }
+    setLang(curLang);
 
     async function createEvent() {
       const title = document.getElementById('event-title').value.trim();
       let slug = document.getElementById('event-slug').value.trim().toLowerCase();
       const date = document.getElementById('event-date').value;
       const limit = parseInt(document.getElementById('event-limit').value);
+      const submitBtn = document.getElementById('btn-submit');
 
       if (!title || !slug) {
-        alert(curLang === 'kz' ? "Барлық жолдарды толтырыңыз!" : "Заполните все поля!");
+        alert(curLang === 'kz' ? "Той атауы мен қысқаша сілтемені толтырыңыз!" : "Заполните название и короткую ссылку!");
         return;
       }
 
-      slug = slug.replace(/\s+/g, '-'); // Бос орындарды дефиске айналдыру
+      slug = slug.replace(/[^a-z0-9_-]/g, '-');
 
-      // Supabase events кестесіне жазу
-      const { data, error } = await supabaseClient
-        .from('events')
-        .insert([{
-          title: title,
-          slug: slug,
-          event_date: date ? date : null,
-          shot_limit: limit,
-          default_lang: curLang
-        }])
-        .select();
+      submitBtn.disabled = true;
+      submitBtn.innerText = texts[curLang].btnLoading;
 
-      if (error) {
-        alert("Қате / Ошибка: " + error.message);
-        return;
+      try {
+        const { data, error } = await supabaseClient
+          .from('events')
+          .insert([{
+            user_id: curUser ? curUser.id : null,
+            title: title,
+            slug: slug,
+            event_date: date ? date : null,
+            shot_limit: limit,
+            default_lang: curLang
+          }])
+          .select();
+
+        if (error) throw error;
+
+        const currentHost = window.location.origin + window.location.pathname.replace('dashboard.html', '');
+        const guestLink = `${currentHost}event.html?slug=${slug}`;
+        const galleryLink = `${currentHost}gallery.html?slug=${slug}`;
+
+        document.getElementById('qrcode').innerHTML = "";
+        new QRCode(document.getElementById('qrcode'), {
+          text: guestLink,
+          width: 180,
+          height: 180
+        });
+
+        document.getElementById('event-url').innerText = guestLink;
+        document.getElementById('album-link').href = galleryLink;
+        document.getElementById('event-result').style.display = 'block';
+
+      } catch (err) {
+        alert("Қате / Ошибка: " + err.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = texts[curLang].btn;
       }
-
-      // Қонаққа берілетін толық сілтемені жасау
-      const currentHost = window.location.origin + window.location.pathname.replace('dashboard.html', '');
-      const guestLink = `${currentHost}event.html?slug=${slug}`;
-
-      // QR-кодты экранға шығару
-      document.getElementById('qrcode').innerHTML = "";
-      new QRCode(document.getElementById('qrcode'), {
-        text: guestLink,
-        width: 180,
-        height: 180
-      });
-
-      document.getElementById('event-url').innerText = guestLink;
-      document.getElementById('event-result').style.display = 'block';
     }
   </script>
 </body>
