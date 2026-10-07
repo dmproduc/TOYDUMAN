@@ -82,7 +82,7 @@
         </select>
       </div>
 
-      <button class="btn" id="btn-submit" onclick="createEvent()">🎉 Тойды іске қосу & QR жасау</button>
+      <button class="btn" id="btn-submit" onclick="createNewEvent()">🎉 Тойды іске қосу & QR жасау</button>
 
       <div class="event-result" id="event-result">
         <h3 id="res-title" style="color: #66fcf1;">Той сәтті іске қосылды!</h3>
@@ -107,11 +107,9 @@
 
     let curUser = null;
 
-    // Пайдаланушының жүйеге кіргенін тексеру
     async function checkUser() {
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (!session) {
-        // Егер логин жасамаған болса, кіру бетіне жібереді
         window.location.href = "auth.html";
         return;
       }
@@ -172,7 +170,7 @@
     }
     setLang(curLang);
 
-    async function createEvent() {
+    async function createNewEvent() {
       const title = document.getElementById('event-title').value.trim();
       let slug = document.getElementById('event-slug').value.trim().toLowerCase();
       const date = document.getElementById('event-date').value;
