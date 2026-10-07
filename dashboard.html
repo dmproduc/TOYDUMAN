@@ -31,7 +31,7 @@
     label { font-size: 0.85rem; color: #aaa; }
     input, select { background: #0b0c10; border: 1px solid #45a29e; border-radius: 10px; padding: 12px; color: #fff; font-size: 0.95rem; outline: none; }
     
-    .btn { background: #66fcf1; color: #0b0c10; border: none; padding: 14px; border-radius: 10px; font-weight: 700; cursor: pointer; text-align: center; width: 100%; font-size: 1rem; margin-top: 6px; }
+    .btn { background: #66fcf1; color: #0b0c10; border: none; padding: 14px; border-radius: 10px; font-weight: 700; cursor: pointer; text-align: center; width: 100%; font-size: 1rem; margin-top: 6px; transition: 0.2s; }
     .btn:active { transform: scale(0.98); }
 
     .event-result { display: none; margin-top: 20px; border-top: 1px dashed #45a29e; padding-top: 20px; text-align: center; }
@@ -105,15 +105,17 @@
     const SUPABASE_KEY = "sb_publishable_cOyPl30aOSb6pdxCRfRNQA_Tn6dBaZg";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    let curUser = null;
-
     async function checkUser() {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (!session) {
-        window.location.href = "auth.html";
-        return;
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) {
+          window.location.href = "auth.html";
+          return null;
+        }
+        return session.user;
+      } catch (e) {
+        return null;
       }
-      curUser = session.user;
     }
     checkUser();
 
@@ -188,10 +190,14 @@
       submitBtn.innerText = texts[curLang].btnLoading;
 
       try {
+        // Тікелей сол сәттегі сессияны анықтау
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const userId = session ? session.user.id : null;
+
         const { data, error } = await supabaseClient
           .from('events')
           .insert([{
-            user_id: curUser ? curUser.id : null,
+            user_id: userId,
             title: title,
             slug: slug,
             event_date: date ? date : null,
@@ -200,7 +206,12 @@
           }])
           .select();
 
-        if (error) throw error;
+        if (error) {
+          if (error.code === '23505') {
+            throw new Error(curLang === 'kz' ? "Бұл код/сілтеме бұрыннан бар! Басқа сілтеме жазыңыз." : "Этот код ссылки уже занят! Придумайте другой.");
+          }
+          throw error;
+        }
 
         const currentHost = window.location.origin + window.location.pathname.replace('dashboard.html', '');
         const guestLink = `${currentHost}event.html?slug=${slug}`;
@@ -218,7 +229,7 @@
         document.getElementById('event-result').style.display = 'block';
 
       } catch (err) {
-        alert("Қате / Ошибка: " + err.message);
+        alert("Қате: " + err.message);
       } finally {
         submitBtn.disabled = false;
         submitBtn.innerText = texts[curLang].btn;
