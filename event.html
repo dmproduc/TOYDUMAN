@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Той қонағының парақшасы — ToyDuman</title>
 
-  <!-- Жаңа Supabase JS кітапханасы -->
+  <!-- Supabase v2.48.1 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
 
   <style>
@@ -61,6 +61,7 @@
     .feed-info { padding: 10px 12px; }
     .feed-author { font-weight: 700; color: #66fcf1; font-size: 0.85rem; }
     .feed-caption { font-size: 0.85rem; color: #ddd; margin-top: 4px; }
+    .empty-feed { text-align: center; color: #777; font-size: 0.85rem; padding: 15px; }
   </style>
 </head>
 <body>
@@ -101,7 +102,7 @@
       <div class="msg" id="msg-box"></div>
     </div>
 
-    <div class="feed-title" id="lbl-feed">Той естеліктері (Лента)</div>
+    <div class="feed-title" id="lbl-feed">Менің жүктеген естеліктерім</div>
     <div class="feed" id="feed-list"></div>
   </div>
 
@@ -116,7 +117,14 @@
     let currentEvent = null;
     let selectedFile = null;
     let guestLimit = 25;
-    let uploadedCount = 0;
+
+    // Әр қонақтың телефонына жеке сақталатын құпия кілт
+    let myPhotosList = [];
+    try {
+      myPhotosList = JSON.parse(localStorage.getItem(`my_photos_${slug}`)) || [];
+    } catch(e) {
+      myPhotosList = [];
+    }
 
     const texts = {
       kz: {
@@ -125,12 +133,13 @@
         lblName: "Сіздің есіміңіз:",
         lblWish: "Жас жұбайларға тілек (міндетті емес):",
         btnSend: "Жүктеу",
-        feed: "Той естеліктері (Лента)",
+        feed: "Менің жүктеген естеліктерім",
         remain: "Қалған лимитіңіз: ",
         limitOver: "Сіз өз лимитіңізді толық пайдаландыңыз!",
         selectPhoto: "Алдымен фото таңдаңыз!",
         success: "Фото сәтті жүктелді! Рақмет!",
-        notFound: "Той табылмады немесе жабық 😔"
+        notFound: "Той табылмады немесе жабық 😔",
+        noPhotos: "Сіз әлі фото жүктеген жоқсыз 📷"
       },
       ru: {
         subtitle: "Свадебное торжество • Памятные моменты и пожелания ✨",
@@ -138,12 +147,13 @@
         lblName: "Ваше имя:",
         lblWish: "Пожелание молодожёнам (необязательно):",
         btnSend: "Опубликовать",
-        feed: "Лента воспоминаний",
+        feed: "Мои загруженные фотографии",
         remain: "Ваш лимит: ",
         limitOver: "Вы исчерпали свой лимит кадров!",
         selectPhoto: "Сначала выберите фото!",
         success: "Фото успешно опубликовано! Спасибо!",
-        notFound: "Событие не найдено или закрыто 😔"
+        notFound: "Событие не найдено или закрыто 😔",
+        noPhotos: "Вы еще не загружали фотографии 📷"
       }
     };
 
@@ -163,6 +173,7 @@
       document.getElementById('btn-send').innerText = t.btnSend;
       document.getElementById('lbl-feed').innerText = t.feed;
       updateLimitUI();
+      renderMyFeed();
     }
 
     async function initEvent() {
@@ -188,15 +199,12 @@
       document.getElementById('event-title').innerText = currentEvent.title;
       guestLimit = currentEvent.shot_limit || 25;
 
-      const storedCount = localStorage.getItem(`shots_${slug}`);
-      if (storedCount) uploadedCount = parseInt(storedCount);
-
       updateLimitUI();
-      loadFeed();
+      renderMyFeed();
     }
 
     function updateLimitUI() {
-      const remain = Math.max(0, guestLimit - uploadedCount);
+      const remain = Math.max(0, guestLimit - myPhotosList.length);
       const el = document.getElementById('shot-counter');
       if (guestLimit >= 999) {
         el.innerText = curLang === 'kz' ? "Шектеусіз кадр" : "Кадры без ограничений";
@@ -235,7 +243,7 @@
         const fileName = `${currentEvent.id}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
 
         // Storage-ге салу
-        const { data: uploadData, error: uploadErr } = await supabaseClient.storage
+        const { error: uploadErr } = await supabaseClient.storage
           .from('photos')
           .upload(fileName, selectedFile);
 
@@ -249,7 +257,7 @@
         const author = document.getElementById('guest-name').value.trim() || 'Қонақ';
         const wish = document.getElementById('guest-wish').value.trim();
 
-        // Базаға тілекпен бірге жазу
+        // Базаға жазу
         const { error: dbErr } = await supabaseClient
           .from('event_photos')
           .insert([{
@@ -261,9 +269,16 @@
 
         if (dbErr) throw dbErr;
 
-        uploadedCount++;
-        localStorage.setItem(`shots_${slug}`, uploadedCount);
+        // Қонақтың өз телефонындағы жеке тізіміне сақтау
+        myPhotosList.unshift({
+          photo_url: publicUrl,
+          author_name: author,
+          wishes: wish
+        });
+        localStorage.setItem(`my_photos_${slug}`, JSON.stringify(myPhotosList));
+
         updateLimitUI();
+        renderMyFeed();
 
         msgBox.className = 'msg success';
         msgBox.innerText = texts[curLang].success;
@@ -271,11 +286,11 @@
 
         // Форманы тазарту
         document.getElementById('preview').style.display = 'none';
+        document.getElementById('file-input').value = '';
         document.getElementById('guest-wish').value = '';
         selectedFile = null;
 
         setTimeout(() => { msgBox.style.display = 'none'; }, 3000);
-        loadFeed();
 
       } catch (err) {
         msgBox.className = 'msg error';
@@ -287,26 +302,23 @@
       }
     }
 
-    async function loadFeed() {
-      if (!currentEvent) return;
-      const { data, error } = await supabaseClient
-        .from('event_photos')
-        .select('*')
-        .eq('event_id', currentEvent.id)
-        .order('created_at', { ascending: false });
-
-      if (error || !data) return;
-
+    // Тек осы қонақтың салған суреттерін ғана шығару
+    function renderMyFeed() {
       const feedBox = document.getElementById('feed-list');
       feedBox.innerHTML = '';
 
-      data.forEach(item => {
+      if (myPhotosList.length === 0) {
+        feedBox.innerHTML = `<div class="empty-feed">${texts[curLang].noPhotos}</div>`;
+        return;
+      }
+
+      myPhotosList.forEach(item => {
         const div = document.createElement('div');
         div.className = 'feed-item';
         div.innerHTML = `
           <img src="${item.photo_url}" loading="lazy">
           <div class="feed-info">
-            <div class="feed-author">👤 ${item.author_name}</div>
+            <div class="feed-author">👤 ${item.author_name} (Сіз)</div>
             ${item.wishes ? `<div class="feed-caption">💬 ${item.wishes}</div>` : ''}
           </div>
         `;
