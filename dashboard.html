@@ -31,7 +31,7 @@
       font-family: 'Onest', -apple-system, BlinkMacSystemFont, sans-serif; 
       -webkit-tap-highlight-color: transparent; 
     }
-    body { background-color: var(--bg); color: var(--text-main); min-height: 100vh; padding-bottom: 90px; }
+    body { background-color: var(--bg); color: var(--text-main); min-height: 100vh; padding-bottom: 110px; }
 
     header {
       background: rgba(252, 251, 249, 0.94);
@@ -69,21 +69,23 @@
       padding: 6px 14px;
       border-radius: 20px;
       font-weight: 600;
-      max-width: 200px;
+      max-width: 220px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     .btn-logout {
-      background: none;
-      border: none;
+      background: #fee2e2;
+      border: 1px solid #fecaca;
       font-size: 0.82rem;
-      color: #ef4444;
+      color: #dc2626;
       cursor: pointer;
       font-weight: 700;
-      padding: 4px 8px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      transition: background 0.2s;
     }
-    .btn-logout:hover { text-decoration: underline; }
+    .btn-logout:hover { background: #fca5a5; color: #fff; }
 
     .container {
       max-width: 860px;
@@ -213,38 +215,38 @@
       border: 1px solid #bfdbfe;
     }
 
+    /* Төменгі үлкен батырма */
     .bottom-bar {
       position: fixed;
-      bottom: 20px;
+      bottom: 24px;
       left: 0;
       width: 100%;
       display: flex;
       justify-content: center;
-      z-index: 40;
-      pointer-events: none;
+      z-index: 60;
     }
     .btn-add-circle {
-      pointer-events: auto;
       background: #121212;
       color: #fff;
       border: none;
-      padding: 14px 28px;
+      padding: 16px 32px;
       border-radius: 40px;
-      font-size: 0.92rem;
-      font-weight: 600;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+      font-size: 0.95rem;
+      font-weight: 700;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.25);
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       cursor: pointer;
-      transition: transform 0.2s;
+      transition: transform 0.15s;
     }
     .btn-add-circle:active { transform: scale(0.96); }
 
+    /* Модаль терезе */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.55);
       backdrop-filter: blur(8px);
       z-index: 100;
       display: none;
@@ -258,18 +260,24 @@
       max-width: 440px;
       border-radius: var(--radius-lg);
       padding: 24px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
       position: relative;
     }
     .modal-close {
       position: absolute;
-      top: 20px;
-      right: 20px;
-      background: none;
+      top: 18px;
+      right: 18px;
+      background: #f2f0eb;
       border: none;
-      font-size: 1.4rem;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 1.1rem;
       cursor: pointer;
-      color: #888;
+      color: #555;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .modal-window h3 {
@@ -340,8 +348,8 @@
       <a href="dashboard.html" class="brand">ToyDuman</a>
       <div class="header-actions">
         <a id="btn-admin-link" href="admin.html" style="display: none; font-size: 0.78rem; color: #b45309; font-weight: 700; text-decoration: none;">👑 Админ</a>
-        <div class="user-tag" id="user-email">Жүктелуде...</div>
-        <button class="btn-logout" onclick="logout()">Шығу</button>
+        <div class="user-tag" id="user-email">...</div>
+        <button class="btn-logout" id="logout-button" onclick="window.logout()">Шығу</button>
       </div>
     </div>
   </header>
@@ -356,20 +364,20 @@
 
     <div class="empty-state" id="empty-state" style="display: none;">
       <p style="font-size: 1.1rem; margin-bottom: 6px; color: var(--text-main); font-weight: 600;">Әзірге оқиға ашылмаған</p>
-      <p style="font-size: 0.85rem;">Төмендегі түймені басып, алғашқы цифрлық альбомыңызды құрыңыз</p>
+      <p style="font-size: 0.85rem;">Төмендегі «Жаңа альбом ашу» түймесін басып бастаңыз</p>
     </div>
   </div>
 
   <div class="bottom-bar">
-    <button class="btn-add-circle" onclick="openCreateModal()">
-      <span>+</span> Жаңа альбом ашу
+    <button class="btn-add-circle" id="open-create-btn" onclick="window.openCreateModal()">
+      <span>＋</span> Жаңа альбом ашу
     </button>
   </div>
 
   <!-- Модаль: Той ашу -->
   <div class="modal-overlay" id="create-modal">
     <div class="modal-window">
-      <button class="modal-close" onclick="closeCreateModal()">✕</button>
+      <button class="modal-close" onclick="window.closeCreateModal()">✕</button>
       <h3>Жаңа альбом құру</h3>
       <p>Мереке деректерін толтырыңыз (25 кадр тегін беріледі)</p>
 
@@ -392,12 +400,12 @@
         <label>Басты мұқаба суреті:</label>
         <div class="file-drop" onclick="document.getElementById('cover-file-input').click()">
           <span style="font-size: 0.85rem; color: #777;">📷 Фото таңдау</span>
-          <input type="file" id="cover-file-input" accept="image/*" onchange="previewCoverFile(event)">
+          <input type="file" id="cover-file-input" accept="image/*" onchange="window.previewCoverFile(event)">
         </div>
         <img id="cover-preview-img" class="preview-box" alt="Cover">
       </div>
 
-      <button class="btn-luxury btn-dark" style="width: 100%; margin-top: 12px; padding: 13px;" id="btn-submit" onclick="submitNewEvent()">
+      <button class="btn-luxury btn-dark" style="width: 100%; margin-top: 12px; padding: 13px;" id="btn-submit" onclick="window.submitNewEvent()">
         Альбомды құру
       </button>
     </div>
@@ -406,7 +414,7 @@
   <!-- Модаль: QR көрсету -->
   <div class="modal-overlay" id="qr-modal">
     <div class="modal-window">
-      <button class="modal-close" onclick="closeQrModal()">✕</button>
+      <button class="modal-close" onclick="window.closeQrModal()">✕</button>
       <div class="qr-center">
         <h3 id="modal-qr-title">QR-код</h3>
         <p style="margin-bottom: 0;">Қонақтар камерасын осы кодқа бағыттайды</p>
@@ -415,7 +423,7 @@
 
         <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
           <a id="modal-preview-btn" class="btn-luxury btn-dark" href="#" target="_blank">👁️ Қонақ көзімен қарау</a>
-          <button class="btn-luxury btn-outline" onclick="copyLink()">📋 Сілтемені көшіру</button>
+          <button class="btn-luxury btn-outline" onclick="window.copyLink()">📋 Сілтемені көшіру</button>
         </div>
       </div>
     </div>
@@ -432,8 +440,66 @@
     let selectedCoverFile = null;
     let currentGuestLink = "";
 
-    // 1. Жергілікті localStorage-тен токенді бірден тексеру (Қатып қалмаудың басты кепілі)
-    function getStoredUser() {
+    // 1. БАРЛЫҚ БАТЫРМАЛАР МЕН ФУНКЦИЯЛАРДЫ БІРДЕН WINDOW ОБЪЕКТІСІНЕ БАЙЛАУ (ешқашан өшіп қалмайды)
+    window.logout = async function() {
+      try {
+        await supabaseClient.auth.signOut();
+      } catch(e) {}
+      localStorage.clear();
+      window.location.href = "auth.html";
+    };
+
+    window.openCreateModal = function() {
+      document.getElementById('create-modal').style.display = 'flex';
+    };
+
+    window.closeCreateModal = function() {
+      document.getElementById('create-modal').style.display = 'none';
+    };
+
+    window.closeQrModal = function() {
+      document.getElementById('qr-modal').style.display = 'none';
+    };
+
+    window.previewCoverFile = function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      selectedCoverFile = file;
+      const preview = document.getElementById('cover-preview-img');
+      preview.src = URL.createObjectURL(file);
+      preview.style.display = 'block';
+    };
+
+    window.openWhatsAppUpgrade = function(title) {
+      const text = encodeURIComponent(`Сәлеметсіз бе! Мен ToyDuman-дағы "${title}" іс-шарасына толық VIP қолжетімділік алғым келеді.`);
+      window.open(`https://wa.me/${MY_WHATSAPP_PHONE}?text=${text}`, '_blank');
+    };
+
+    window.showQrModal = function(title, guestLink) {
+      currentGuestLink = guestLink;
+      document.getElementById('modal-qr-title').innerText = title;
+      document.getElementById('modal-preview-btn').href = guestLink;
+
+      const qrb = document.getElementById('qrcode-container');
+      qrb.innerHTML = '';
+      new QRCode(qrb, {
+        text: guestLink,
+        width: 180,
+        height: 180,
+        colorDark: "#121212",
+        colorLight: "#ffffff"
+      });
+
+      document.getElementById('qr-modal').style.display = 'flex';
+    };
+
+    window.copyLink = function() {
+      navigator.clipboard.writeText(currentGuestLink);
+      alert("Сілтеме көшірілді!");
+    };
+
+    // 2. СЕССИЯНЫ ОҚУ
+    function getLocalUser() {
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (key && key.includes('-auth-token')) {
@@ -446,18 +512,17 @@
       return null;
     }
 
-    async function initDashboard() {
-      // Алдымен localStorage-тен оқимыз
-      const localUser = getStoredUser();
-      if (localUser) {
-        currentUser = localUser;
-        document.getElementById('user-email').innerText = currentUser.email || 'Қолданушы';
+    async function start() {
+      // Алдымен жедел түрде localStorage-ден алып қоямыз
+      const cached = getLocalUser();
+      if (cached) {
+        currentUser = cached;
+        document.getElementById('user-email').innerText = currentUser.email;
         loadMyEvents();
       }
 
-      // Сосын Supabase арқылы нақты сессияны растаймыз
+      // Сосын ресми сессияны аламыз
       const { data: { session } } = await supabaseClient.auth.getSession();
-
       if (!session && !currentUser) {
         window.location.href = "auth.html";
         return;
@@ -465,48 +530,20 @@
 
       if (session && session.user) {
         currentUser = session.user;
-        document.getElementById('user-email').innerText = currentUser.email || 'Қолданушы';
+        document.getElementById('user-email').innerText = currentUser.email;
+        if (!cached) loadMyEvents();
+      }
 
-        // Админ тексеру
+      // Админка сілтемесін артқы фонмен тексеру (еш кедергісіз)
+      setTimeout(async () => {
         try {
-          const { data: settingData } = await supabaseClient
-            .from('app_settings')
-            .select('value')
-            .eq('key', 'admin_email')
-            .maybeSingle();
-
-          const adminEmail = (settingData && settingData.value) ? settingData.value : 'guldanaih@gmail.com';
-          if (currentUser.email && currentUser.email.toLowerCase() === adminEmail.toLowerCase()) {
+          const { data } = await supabaseClient.from('app_settings').select('value').eq('key', 'admin_email').maybeSingle();
+          const adminEmail = (data && data.value) ? data.value : 'guldanaih@gmail.com';
+          if (currentUser && currentUser.email && currentUser.email.toLowerCase() === adminEmail.toLowerCase()) {
             document.getElementById('btn-admin-link').style.display = 'inline-block';
           }
         } catch(e) {}
-
-        if (!localUser) {
-          loadMyEvents();
-        }
-      }
-    }
-
-    async function logout() {
-      try {
-        await supabaseClient.auth.signOut();
-      } catch(e) {}
-      localStorage.clear();
-      window.location.href = "auth.html";
-    }
-
-    function previewCoverFile(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      selectedCoverFile = file;
-      const preview = document.getElementById('cover-preview-img');
-      preview.src = URL.createObjectURL(file);
-      preview.style.display = 'block';
-    }
-
-    function openWhatsAppUpgrade(title) {
-      const text = encodeURIComponent(`Сәлеметсіз бе! Мен ToyDuman-дағы "${title}" іс-шарасына толық VIP қолжетімділік алғым келеді.`);
-      window.open(`https://wa.me/${MY_WHATSAPP_PHONE}?text=${text}`, '_blank');
+      }, 500);
     }
 
     async function loadMyEvents() {
@@ -565,7 +602,7 @@
 
           <div class="card-btn-group">
             ${!isVip ? `
-              <button class="btn-luxury btn-upgrade-vip" onclick="openWhatsAppUpgrade('${evt.title}')">
+              <button class="btn-luxury btn-upgrade-vip" onclick="window.openWhatsAppUpgrade('${evt.title}')">
                 💎 VIP-ке көшіру (WhatsApp)
               </button>
             ` : `
@@ -579,7 +616,7 @@
             </a>
 
             <div class="btn-row">
-              <button class="btn-luxury btn-outline" onclick="showQrModal('${evt.title}', '${guestLink}')">
+              <button class="btn-luxury btn-outline" onclick="window.showQrModal('${evt.title}', '${guestLink}')">
                 📲 QR-код
               </button>
               <a class="btn-luxury btn-outline" href="${galleryLink}" target="_blank">
@@ -596,34 +633,7 @@
       });
     }
 
-    function openCreateModal() { document.getElementById('create-modal').style.display = 'flex'; }
-    function closeCreateModal() { document.getElementById('create-modal').style.display = 'none'; }
-    function closeQrModal() { document.getElementById('qr-modal').style.display = 'none'; }
-
-    function showQrModal(title, guestLink) {
-      currentGuestLink = guestLink;
-      document.getElementById('modal-qr-title').innerText = title;
-      document.getElementById('modal-preview-btn').href = guestLink;
-
-      const qrb = document.getElementById('qrcode-container');
-      qrb.innerHTML = '';
-      new QRCode(qrb, {
-        text: guestLink,
-        width: 180,
-        height: 180,
-        colorDark: "#121212",
-        colorLight: "#ffffff"
-      });
-
-      document.getElementById('qr-modal').style.display = 'flex';
-    }
-
-    function copyLink() {
-      navigator.clipboard.writeText(currentGuestLink);
-      alert("Сілтеме көшірілді!");
-    }
-
-    async function submitNewEvent() {
+    window.submitNewEvent = async function() {
       const title = document.getElementById('event-title').value.trim();
       let slug = document.getElementById('event-slug').value.trim().toLowerCase();
       const date = document.getElementById('event-date').value;
@@ -680,7 +690,7 @@
           return;
         }
 
-        closeCreateModal();
+        window.closeCreateModal();
         document.getElementById('event-title').value = '';
         document.getElementById('event-slug').value = '';
         document.getElementById('cover-preview-img').style.display = 'none';
@@ -693,9 +703,9 @@
         btn.disabled = false;
         btn.innerText = "Альбомды құру";
       }
-    }
+    };
 
-    initDashboard();
+    start();
   </script>
 </body>
 </html>
