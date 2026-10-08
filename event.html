@@ -12,283 +12,76 @@
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-    
-    body {
-      background-color: #0d0d0d;
-      color: #ffffff;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding-bottom: 50px;
-    }
+    body { background-color: #0d0d0d; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding-bottom: 50px; }
 
-    .app-container {
-      width: 100%;
-      max-width: 440px;
-      display: flex;
-      flex-direction: column;
-      padding: 12px 16px;
-    }
+    .app-container { width: 100%; max-width: 440px; display: flex; flex-direction: column; padding: 12px 16px; }
 
-    .header-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 4px 14px 4px;
-    }
-    .event-name {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.15rem;
-      font-weight: 600;
-      letter-spacing: 0.2px;
-      color: #f5f5f5;
-    }
-    .badge-sent {
-      background: rgba(255, 255, 255, 0.12);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #e5e5e5;
-      font-size: 0.72rem;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 20px;
-    }
+    .header-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 4px 14px 4px; }
+    .event-name { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 600; letter-spacing: 0.2px; color: #f5f5f5; }
+    .badge-sent { background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.1); color: #e5e5e5; font-size: 0.72rem; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
 
-    /* 24 сағат өтіп кеткенде шығатын құлып экраны */
-    .expired-box {
-      background: #181818;
-      border: 1px solid #2a2a2a;
-      border-radius: 24px;
-      padding: 40px 24px;
-      text-align: center;
-      margin-top: 40px;
-      display: none;
-    }
-    .expired-box h3 { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 8px; color: #fff; }
-    .expired-box p { font-size: 0.88rem; color: #888; line-height: 1.5; }
+    .viewfinder-card { width: 100%; height: 380px; background: #1a1a1a; border-radius: 28px; overflow: hidden; position: relative; border: 1px solid #2a2a2a; box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; }
+    .hero-bg-preview { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.65); }
+    .camera-frame-overlay { position: absolute; inset: 16px; border: 1px dashed rgba(255, 255, 255, 0.25); border-radius: 20px; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; padding: 12px; }
+    .frame-center-cross { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255, 255, 255, 0.35); font-size: 1.5rem; font-weight: 300; }
+    .frame-hint { font-size: 0.75rem; color: rgba(255, 255, 255, 0.6); text-align: center; margin-top: auto; }
+    .preview-capture { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; z-index: 10; }
 
-    /* Камера видоискателі */
-    .viewfinder-card {
-      width: 100%;
-      height: 380px;
-      background: #1a1a1a;
-      border-radius: 28px;
-      overflow: hidden;
-      position: relative;
-      border: 1px solid #2a2a2a;
-      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .hero-bg-preview {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      filter: brightness(0.65);
-    }
-
-    .camera-frame-overlay {
-      position: absolute;
-      inset: 16px;
-      border: 1px dashed rgba(255, 255, 255, 0.25);
-      border-radius: 20px;
-      pointer-events: none;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 12px;
-    }
-    .frame-center-cross {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: rgba(255, 255, 255, 0.35);
-      font-size: 1.5rem;
-      font-weight: 300;
-    }
-    .frame-hint {
-      font-size: 0.75rem;
-      color: rgba(255, 255, 255, 0.6);
-      text-align: center;
-      margin-top: auto;
-      text-shadow: 0 2px 6px rgba(0,0,0,0.8);
-    }
-
-    .preview-capture {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: none;
-      z-index: 10;
-    }
-
-    .controls-panel {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-      margin-top: 20px;
-    }
-
-    .btn-gallery-select {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #fff;
-      padding: 9px 20px;
-      border-radius: 30px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      backdrop-filter: blur(10px);
-    }
+    .controls-panel { display: flex; flex-direction: column; align-items: center; gap: 16px; margin-top: 20px; }
+    .btn-gallery-select { background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 9px 20px; border-radius: 30px; font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 8px; cursor: pointer; }
     .btn-gallery-select input { display: none; }
 
-    .film-counter-strip {
-      background: #181818;
-      border: 1px solid #282828;
-      border-radius: 22px;
-      padding: 6px 14px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      font-family: 'Space Mono', monospace;
-    }
+    .film-counter-strip { background: #181818; border: 1px solid #282828; border-radius: 22px; padding: 6px 14px; display: flex; align-items: center; gap: 14px; font-family: 'Space Mono', monospace; }
     .counter-num { font-size: 0.85rem; color: #555; font-weight: 700; }
-    .counter-current {
-      font-size: 1.05rem;
-      color: #fff;
-      background: #2a2a2a;
-      padding: 2px 10px;
-      border-radius: 12px;
-      border: 1px solid #444;
-    }
+    .counter-current { font-size: 1.05rem; color: #fff; background: #2a2a2a; padding: 2px 10px; border-radius: 12px; border: 1px solid #444; }
 
-    .shutter-wrapper {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-top: 4px;
-    }
-    .shutter-btn {
-      width: 76px;
-      height: 76px;
-      border-radius: 50%;
-      background: #ffffff;
-      border: 4px solid #333333;
-      box-shadow: 0 0 0 4px #1a1a1a, 0 10px 24px rgba(0,0,0,0.5);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.1s;
-    }
-    .shutter-btn:active {
-      transform: scale(0.92);
-      background: #e0e0e0;
-    }
-    .shutter-inner {
-      width: 58px;
-      height: 58px;
-      border-radius: 50%;
-      border: 2px solid #000;
-    }
+    .shutter-btn { width: 76px; height: 76px; border-radius: 50%; background: #ffffff; border: 4px solid #333333; box-shadow: 0 0 0 4px #1a1a1a, 0 10px 24px rgba(0,0,0,0.5); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .shutter-btn:active { transform: scale(0.92); }
+    .shutter-inner { width: 58px; height: 58px; border-radius: 50%; border: 2px solid #000; }
 
-    /* Модаль */
-    .caption-modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(12px);
-      z-index: 100;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .caption-box {
-      background: #1a1a1a;
+    /* МОДАЛЬ */
+    .caption-modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(12px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .caption-box { background: #1a1a1a; border: 1px solid #333; border-radius: 24px; width: 100%; max-width: 400px; padding: 22px; display: flex; flex-direction: column; gap: 12px; }
+    .caption-box h4 { font-family: 'Playfair Display', serif; font-size: 1.25rem; color: #fff; }
+    .caption-input { background: #0d0d0d; border: 1px solid #333; border-radius: 12px; padding: 12px 14px; color: #fff; font-size: 0.9rem; outline: none; width: 100%; }
+    
+    /* ДАУЫСТЫҚ ХАБАРЛАМА (АУДИО-ТІЛЕК) БЛОГЫ */
+    .voice-box {
+      background: #242424;
       border: 1px solid #333;
-      border-radius: 24px;
-      width: 100%;
-      max-width: 400px;
-      padding: 22px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .caption-box h4 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.25rem;
-      color: #fff;
-    }
-    .caption-input {
-      background: #0d0d0d;
-      border: 1px solid #333;
-      border-radius: 12px;
-      padding: 12px 14px;
-      color: #fff;
-      font-size: 0.9rem;
-      outline: none;
-      width: 100%;
-    }
-    .caption-input:focus { border-color: #fff; }
-    .btn-send-final {
-      background: #fff;
-      color: #000;
-      border: none;
-      padding: 14px;
       border-radius: 14px;
-      font-size: 0.95rem;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .btn-record {
+      background: #dc2626;
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 0.78rem;
       font-weight: 700;
       cursor: pointer;
-      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
+    .btn-record.recording {
+      animation: pulse 1s infinite;
+      background: #ef4444;
+    }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+    .btn-send-final { background: #fff; color: #000; border: none; padding: 14px; border-radius: 14px; font-size: 0.95rem; font-weight: 700; cursor: pointer; margin-top: 4px; }
 
     .feed-section { margin-top: 36px; width: 100%; }
-    .feed-heading {
-      font-size: 0.88rem;
-      font-weight: 600;
-      color: #888;
-      margin-bottom: 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .feed-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    .feed-card {
-      background: #181818;
-      border-radius: 16px;
-      overflow: hidden;
-      border: 1px solid #262626;
-      display: flex;
-      flex-direction: column;
-    }
-    .feed-img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-      background: #111;
-      display: block;
-    }
-    .feed-meta {
-      padding: 8px 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
+    .feed-heading { font-size: 0.88rem; font-weight: 600; color: #888; margin-bottom: 14px; display: flex; justify-content: space-between; }
+    .feed-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .feed-card { background: #181818; border-radius: 16px; overflow: hidden; border: 1px solid #262626; display: flex; flex-direction: column; }
+    .feed-img { width: 100%; height: 180px; object-fit: cover; }
+    .feed-meta { padding: 8px 10px; display: flex; flex-direction: column; gap: 2px; }
     .feed-author { font-size: 0.75rem; font-weight: 700; color: #eee; }
     .feed-wish { font-size: 0.72rem; color: #999; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   </style>
@@ -296,62 +89,41 @@
 <body>
 
   <div class="app-container">
-    
     <div class="header-bar">
       <div class="event-name" id="event-title">Жүктелуде...</div>
-      <div class="badge-wrap">
-        <span class="badge-sent" id="shots-badge">✓ Кадрлар</span>
+      <span class="badge-sent" id="shots-badge">✓ 25 кадр</span>
+    </div>
+
+    <div class="viewfinder-card">
+      <img id="bg-cover" class="hero-bg-preview" src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80" alt="Cover">
+      <div class="camera-frame-overlay">
+        <div style="font-size: 0.68rem; color: rgba(255,255,255,0.4);">ToyDuman Cam • 35mm</div>
+        <div class="frame-center-cross">+</div>
+        <div class="frame-hint" id="frame-hint">Төмендегі ақ түймені басып фото түсіріңіз</div>
+      </div>
+      <img id="preview-img" class="preview-capture" alt="Preview">
+    </div>
+
+    <div class="controls-panel">
+      <label class="btn-gallery-select">
+        <span>🖼️</span> Галереядан қосу
+        <input type="file" id="file-input-gallery" accept="image/*" onchange="handleFile(event)">
+      </label>
+      <input type="file" id="file-input-camera" accept="image/*" capture="environment" style="display: none;" onchange="handleFile(event)">
+
+      <div class="film-counter-strip">
+        <span class="counter-num" id="cnt-prev">23</span>
+        <span class="counter-current" id="cnt-cur">24</span>
+        <span class="counter-num" id="cnt-next">25</span>
+      </div>
+
+      <div class="shutter-wrapper">
+        <button class="shutter-btn" onclick="triggerCamera()">
+          <div class="shutter-inner"></div>
+        </button>
       </div>
     </div>
 
-    <!-- 24 сағат өткенде шығатын құлып блогы -->
-    <div class="expired-box" id="expired-box">
-      <div style="font-size: 2.5rem; margin-bottom: 8px;">⏳</div>
-      <h3>Сынақ мерзімі аяқталды</h3>
-      <p>Бұл іс-шараның тегін сынақ мерзімі (24 сағат) аяқталды. Фото жүктеу тоқтатылды.</p>
-    </div>
-
-    <!-- Камераның негізгі бөлімі -->
-    <div id="camera-main-section">
-      <div class="viewfinder-card">
-        <img id="bg-cover" class="hero-bg-preview" src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80" alt="Cover">
-        
-        <div class="camera-frame-overlay">
-          <div style="font-size: 0.68rem; color: rgba(255,255,255,0.4); text-transform: uppercase;">ToyDuman Cam • 35mm</div>
-          <div class="frame-center-cross">+</div>
-          <div class="frame-hint" id="frame-hint">Төмендегі ақ түймені басып фото түсіріңіз</div>
-        </div>
-
-        <img id="preview-img" class="preview-capture" alt="Preview">
-      </div>
-
-      <div class="controls-panel">
-        
-        <!-- Галереядан таңдау түймесі (файлдық инпут) -->
-        <label class="btn-gallery-select">
-          <span>🖼️</span> Галереядан қосу
-          <input type="file" id="file-input-gallery" accept="image/*" onchange="handleFile(event)">
-        </label>
-
-        <!-- Тікелей артқы камераны ашатын жасырын инпут -->
-        <input type="file" id="file-input-camera" accept="image/*" capture="environment" style="display: none;" onchange="handleFile(event)">
-
-        <div class="film-counter-strip">
-          <span class="counter-num" id="cnt-prev">23</span>
-          <span class="counter-current" id="cnt-cur">24</span>
-          <span class="counter-num" id="cnt-next">25</span>
-        </div>
-
-        <div class="shutter-wrapper">
-          <button class="shutter-btn" onclick="triggerCamera()" title="Фото түсіру">
-            <div class="shutter-inner"></div>
-          </button>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- 2 қатарлы лента -->
     <div class="feed-section">
       <div class="feed-heading">
         <span>Түсірілген кадрлар</span>
@@ -359,15 +131,20 @@
       </div>
       <div class="feed-grid" id="feed-grid"></div>
     </div>
-
   </div>
 
-  <!-- Модаль: Сақтау алдындағы тілек -->
   <div class="caption-modal" id="caption-modal">
     <div class="caption-box">
       <h4>Кадр түсірілді! 📸</h4>
-      <input type="text" id="guest-name" class="caption-input" placeholder="Сіздің есіміңіз (мысалы: Аружан)">
+      <input type="text" id="guest-name" class="caption-input" placeholder="Сіздің есіміңіз">
       <textarea id="guest-wish" class="caption-input" rows="2" placeholder="Ақ тілегіңіз (міндетті емес)"></textarea>
+
+      <!-- АУДИО-ТІЛЕК ЖАЗУ -->
+      <div class="voice-box">
+        <span id="voice-status" style="font-size: 0.78rem; color: #aaa;">🎙️ Дауыстық тілек (15 сек)</span>
+        <button type="button" id="btn-record" class="btn-record" onclick="toggleRecording()">Жазу</button>
+      </div>
+
       <button class="btn-send-final" id="btn-save" onclick="uploadPhoto()">Альбомға жолдау</button>
     </div>
   </div>
@@ -381,72 +158,48 @@
 
     let currentEvent = null;
     let compressedBlob = null;
-    let guestLimit = 25;
-    let isExpired = false;
-    let myPhotos = [];
+    let audioBlob = null;
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let isRecording = false;
 
-    try {
-      myPhotos = JSON.parse(localStorage.getItem(`td_shots_${slug}`)) || [];
-    } catch(e) { myPhotos = []; }
+    let myPhotos = [];
+    try { myPhotos = JSON.parse(localStorage.getItem(`td_shots_${slug}`)) || []; } catch(e) {}
 
     async function init() {
       if (!slug) return;
-      const { data, error } = await supabaseClient.from('events').select('*').eq('slug', slug).single();
-      if (error || !data) return;
-
+      const { data } = await supabaseClient.from('events').select('*').eq('slug', slug).single();
+      if (!data) return;
       currentEvent = data;
+
       document.getElementById('event-title').innerText = currentEvent.title;
-      guestLimit = currentEvent.shot_limit || 25;
-
-      // 24 САҒАТТЫҚ ШЕКТЕУДІ ТЕКСЕРУ (Егер тегін тариф болса)
-      if (currentEvent.plan_type !== 'vip') {
-        const createdTime = new Date(currentEvent.created_at).getTime();
-        const now = new Date().getTime();
-        const diffHours = (now - createdTime) / (1000 * 60 * 60);
-
-        if (diffHours >= 24) {
-          isExpired = true;
-          document.getElementById('camera-main-section').style.display = 'none';
-          document.getElementById('expired-box').style.display = 'block';
-          document.getElementById('shots-badge').innerText = 'Уақыты аяқталды';
-          renderFeed();
-          return;
-        }
-      }
-
-      if (currentEvent.cover_url) {
-        document.getElementById('bg-cover').src = currentEvent.cover_url;
-      }
+      if (currentEvent.cover_url) document.getElementById('bg-cover').src = currentEvent.cover_url;
 
       updateCounterUI();
       renderFeed();
     }
 
     function updateCounterUI() {
-      const remain = Math.max(0, guestLimit - myPhotos.length);
-      document.getElementById('cnt-cur').innerText = remain;
-      document.getElementById('cnt-prev').innerText = Math.max(0, remain - 1);
-      document.getElementById('cnt-next').innerText = remain + 1;
-      document.getElementById('shots-badge').innerText = `✓ ${remain} кадр қалды`;
+      const isVip = currentEvent && currentEvent.plan_type === 'vip';
+      const maxLimit = isVip ? 9999 : 25;
+      const remain = Math.max(0, maxLimit - myPhotos.length);
 
-      if (remain === 0 && guestLimit < 999) {
-        document.getElementById('frame-hint').innerText = "Кадр лимиті аяқталды 😔";
-      }
+      document.getElementById('cnt-cur').innerText = isVip ? '∞' : remain;
+      document.getElementById('cnt-prev').innerText = isVip ? '—' : Math.max(0, remain - 1);
+      document.getElementById('cnt-next').innerText = isVip ? '—' : remain + 1;
+      document.getElementById('shots-badge').innerText = isVip ? '✓ VIP Шектеусіз' : `✓ ${remain} кадр қалды`;
     }
 
-    // Шуттер түймесін басқанда артқы камераның лезде ашылуы
     function triggerCamera() {
-      if (isExpired) return;
-
-      const remain = Math.max(0, guestLimit - myPhotos.length);
-      if (remain <= 0 && guestLimit < 999) {
-        alert("Сіз барлық кадрларыңызды пайдаландыңыз!");
+      const isVip = currentEvent && currentEvent.plan_type === 'vip';
+      if (!isVip && myPhotos.length >= 25) {
+        alert("Сіздің 25 кадрлық тегін лимитіңіз таусылды!");
         return;
       }
       document.getElementById('file-input-camera').click();
     }
 
-    function compressImage(file, maxWidth = 1200, quality = 0.82) {
+    function compressImage(file) {
       return new Promise((resolve) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -456,10 +209,10 @@
           img.onload = () => {
             const canvas = document.createElement('canvas');
             let w = img.width, h = img.height;
-            if (w > maxWidth) { h = Math.round((h * maxWidth) / w); w = maxWidth; }
+            if (w > 1200) { h = Math.round((h * 1200) / w); w = 1200; }
             canvas.width = w; canvas.height = h;
             canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-            canvas.toBlob(blob => resolve(blob), 'image/jpeg', quality);
+            canvas.toBlob(blob => resolve(blob), 'image/jpeg', 0.82);
           };
         };
       });
@@ -477,6 +230,43 @@
       document.getElementById('caption-modal').style.display = 'flex';
     }
 
+    // ДАУЫСТЫҚ ТІЛЕК ЖАЗУ ЛОГИКАСЫ
+    async function toggleRecording() {
+      const btn = document.getElementById('btn-record');
+      const status = document.getElementById('voice-status');
+
+      if (!isRecording) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorder = new MediaRecorder(stream);
+          audioChunks = [];
+
+          mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+          mediaRecorder.onstop = () => {
+            audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            status.innerText = "✅ Дауыс жазылды!";
+          };
+
+          mediaRecorder.start();
+          isRecording = true;
+          btn.innerText = "Тоқтату";
+          btn.classList.add('recording');
+          status.innerText = "🎙️ Жазылуда (15 сек)...";
+
+          setTimeout(() => {
+            if (isRecording) toggleRecording();
+          }, 15000);
+        } catch(err) {
+          alert("Микрофонға рұқсат берілмеді");
+        }
+      } else {
+        mediaRecorder.stop();
+        isRecording = false;
+        btn.innerText = "Қайта жазу";
+        btn.classList.remove('recording');
+      }
+    }
+
     async function uploadPhoto() {
       if (!compressedBlob) return;
 
@@ -490,12 +280,21 @@
         const { data: urlData } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
         const photoUrl = urlData.publicUrl;
 
+        let audioUrl = null;
+        if (audioBlob) {
+          const audioName = `${currentEvent.id}/${Date.now()}_audio.webm`;
+          await supabaseClient.storage.from('photos').upload(audioName, audioBlob, { contentType: 'audio/webm' });
+          const { data: aData } = supabaseClient.storage.from('photos').getPublicUrl(audioName);
+          audioUrl = aData.publicUrl;
+        }
+
         const author = document.getElementById('guest-name').value.trim() || 'Қонақ';
         const wish = document.getElementById('guest-wish').value.trim() || '';
 
         await supabaseClient.from('event_photos').insert([{
           event_id: currentEvent.id,
           photo_url: photoUrl,
+          audio_url: audioUrl,
           author_name: author,
           wishes: wish
         }]);
@@ -506,9 +305,8 @@
         document.getElementById('caption-modal').style.display = 'none';
         document.getElementById('preview-img').style.display = 'none';
         document.getElementById('guest-wish').value = '';
-        document.getElementById('file-input-gallery').value = '';
-        document.getElementById('file-input-camera').value = '';
         compressedBlob = null;
+        audioBlob = null;
 
         updateCounterUI();
         renderFeed();
@@ -524,11 +322,6 @@
       const grid = document.getElementById('feed-grid');
       grid.innerHTML = '';
       document.getElementById('feed-count').innerText = `${myPhotos.length} фото`;
-
-      if (myPhotos.length === 0) {
-        grid.innerHTML = '<div style="grid-column: span 2; text-align: center; color: #555; padding: 20px; font-size: 0.8rem;">Әзірге түсірілген кадр жоқ</div>';
-        return;
-      }
 
       myPhotos.forEach(item => {
         const div = document.createElement('div');
