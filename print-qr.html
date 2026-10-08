@@ -8,9 +8,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-  <!-- Қазақ тілін толық қолдайтын қаріптер -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
@@ -24,33 +23,46 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 30px 16px;
     }
 
     .no-print-bar {
-      margin-bottom: 20px;
+      margin-bottom: 24px;
       display: flex;
       gap: 12px;
+      align-items: center;
     }
     .btn-print {
       background: #121212;
       color: #fff;
       border: none;
-      padding: 12px 24px;
+      padding: 12px 28px;
       border-radius: 30px;
-      font-size: 0.9rem;
-      font-weight: 600;
+      font-size: 0.92rem;
+      font-weight: 700;
       cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      transition: transform 0.15s;
+    }
+    .btn-print:active { transform: scale(0.96); }
+    .btn-back {
+      background: rgba(0, 0, 0, 0.06);
+      color: #121212;
+      text-decoration: none;
+      padding: 12px 20px;
+      border-radius: 30px;
+      font-size: 0.88rem;
+      font-weight: 600;
     }
 
-    /* Басып шығаруға арналған А5 өлшемді карточка */
+    /* А5 өлшемді премиум карточка (148 x 210 мм) */
     .card-print {
       width: 148mm;
       min-height: 210mm;
       background: #ffffff;
       padding: 18mm 14mm;
-      border-radius: 8px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      border-radius: 6px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.06);
       border: 1px solid #eae8e4;
       display: flex;
       flex-direction: column;
@@ -62,8 +74,8 @@
 
     .border-inner {
       position: absolute;
-      inset: 8mm;
-      border: 1px solid #e2ded6;
+      inset: 7mm;
+      border: 1px solid #dcd7cc;
       border-radius: 4px;
       pointer-events: none;
     }
@@ -73,39 +85,41 @@
       flex-direction: column;
       align-items: center;
       gap: 6px;
+      z-index: 2;
     }
     .event-couple-title {
       font-family: 'Cormorant Garamond', Georgia, serif;
-      font-size: 2.4rem;
+      font-size: 2.3rem;
       font-weight: 700;
       letter-spacing: -0.5px;
-      line-height: 1.1;
-      margin-bottom: 4px;
+      line-height: 1.15;
+      margin-bottom: 2px;
     }
     .event-date-str {
       font-size: 0.85rem;
       color: #737373;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 1.5px;
     }
 
     .instruction-lead {
       font-family: 'Cormorant Garamond', Georgia, serif;
-      font-size: 1.5rem;
+      font-size: 1.45rem;
       font-weight: 600;
       color: #222;
-      margin-top: 10px;
+      margin-top: 14px;
       line-height: 1.25;
     }
 
-    /* QR-код блогы */
+    /* QR блогы */
     .qr-holder {
       background: #ffffff;
       padding: 14px;
-      border: 1px solid #e8e6e1;
-      border-radius: 16px;
-      margin: 12px 0;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.03);
+      border: 1px solid #e5e2da;
+      border-radius: 18px;
+      margin: 14px 0;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+      z-index: 2;
     }
 
     .card-bottom {
@@ -113,29 +127,31 @@
       flex-direction: column;
       align-items: center;
       gap: 6px;
+      z-index: 2;
     }
     .guide-step {
       font-size: 0.82rem;
       color: #555;
-      line-height: 1.4;
-      max-width: 300px;
+      line-height: 1.45;
+      max-width: 310px;
     }
     .brand-mark {
       font-size: 0.7rem;
       color: #999;
       letter-spacing: 0.5px;
-      margin-top: 6px;
+      margin-top: 8px;
     }
 
-    /* Баспаға жібергенде артық батырмаларды жасыру */
+    /* Баспаға шығарғанда */
     @media print {
-      body { background: #fff; padding: 0; }
+      body { background: #fff; padding: 0; min-height: auto; }
       .no-print-bar { display: none !important; }
       .card-print {
         box-shadow: none;
         border: none;
         width: 100%;
         height: 100%;
+        page-break-after: avoid;
       }
     }
   </style>
@@ -143,6 +159,7 @@
 <body>
 
   <div class="no-print-bar">
+    <a href="dashboard.html" class="btn-back">← Кабинетке қайту</a>
     <button class="btn-print" onclick="window.print()">🖨️ Басып шығару (Печать)</button>
   </div>
 
@@ -176,13 +193,16 @@
     const slug = new URLSearchParams(window.location.search).get('slug');
 
     async function init() {
-      if (!slug) return;
+      if (!slug) {
+        document.getElementById('card-title').innerText = "Той коды жоқ";
+        return;
+      }
 
       const { data, error } = await supabaseClient
         .from('events')
         .select('*')
         .eq('slug', slug)
-        .single();
+        .maybeSingle();
 
       if (error || !data) {
         document.getElementById('card-title').innerText = "Той табылмады";
@@ -194,12 +214,13 @@
         document.getElementById('card-date').innerText = new Date(data.event_date).toLocaleDateString('kk-KZ');
       }
 
-      const guestLink = `${window.location.origin}${window.location.pathname.replace('print-qr.html', 'event.html')}?slug=${slug}`;
+      const currentOrigin = window.location.origin + window.location.pathname.replace('print-qr.html', 'event.html');
+      const guestLink = `${currentOrigin}?slug=${slug}`;
 
       new QRCode(document.getElementById('qr-box'), {
         text: guestLink,
-        width: 170,
-        height: 170,
+        width: 175,
+        height: 175,
         colorDark: "#121212",
         colorLight: "#ffffff"
       });
