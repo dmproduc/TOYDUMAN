@@ -8,7 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
@@ -144,75 +144,96 @@
       background: var(--card-bg);
       border-radius: 20px;
       border: 1px solid var(--border);
-      padding: 24px;
+      padding: 20px;
       box-shadow: var(--shadow-sm);
       display: flex;
       flex-direction: column;
       position: relative;
+      overflow: hidden;
     }
     .event-card:hover {
       transform: translateY(-4px);
       box-shadow: var(--shadow-md);
       border-color: var(--accent);
     }
+
+    .card-cover-preview {
+      width: 100%;
+      height: 140px;
+      border-radius: 12px;
+      object-fit: cover;
+      margin-bottom: 12px;
+      border: 1px solid var(--border);
+    }
+
     .badge-wrap {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
+      margin-bottom: 10px;
     }
     .event-badge {
       background: rgba(217, 119, 6, 0.12);
       color: var(--accent);
       font-size: 0.72rem;
       font-weight: 800;
-      padding: 5px 12px;
-      border-radius: 12px;
+      padding: 4px 10px;
+      border-radius: 10px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
     }
     .photo-count-badge {
       background: var(--pill-bg);
       color: var(--text);
       border: 1px solid var(--border);
-      font-size: 0.76rem;
+      font-size: 0.75rem;
       font-weight: 700;
-      padding: 5px 12px;
-      border-radius: 14px;
+      padding: 4px 10px;
+      border-radius: 12px;
     }
 
     .event-card-title {
       font-family: 'Playfair Display', serif;
-      font-size: 1.35rem;
+      font-size: 1.25rem;
       font-weight: 800;
       color: var(--text);
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
     .event-meta {
-      font-size: 0.84rem;
+      font-size: 0.82rem;
       color: var(--text-muted);
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      margin-bottom: 22px;
+      gap: 5px;
+      margin-bottom: 18px;
     }
     .event-meta b { color: var(--text); }
 
     .card-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: auto;
+    }
+    .action-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: auto;
+      gap: 8px;
     }
     .btn-action {
       text-align: center;
-      padding: 11px;
-      border-radius: 12px;
-      font-size: 0.84rem;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 0.82rem;
       font-weight: 700;
       text-decoration: none;
       cursor: pointer;
       border: none;
+    }
+    .btn-action-preview {
+      background: #eff6ff;
+      color: #2563eb;
+      border: 1px solid #bfdbfe;
+      grid-column: span 2;
     }
     .btn-action-qr { background: var(--pill-bg); color: var(--text); border: 1px solid var(--border); }
     .btn-action-album { background: var(--accent); color: #fff; }
@@ -288,11 +309,13 @@
     .modal-card {
       background: var(--card-bg);
       width: 100%;
-      max-width: 480px;
+      max-width: 500px;
       border-radius: 24px;
-      padding: 30px;
+      padding: 26px;
       border: 1px solid var(--border);
       position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
     }
     .modal-close {
       position: absolute;
@@ -307,18 +330,39 @@
       color: var(--text);
     }
 
-    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
     .form-group label { font-size: 0.82rem; font-weight: 700; color: var(--text); }
     .form-group input, .form-group select {
       background: var(--pill-bg);
       border: 1px solid var(--border);
-      padding: 12px 14px;
+      padding: 11px 14px;
       border-radius: 12px;
       font-size: 0.95rem;
       color: var(--text);
       outline: none;
     }
     .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
+
+    /* Мұқаба суретін таңдау зонасы */
+    .cover-upload-zone {
+      border: 2px dashed var(--accent);
+      border-radius: 14px;
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      background: rgba(217, 119, 6, 0.04);
+      margin-top: 4px;
+    }
+    .cover-upload-zone input { display: none; }
+    .cover-preview {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 10px;
+      display: none;
+      margin-top: 10px;
+      border: 1px solid var(--border);
+    }
 
     .btn-create {
       background: var(--accent);
@@ -386,11 +430,12 @@
     </button>
   </div>
 
+  <!-- Модаль 1: Жаңа іс-шара құру + Жұбайлар фотосын жүктеу -->
   <div class="modal-overlay" id="create-modal">
     <div class="modal-card">
       <button class="modal-close" onclick="closeCreateModal()">✕</button>
-      <h2 style="font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 800; margin-bottom: 6px; color: var(--text);">Жаңа іс-шара құру</h2>
-      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">Мереке атын және қонақтарға арналған сілтемені енгізіңіз</p>
+      <h2 style="font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 800; margin-bottom: 4px; color: var(--text);">Жаңа іс-шара құру</h2>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">Мереке атын және жас жұбайлардың мұқаба фотосын енгізіңіз</p>
 
       <div class="form-group">
         <label>Іс-шара атауы (Жұптың есімі):</label>
@@ -407,6 +452,17 @@
         <input type="date" id="event-date">
       </div>
 
+      <!-- Жұбайлардың фотосын жүктеу өрісі -->
+      <div class="form-group">
+        <label>Жас жұбайлардың бас фотосы (Мұқаба):</label>
+        <div class="cover-upload-zone" onclick="document.getElementById('cover-file-input').click()">
+          <span style="font-size: 1.5rem;">📸</span>
+          <p style="font-size: 0.82rem; font-weight: 600; color: var(--text); margin-top: 4px;">Жұптың фотосын таңдау</p>
+          <input type="file" id="cover-file-input" accept="image/*" onchange="previewCoverFile(event)">
+        </div>
+        <img id="cover-preview-img" class="cover-preview" alt="Cover Preview">
+      </div>
+
       <div class="form-group">
         <label>Бір қонаққа кадр шектеуі:</label>
         <select id="event-limit">
@@ -421,6 +477,7 @@
     </div>
   </div>
 
+  <!-- Модаль 2: QR және Предосмотр терезесі -->
   <div class="modal-overlay" id="qr-modal">
     <div class="modal-card">
       <button class="modal-close" onclick="closeQrModal()">✕</button>
@@ -431,9 +488,12 @@
         <div class="qr-box-wrap" id="qrcode-container"></div>
         <div class="link-copy-box" id="modal-qr-link"></div>
 
-        <div style="display: flex; gap: 8px; width: 100%;">
-          <a id="modal-album-btn" class="btn-action btn-action-album" style="flex: 1;" href="#" target="_blank">🖼️ Галерея</a>
-          <button class="btn-action btn-action-qr" style="flex: 1;" onclick="copyLink()">📋 Көшіру</button>
+        <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
+          <a id="modal-preview-btn" class="btn-action btn-action-preview" href="#" target="_blank">👁️ Қонақ көзімен көру (Предосмотр)</a>
+          <div style="display: flex; gap: 8px; width: 100%;">
+            <a id="modal-album-btn" class="btn-action btn-action-album" style="flex: 1;" href="#" target="_blank">🖼️ Галерея</a>
+            <button class="btn-action btn-action-qr" style="flex: 1;" onclick="copyLink()">📋 Көшіру</button>
+          </div>
         </div>
       </div>
     </div>
@@ -445,6 +505,7 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let currentUser = null;
+    let selectedCoverFile = null;
 
     function initTheme() {
       const savedTheme = localStorage.getItem('toyduman_theme') || 'light';
@@ -477,6 +538,15 @@
     async function logout() {
       await supabaseClient.auth.signOut();
       window.location.href = "auth.html";
+    }
+
+    function previewCoverFile(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      selectedCoverFile = file;
+      const preview = document.getElementById('cover-preview-img');
+      preview.src = URL.createObjectURL(file);
+      preview.style.display = 'block';
     }
 
     async function loadMyEvents() {
@@ -512,9 +582,13 @@
         const galleryLink = `${currentOrigin}gallery.html?slug=${evt.slug}`;
         const dateFormatted = evt.event_date ? new Date(evt.event_date).toLocaleDateString('kk-KZ') : 'Күні белгіленбеген';
 
+        const defaultCover = 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80';
+        const coverImg = evt.cover_url || defaultCover;
+
         const card = document.createElement('div');
         card.className = 'event-card';
         card.innerHTML = `
+          <img src="${coverImg}" class="card-cover-preview" alt="Мұқаба">
           <div class="badge-wrap">
             <span class="event-badge">✨ Белсенді</span>
             <span class="photo-count-badge">📷 ${count} фото</span>
@@ -526,8 +600,11 @@
             <span>🔗 Код: <b>${evt.slug}</b></span>
           </div>
           <div class="card-actions">
-            <button class="btn-action btn-action-qr" onclick="showQrModal('${evt.title}', '${guestLink}', '${galleryLink}')">📲 QR-код</button>
-            <a class="btn-action btn-action-album" href="${galleryLink}" target="_blank">🖼️ Галерея</a>
+            <a class="btn-action btn-action-preview" href="${guestLink}" target="_blank">👁️ Қонақ көзімен көру (Предосмотр)</a>
+            <div class="action-row">
+              <button class="btn-action btn-action-qr" onclick="showQrModal('${evt.title}', '${guestLink}', '${galleryLink}')">📲 QR-код</button>
+              <a class="btn-action btn-action-album" href="${galleryLink}" target="_blank">🖼️ Галерея</a>
+            </div>
           </div>
         `;
         listEl.appendChild(card);
@@ -544,6 +621,7 @@
       document.getElementById('modal-qr-title').innerText = title;
       document.getElementById('modal-qr-link').innerText = guestLink;
       document.getElementById('modal-album-btn').href = galleryLink;
+      document.getElementById('modal-preview-btn').href = guestLink;
 
       const qrb = document.getElementById('qrcode-container');
       qrb.innerHTML = '';
@@ -577,12 +655,28 @@
       btn.innerText = "Құрылуда... ⏳";
 
       try {
+        let coverUrl = null;
+
+        // Жұбайлардың фотосы таңдалса, оны Storage-ге сақтау
+        if (selectedCoverFile) {
+          const coverName = `covers/${slug}_${Date.now()}.jpg`;
+          const { error: coverErr } = await supabaseClient.storage
+            .from('photos')
+            .upload(coverName, selectedCoverFile, { contentType: 'image/jpeg' });
+
+          if (!coverErr) {
+            const { data: cUrlData } = supabaseClient.storage.from('photos').getPublicUrl(coverName);
+            coverUrl = cUrlData.publicUrl;
+          }
+        }
+
         const { error } = await supabaseClient.from('events').insert([{
           user_id: currentUser ? currentUser.id : null,
           title: title,
           slug: slug,
           event_date: date || null,
           shot_limit: limit,
+          cover_url: coverUrl,
           default_lang: 'kz'
         }]);
 
@@ -594,6 +688,9 @@
         closeCreateModal();
         document.getElementById('event-title').value = '';
         document.getElementById('event-slug').value = '';
+        document.getElementById('cover-preview-img').style.display = 'none';
+        selectedCoverFile = null;
+
         await loadMyEvents();
 
         const currentOrigin = window.location.origin + window.location.pathname.replace('dashboard.html', '');
