@@ -2,28 +2,59 @@
 <html lang="kk">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Бас Админ Панелі — ToyDuman Master Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Бас Админ Панелі — ToyDuman</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-    body { background-color: #0c0a09; color: #f5f5f4; min-height: 100vh; padding: 24px 16px; }
-    .container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+    :root {
+      --bg: #fcfbf9;
+      --card-bg: #ffffff;
+      --text: #121212;
+      --text-muted: #737373;
+      --border: #eae8e4;
+      --accent: #121212;
+      --radius: 20px;
+    }
 
-    header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #292524; padding-bottom: 16px; flex-wrap: wrap; gap: 12px; }
-    .logo { font-size: 1.4rem; font-weight: 800; color: #f59e0b; display: flex; align-items: center; gap: 8px; }
-    .admin-badge { background: #dc2626; color: #fff; font-size: 0.72rem; padding: 4px 10px; border-radius: 20px; font-weight: 800; text-transform: uppercase; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Onest', sans-serif; }
+    body { background-color: var(--bg); color: var(--text); min-height: 100vh; padding: 24px 16px; }
+    .container { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
 
-    /* Бас админді өзгерту панелі */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .logo {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .admin-pill {
+      background: #121212;
+      color: #fff;
+      font-size: 0.72rem;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
     .admin-change-box {
-      background: #1c1917;
-      border: 1px solid #292524;
-      border-radius: 16px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
       padding: 16px 20px;
       display: flex;
       justify-content: space-between;
@@ -31,36 +62,88 @@
       flex-wrap: wrap;
       gap: 12px;
     }
-    .admin-change-box label { font-size: 0.85rem; color: #a8a29e; font-weight: 600; }
-    .admin-input-group { display: flex; gap: 8px; align-items: center; }
-    .admin-input { background: #0c0a09; border: 1px solid #292524; color: #fff; padding: 8px 14px; border-radius: 10px; font-size: 0.85rem; outline: none; width: 260px; }
-    .admin-input:focus { border-color: #f59e0b; }
+    .admin-input-group { display: flex; gap: 8px; }
+    .admin-input {
+      background: #faf9f7;
+      border: 1px solid var(--border);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      outline: none;
+      width: 250px;
+    }
+    .btn-save {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
 
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
-    .stat-card { background: #1c1917; border: 1px solid #292524; border-radius: 16px; padding: 18px; }
-    .stat-val { font-size: 1.8rem; font-weight: 800; color: #f59e0b; margin-top: 6px; }
-    .stat-lbl { font-size: 0.82rem; color: #a8a29e; }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+    .stat-val {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+    .stat-lbl { font-size: 0.82rem; color: var(--text-muted); }
 
-    .table-wrap { background: #1c1917; border: 1px solid #292524; border-radius: 20px; overflow-x: auto; }
+    .table-wrap {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow-x: auto;
+    }
     table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem; }
-    th { background: #292524; padding: 14px 16px; color: #d6d3d1; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; }
-    td { padding: 14px 16px; border-bottom: 1px solid #292524; color: #f5f5f4; }
-    tr:hover { background: rgba(255, 255, 255, 0.02); }
+    th {
+      background: #f7f6f4;
+      padding: 14px 16px;
+      color: #555;
+      font-weight: 700;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    td { padding: 14px 16px; border-bottom: 1px solid var(--border); }
+    tr:hover { background: #faf9f7; }
 
-    .badge-vip { background: #fef3c7; color: #b45309; padding: 4px 10px; border-radius: 12px; font-weight: 800; font-size: 0.72rem; text-transform: uppercase; }
-    .badge-free { background: #292524; color: #a8a29e; padding: 4px 10px; border-radius: 12px; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; }
+    .badge-vip { background: #121212; color: #fff; padding: 4px 10px; border-radius: 12px; font-weight: 700; font-size: 0.72rem; }
+    .badge-free { background: #f2f0eb; color: #666; padding: 4px 10px; border-radius: 12px; font-weight: 700; font-size: 0.72rem; }
 
-    .btn { padding: 8px 14px; border-radius: 10px; font-weight: 700; cursor: pointer; border: none; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
-    .btn-vip { background: #10b981; color: #fff; }
-    .btn-vip:hover { background: #059669; }
+    .btn-action {
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.78rem;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-give { background: #10b981; color: #fff; }
     .btn-revoke { background: #ef4444; color: #fff; }
-    .btn-link { background: #292524; color: #f59e0b; }
-    .btn-save-admin { background: #f59e0b; color: #000; font-weight: 800; }
-
-    .search-input { background: #1c1917; border: 1px solid #292524; color: #fff; padding: 10px 16px; border-radius: 12px; font-size: 0.9rem; outline: none; width: 100%; max-width: 350px; }
-    .search-input:focus { border-color: #f59e0b; }
-
-    .access-denied { text-align: center; padding: 80px 20px; }
+    .search-input {
+      background: #fff;
+      border: 1px solid var(--border);
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      outline: none;
+      width: 100%;
+      max-width: 300px;
+    }
   </style>
 </head>
 <body>
@@ -68,69 +151,68 @@
   <div class="container" id="admin-content" style="display: none;">
     <header>
       <div class="logo">
-        👑 ToyDuman Басқару Панелі <span class="admin-badge">Бас Админ</span>
+        ToyDuman <span class="admin-pill">Бас Басқару</span>
       </div>
       <div style="display: flex; align-items: center; gap: 12px;">
-        <span id="current-user-email" style="font-size: 0.85rem; color: #a8a29e;"></span>
-        <a href="dashboard.html" class="btn btn-link">← Кабинетке өту</a>
+        <span id="current-user-email" style="font-size: 0.82rem; color: var(--text-muted);"></span>
+        <a href="dashboard.html" style="font-size: 0.82rem; color: var(--text); font-weight: 600; text-decoration: none;">← Кабинетке өту</a>
       </div>
     </header>
 
-    <!-- БАС АДМИН ПОШТАСЫН ӨЗГЕРТУ БЛОГЫ -->
     <div class="admin-change-box">
       <div>
-        <label>⚙️ Бас админ поштасы:</label>
-        <div style="font-size: 0.78rem; color: #78716c; margin-top: 2px;">Осы поштамен кірген адам ғана админканы басқара алады</div>
+        <div style="font-size: 0.85rem; font-weight: 700;">⚙️ Бас админ поштасы:</div>
+        <div style="font-size: 0.75rem; color: var(--text-muted);">Осы пошта иесі ғана админкаға кіре алады</div>
       </div>
       <div class="admin-input-group">
-        <input type="email" id="input-admin-email" class="admin-input" placeholder="жаңа_пошта@gmail.com">
-        <button class="btn btn-save-admin" onclick="saveNewAdminEmail()">Сақтау</button>
+        <input type="email" id="input-admin-email" class="admin-input" placeholder="admin@gmail.com">
+        <button class="btn-save" onclick="saveNewAdminEmail()">Сақтау</button>
       </div>
     </div>
 
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-lbl">Жалпы ашылған тойлар</div>
+        <div class="stat-lbl">Жалпы тойлар</div>
         <div class="stat-val" id="stat-total">0</div>
       </div>
       <div class="stat-card">
-        <div class="stat-lbl">VIP (Сатылған қолжетімділік)</div>
+        <div class="stat-lbl">VIP Альбомдар</div>
         <div class="stat-val" id="stat-vip" style="color: #10b981;">0</div>
       </div>
       <div class="stat-card">
         <div class="stat-lbl">Тегін сынақтар</div>
-        <div class="stat-val" id="stat-free" style="color: #a8a29e;">0</div>
+        <div class="stat-val" id="stat-free" style="color: #888;">0</div>
       </div>
     </div>
 
     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; flex-wrap: wrap; gap: 10px;">
-      <h2 style="font-size: 1.25rem; font-weight: 800;">Барлық клиенттер мен мерекелер</h2>
-      <input type="text" id="search-box" class="search-input" placeholder="Пошта немесе той атымен іздеу..." oninput="filterEvents()">
+      <h3 style="font-size: 1.15rem; font-weight: 700;">Барлық клиенттер тізімі</h3>
+      <input type="text" id="search-box" class="search-input" placeholder="Іздеу..." oninput="filterEvents()">
     </div>
 
     <div class="table-wrap">
       <table>
         <thead>
           <tr>
-            <th>Клиенттің Gmail поштасы</th>
-            <th>Той / Іс-шара аты</th>
-            <th>Сілтеме коды</th>
-            <th>Сурет саны</th>
-            <th>Тариф күйі</th>
-            <th>Басқару (Доступ беру)</th>
+            <th>Пошта</th>
+            <th>Той атауы</th>
+            <th>Сілтеме</th>
+            <th>Фото</th>
+            <th>Күйі</th>
+            <th>VIP Қолжетімділік</th>
           </tr>
         </thead>
         <tbody id="events-table-body">
-          <tr><td colspan="6" style="text-align: center; color: #a8a29e;">Жүктелуде...</td></tr>
+          <tr><td colspan="6" style="text-align: center; color: #888;">Жүктелуде...</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 
-  <div class="access-denied" id="denied-box" style="display: none;">
-    <h2 style="font-size: 2rem; color: #ef4444; margin-bottom: 10px;">⛔ Қолжетімділік жабық!</h2>
-    <p style="color: #a8a29e; margin-bottom: 20px;">Бұл парақшаға тек белгіленген Бас Админ ғана кіре алады.</p>
-    <a href="dashboard.html" class="btn btn-link">Кабинетке қайту</a>
+  <div id="denied-box" style="display: none; text-align: center; padding: 100px 20px;">
+    <h2>⛔ Қолжетімділік жабық</h2>
+    <p style="color: #888; margin-top: 8px;">Бұл парақшаға тек бас админ ғана кіре алады.</p>
+    <a href="dashboard.html" style="display: inline-block; margin-top: 16px; color: #121212; font-weight: 600;">Кабинетке қайту</a>
   </div>
 
   <script>
@@ -149,7 +231,6 @@
         return;
       }
 
-      // Базадан қазіргі бас админ поштасын оқу
       const { data: settingData } = await supabaseClient
         .from('app_settings')
         .select('value')
@@ -158,7 +239,6 @@
 
       currentAdminEmail = settingData ? settingData.value : 'guldanaih@gmail.com';
 
-      // Кірген қолданушы бас админ бе?
       if (session.user.email.toLowerCase() !== currentAdminEmail.toLowerCase()) {
         document.getElementById('denied-box').style.display = 'block';
         return;
@@ -171,15 +251,14 @@
       loadAdminData();
     }
 
-    // Бас админ поштасын жаңасына ауыстыру функциясы
     async function saveNewAdminEmail() {
       const newEmail = document.getElementById('input-admin-email').value.trim().toLowerCase();
       if (!newEmail || !newEmail.includes('@')) {
-        alert("Дұрыс пошта мекенжайын енгізіңіз!");
+        alert("Дұрыс пошта енгізіңіз!");
         return;
       }
 
-      if (!confirm(`Бас админ құқығын "${newEmail}" поштасына ауыстырғыңыз келетініне сенімдісіз бе?`)) return;
+      if (!confirm(`Бас админді "${newEmail}" поштасына ауыстырасыз ба?`)) return;
 
       const { error } = await supabaseClient
         .from('app_settings')
@@ -188,7 +267,7 @@
       if (error) {
         alert("Қате: " + error.message);
       } else {
-        alert(`✅ Сәтті сақталды! Енді бас админ: ${newEmail}`);
+        alert(`Сәтті сақталды: ${newEmail}`);
         currentAdminEmail = newEmail;
       }
     }
@@ -222,7 +301,7 @@
       tbody.innerHTML = '';
 
       if (list.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #a8a29e;">Ешқандай мереке табылмады</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #888;">Ештеңе табылмады</td></tr>';
         return;
       }
 
@@ -235,23 +314,19 @@
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td><b>${evt.user_email || 'Пошта сақталмаған'}</b></td>
+          <td><b>${evt.user_email || '—'}</b></td>
           <td>${evt.title}</td>
-          <td><a href="${guestLink}" target="_blank" style="color: #f59e0b; text-decoration: none;">${evt.slug} ↗</a></td>
-          <td>📷 ${count} фото</td>
-          <td>
-            <span class="${isVip ? 'badge-vip' : 'badge-free'}">
-              ${isVip ? '👑 VIP' : '⏳ Тегін (25)'}
-            </span>
-          </td>
+          <td><a href="${guestLink}" target="_blank" style="color: #121212; text-decoration: underline;">${evt.slug} ↗</a></td>
+          <td>📷 ${count}</td>
+          <td><span class="${isVip ? 'badge-vip' : 'badge-free'}">${isVip ? 'VIP' : 'Тегін (25)'}</span></td>
           <td>
             ${!isVip ? `
-              <button class="btn btn-vip" onclick="toggleVip('${evt.id}', '${evt.title}', true)">
-                ⚡ VIP доступ беру
+              <button class="btn-action btn-give" onclick="toggleVip('${evt.id}', '${evt.title}', true)">
+                ⚡ VIP беру
               </button>
             ` : `
-              <button class="btn btn-revoke" onclick="toggleVip('${evt.id}', '${evt.title}', false)">
-                ❌ Доступты қайтарып алу
+              <button class="btn-action btn-revoke" onclick="toggleVip('${evt.id}', '${evt.title}', false)">
+                ❌ Қайтарып алу
               </button>
             `}
           </td>
@@ -261,10 +336,7 @@
     }
 
     async function toggleVip(eventId, title, toVip) {
-      const msg = toVip 
-        ? `"${title}" тойына VIP доступ бергіңіз келе ме?`
-        : `"${title}" тойының VIP статусын өшіресіз бе?`;
-
+      const msg = toVip ? `"${title}" тойына VIP доступ бергіңіз келе ме?` : `VIP статусын алып тастайсыз ба?`;
       if (!confirm(msg)) return;
 
       const { error } = await supabaseClient
@@ -276,10 +348,7 @@
         })
         .eq('id', eventId);
 
-      if (error) {
-        alert("Қате: " + error.message);
-      } else {
-        alert("Сәтті орындалды!");
+      if (!error) {
         loadAdminData();
       }
     }
