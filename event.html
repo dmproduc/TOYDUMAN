@@ -23,27 +23,82 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
     body { background-color: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 50px; display: flex; flex-direction: column; align-items: center; }
 
+    /* Жас жұбайлардың мұқаба суреті шығатын Hero-баннер */
     .hero-banner {
-      width: 100%; height: 230px; position: relative;
-      background: linear-gradient(180deg, rgba(0,0,0,0.1), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80') center/cover;
-      display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding: 20px; text-align: center; color: #fff;
+      width: 100%;
+      height: 250px;
+      position: relative;
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 20px;
+      text-align: center;
+      color: #fff;
     }
-    .hero-title { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 800; text-shadow: 0 2px 8px rgba(0,0,0,0.6); }
-    .timer-wrap { margin-top: 8px; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); padding: 6px 14px; border-radius: 30px; font-size: 0.75rem; font-weight: 700; color: #fef3c7; }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.85rem;
+      font-weight: 800;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.7);
+    }
+    .timer-wrap {
+      margin-top: 8px;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(8px);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #fef3c7;
+    }
 
     .container { width: 100%; max-width: 480px; padding: 0 16px; margin-top: -20px; z-index: 10; display: flex; flex-direction: column; gap: 16px; }
     .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 20px; box-shadow: var(--shadow); }
     .counter { text-align: center; font-size: 0.88rem; margin-bottom: 12px; color: var(--accent); font-weight: 700; }
 
-    .upload-zone { border: 2px dashed var(--accent); border-radius: 16px; padding: 20px 14px; text-align: center; cursor: pointer; background: rgba(217, 119, 6, 0.04); display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .upload-zone {
+      border: 2px dashed var(--accent);
+      border-radius: 16px;
+      padding: 20px 14px;
+      text-align: center;
+      cursor: pointer;
+      background: rgba(217, 119, 6, 0.04);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
     .upload-zone input { display: none; }
     .preview-img { width: 100%; max-height: 240px; object-fit: contain; border-radius: 12px; display: none; margin-top: 10px; border: 1px solid var(--border); }
 
     /* Голосовой жазу батырмасы */
     .audio-recorder-box {
-      margin-top: 12px; background: #fdfaf6; border: 1px dashed var(--border); border-radius: 14px; padding: 12px; display: flex; align-items: center; justify-content: space-between;
+      margin-top: 12px;
+      background: #fdfaf6;
+      border: 1px dashed var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
-    .btn-record { background: #ef4444; color: #fff; border: none; padding: 9px 15px; border-radius: 20px; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+    .btn-record {
+      background: #ef4444;
+      color: #fff;
+      border: none;
+      padding: 9px 15px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
     .btn-record.recording { animation: pulse 1s infinite; background: #dc2626; }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     .audio-status { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; }
@@ -70,7 +125,8 @@
 </head>
 <body>
 
-  <div class="hero-banner">
+  <!-- Hero Баннер: мұқаба суреті осында шығады -->
+  <div class="hero-banner" id="hero-banner">
     <h1 class="hero-title" id="event-title">Жүктелуде...</h1>
     <div class="timer-wrap" id="timer-box">
       <span id="timer-val">Есептелуде...</span>
@@ -88,7 +144,7 @@
       </div>
       <img id="preview" class="preview-img" alt="Preview">
 
-      <!-- Дауыстық тілек (Голосовое) жазу блогы -->
+      <!-- Дауыстық тілек (Голосовое) жазу -->
       <div class="audio-recorder-box">
         <button type="button" class="btn-record" id="rec-btn" onclick="toggleRecording()">
           <span id="rec-icon">🎙️</span> <span id="rec-txt">Дауысты тілек жазу</span>
@@ -126,7 +182,7 @@
     let compressedBlob = null;
     let guestLimit = 25;
 
-    // ДЫБЫС ЖАЗУ ЖӘНЕ АВТОМАТТЫ ФОРМАТ ТАҢДАУ
+    // Дыбыс жазу айнымалылары
     let mediaRecorder = null;
     let audioChunks = [];
     let audioBlob = null;
@@ -138,19 +194,11 @@
       myPhotosList = JSON.parse(localStorage.getItem(`my_photos_${slug}`)) || [];
     } catch(e) { myPhotosList = []; }
 
-    // Телефонның қай форматты қолдайтынын анықтау
+    // Телефонның аудио кодегін тексеру
     function getSupportedMimeType() {
-      const types = [
-        'audio/mp4',
-        'audio/aac',
-        'audio/webm;codecs=opus',
-        'audio/webm',
-        'audio/ogg'
-      ];
+      const types = ['audio/mp4', 'audio/aac', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg'];
       for (let t of types) {
-        if (MediaRecorder.isTypeSupported(t)) {
-          return t;
-        }
+        if (MediaRecorder.isTypeSupported(t)) return t;
       }
       return '';
     }
@@ -162,10 +210,8 @@
       if (!isRecording) {
         try {
           const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          
           selectedMimeType = getSupportedMimeType();
           const options = selectedMimeType ? { mimeType: selectedMimeType } : {};
-          
           mediaRecorder = new MediaRecorder(stream, options);
           audioChunks = [];
 
@@ -206,6 +252,11 @@
       currentEvent = data;
       document.getElementById('event-title').innerText = currentEvent.title;
       guestLimit = currentEvent.shot_limit || 25;
+
+      // МҰҚАБА СУРЕТІН ҚОЮ:
+      const defaultCover = 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80';
+      const finalCover = currentEvent.cover_url || defaultCover;
+      document.getElementById('hero-banner').style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.75)), url('${finalCover}')`;
 
       startTimer(currentEvent.event_date);
       updateLimitUI();
@@ -279,88 +330,4 @@
         const photoName = `${currentEvent.id}/${Date.now()}_img.jpg`;
         await supabaseClient.storage.from('photos').upload(photoName, compressedBlob, { contentType: 'image/jpeg' });
         const { data: urlData } = supabaseClient.storage.from('photos').getPublicUrl(photoName);
-        const photoUrl = urlData.publicUrl;
-
-        let finalAudioUrl = null;
-        if (audioBlob) {
-          const ext = selectedMimeType.includes('mp4') ? 'mp4' : 'webm';
-          const audioName = `${currentEvent.id}/${Date.now()}_voice.${ext}`;
-          
-          await supabaseClient.storage.from('photos').upload(audioName, audioBlob, { 
-            contentType: audioBlob.type || 'audio/webm' 
-          });
-          
-          const { data: audioData } = supabaseClient.storage.from('photos').getPublicUrl(audioName);
-          finalAudioUrl = audioData.publicUrl;
-        }
-
-        const author = document.getElementById('guest-name').value.trim() || 'Қонақ';
-        const wish = document.getElementById('guest-wish').value.trim() || 'Бақытты болыңыздар!';
-
-        await supabaseClient.from('event_photos').insert([{
-          event_id: currentEvent.id,
-          photo_url: photoUrl,
-          author_name: author,
-          wishes: wish,
-          audio_url: finalAudioUrl
-        }]);
-
-        myPhotosList.unshift({ photo_url: photoUrl, author_name: author, wishes: wish, audio_url: finalAudioUrl });
-        localStorage.setItem(`my_photos_${slug}`, JSON.stringify(myPhotosList));
-
-        updateLimitUI();
-        renderPolaroidFeed();
-
-        msgBox.className = 'msg success';
-        msgBox.innerText = "✨ Polaroid естелігі сәтті сақталды!";
-        msgBox.style.display = 'block';
-
-        document.getElementById('preview').style.display = 'none';
-        document.getElementById('file-input').value = '';
-        document.getElementById('guest-wish').value = '';
-        document.getElementById('recorded-audio-preview').style.display = 'none';
-        document.getElementById('rec-status').innerText = 'Жазылмаған';
-        compressedBlob = null;
-        audioBlob = null;
-
-        setTimeout(() => msgBox.style.display = 'none', 3000);
-      } catch (err) {
-        msgBox.className = 'msg error';
-        msgBox.innerText = "Қате: " + err.message;
-        msgBox.style.display = 'block';
-      } finally {
-        btn.disabled = false;
-        btn.innerText = "✨ Естелікті Polaroid етіп сақтау";
-      }
-    }
-
-    function renderPolaroidFeed() {
-      const feed = document.getElementById('feed-list');
-      feed.innerHTML = '';
-      if (myPhotosList.length === 0) {
-        feed.innerHTML = '<div style="text-align:center; color:#78716c; font-size:0.85rem; padding:20px;">Әзірге фотолар жоқ 📷</div>';
-        return;
-      }
-      myPhotosList.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'polaroid-card';
-        div.innerHTML = `
-          <img class="polaroid-img" src="${item.photo_url}" loading="lazy">
-          <div class="polaroid-content">
-            <div class="polaroid-wish">"${item.wishes}"</div>
-            <div class="polaroid-author">❤️ ${item.author_name}</div>
-            ${item.audio_url ? `
-              <audio class="audio-player-custom" controls preload="none">
-                <source src="${item.audio_url}">
-              </audio>
-            ` : ''}
-          </div>
-        `;
-        feed.appendChild(div);
-      });
-    }
-
-    initEvent();
-  </script>
-</body>
-</html>
+        const photoUrl = url
