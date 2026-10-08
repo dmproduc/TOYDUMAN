@@ -15,8 +15,8 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Onest', sans-serif; }
     
     body {
-      background-color: #0d0d0d;
-      color: #fff;
+      background-color: #0b0b0b;
+      color: #ffffff;
       width: 100vw;
       height: 100vh;
       overflow: hidden;
@@ -24,91 +24,124 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      position: relative;
     }
 
-    /* Артқы бұлдыр фон (Blur backdrop) */
+    /* Артқы бұлдыр кинематографиялық фон */
     .bg-blur {
       position: absolute;
       inset: 0;
       background-size: cover;
       background-position: center;
-      filter: blur(40px) brightness(0.35);
-      transform: scale(1.1);
+      filter: blur(50px) brightness(0.3);
+      transform: scale(1.15);
       transition: background-image 1.2s ease-in-out;
       z-index: 1;
     }
 
-    /* Негізгі фото контейнері */
+    /* Слайд контенті */
     .slide-wrapper {
       position: relative;
       z-index: 2;
       max-width: 90vw;
-      max-height: 80vh;
+      max-height: 85vh;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
     }
 
     .slide-img {
       max-width: 85vw;
-      max-height: 68vh;
+      max-height: 70vh;
       object-fit: contain;
-      border-radius: 16px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
-      border: 1px solid rgba(255,255,255,0.1);
-      transition: opacity 0.8s ease-in-out;
+      border-radius: 18px;
+      box-shadow: 0 24px 70px rgba(0,0,0,0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      transition: opacity 0.7s ease-in-out;
+      opacity: 0;
     }
 
-    /* Фото авторы мен тілегі */
     .slide-caption {
       margin-top: 18px;
       text-align: center;
-      max-width: 700px;
-      animation: fadeIn 1s;
+      max-width: 760px;
+      padding: 0 16px;
     }
     .author-name {
       font-family: 'Cormorant Garamond', Georgia, serif;
-      font-size: 2rem;
+      font-size: 2.2rem;
       font-weight: 700;
-      color: #fff;
+      color: #ffffff;
       letter-spacing: -0.5px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.7);
     }
     .wish-text {
-      font-size: 1.1rem;
-      color: #ddd;
-      margin-top: 4px;
+      font-size: 1.15rem;
+      color: #e5e5e5;
+      margin-top: 6px;
       font-style: italic;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+      line-height: 1.4;
     }
 
-    /* Жоғарғы жақтағы той аты */
-    .top-brand {
+    /* Жоғарғы бұрыштағы той атауы мен Live белгісі */
+    .top-header {
       position: absolute;
       top: 24px;
-      left: 30px;
+      left: 32px;
       z-index: 10;
-      font-family: 'Cormorant Garamond', Georgia, serif;
-      font-size: 1.5rem;
-      color: rgba(255,255,255,0.8);
-      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
+    .event-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.6rem;
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 700;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    }
+    .live-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(220, 38, 38, 0.25);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      background: #ef4444;
+      border-radius: 50%;
+      animation: blink 1.2s infinite;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
     .empty-state {
       position: relative;
       z-index: 2;
       text-align: center;
-      color: #888;
-      font-size: 1.2rem;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      color: #999;
+      font-size: 1.3rem;
+      padding: 20px;
     }
   </style>
 </head>
 <body>
 
-  <div class="top-brand" id="event-title">ToyDuman Live</div>
+  <div class="top-header">
+    <div class="event-title" id="event-title">ToyDuman</div>
+    <div class="live-indicator"><span class="live-dot"></span> Live</div>
+  </div>
+
   <div class="bg-blur" id="bg-blur"></div>
 
   <div class="slide-wrapper" id="slide-box" style="display: none;">
@@ -133,28 +166,38 @@
     let currentEvent = null;
     let photos = [];
     let currentIndex = 0;
+    let carouselTimer = null;
 
     async function initSlideshow() {
-      if (!slug) return;
+      if (!slug) {
+        document.getElementById('empty-state').innerText = "Той сілтемесі қате";
+        return;
+      }
 
-      const { data: eventData } = await supabaseClient
+      const { data: eventData, error } = await supabaseClient
         .from('events')
         .select('*')
         .eq('slug', slug)
-        .single();
+        .maybeSingle();
 
-      if (!eventData) return;
+      if (error || !eventData) {
+        document.getElementById('empty-state').innerText = "Той табылмады";
+        return;
+      }
+
       currentEvent = eventData;
-      document.getElementById('event-title').innerText = `${currentEvent.title} • Live`;
+      document.getElementById('event-title').innerText = currentEvent.title;
 
       await loadPhotos();
       startCarousel();
 
-      // Жаңа фото түскенде автоматты түрде базадан әр 10 секунд сайын тексеру
+      // Әр 10 секунд сайын базадан жаңа түскен суреттерді тексеру
       setInterval(loadPhotos, 10000);
     }
 
     async function loadPhotos() {
+      if (!currentEvent) return;
+
       const { data } = await supabaseClient
         .from('event_photos')
         .select('*')
@@ -162,9 +205,14 @@
         .order('created_at', { ascending: false });
 
       if (data && data.length > 0) {
+        const isFirstLoad = (photos.length === 0);
         photos = data;
         document.getElementById('empty-state').style.display = 'none';
         document.getElementById('slide-box').style.display = 'flex';
+
+        if (isFirstLoad) {
+          showSlide(0);
+        }
       }
     }
 
@@ -180,18 +228,28 @@
         document.getElementById('bg-blur').style.backgroundImage = `url('${item.photo_url}')`;
         document.getElementById('author-name').innerText = item.author_name || 'Қонақ';
         document.getElementById('wish-text').innerText = item.wishes ? `"${item.wishes}"` : '';
-        img.style.opacity = '1';
+        
+        img.onload = () => {
+          img.style.opacity = '1';
+        };
+
+        // Келесі фотоны алдын ала кэшке жүктеп қою (Preload)
+        const nextIdx = (index + 1) % photos.length;
+        if (photos[nextIdx]) {
+          const preImg = new Image();
+          preImg.src = photos[nextIdx].photo_url;
+        }
       }, 400);
     }
 
     function startCarousel() {
-      if (photos.length > 0) showSlide(0);
+      if (carouselTimer) clearInterval(carouselTimer);
 
-      setInterval(() => {
+      carouselTimer = setInterval(() => {
         if (photos.length === 0) return;
         currentIndex = (currentIndex + 1) % photos.length;
         showSlide(currentIndex);
-      }, 5000); // Әр 5 секунд сайын ауысады
+      }, 5500); // Әр 5.5 секунд сайын ауысады
     }
 
     initSlideshow();
