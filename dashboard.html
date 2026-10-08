@@ -8,9 +8,10 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   
+  <!-- Қазақ әріптерін қолдайтын қаріптер -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
@@ -19,18 +20,22 @@
       --text-main: #121212;
       --text-muted: #737373;
       --border: #eae8e4;
-      --accent: #121212;
       --radius-lg: 24px;
       --radius-md: 16px;
       --radius-sm: 10px;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+      font-family: 'Onest', -apple-system, BlinkMacSystemFont, sans-serif; 
+      -webkit-tap-highlight-color: transparent; 
+    }
     body { background-color: var(--bg); color: var(--text-main); min-height: 100vh; padding-bottom: 90px; }
 
-    /* Жоғарғы жинақы навигация */
     header {
-      background: rgba(252, 251, 249, 0.9);
+      background: rgba(252, 251, 249, 0.94);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
       position: sticky;
@@ -46,9 +51,9 @@
       align-items: center;
     }
     .brand {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.4rem;
-      font-weight: 600;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.6rem;
+      font-weight: 700;
       letter-spacing: -0.5px;
       color: var(--text-main);
       text-decoration: none;
@@ -59,13 +64,13 @@
       gap: 10px;
     }
     .user-tag {
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       color: var(--text-muted);
       background: #f2f0eb;
       padding: 6px 12px;
       border-radius: 20px;
       font-weight: 500;
-      max-width: 140px;
+      max-width: 150px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -79,7 +84,6 @@
       font-weight: 600;
     }
 
-    /* Негізгі бөлім */
     .container {
       max-width: 860px;
       margin: 24px auto;
@@ -90,19 +94,18 @@
       margin-bottom: 24px;
     }
     .hero-title-box h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: 2rem;
-      font-weight: 500;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 2.3rem;
+      font-weight: 700;
       line-height: 1.2;
       color: var(--text-main);
     }
     .hero-title-box p {
-      font-size: 0.88rem;
+      font-size: 0.9rem;
       color: var(--text-muted);
       margin-top: 6px;
     }
 
-    /* Карточкалар торы */
     .events-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -119,9 +122,7 @@
       box-shadow: 0 4px 20px rgba(0,0,0,0.02);
       transition: transform 0.2s, box-shadow 0.2s;
     }
-    .event-card:hover {
-      box-shadow: 0 8px 30px rgba(0,0,0,0.05);
-    }
+    .event-card:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.05); }
 
     .card-cover {
       width: 100%;
@@ -139,7 +140,7 @@
       margin-bottom: 8px;
     }
     .status-pill {
-      font-size: 0.68rem;
+      font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       font-weight: 700;
@@ -149,25 +150,24 @@
     .status-free { background: #f2f0eb; color: #666; }
     .status-vip { background: #121212; color: #fff; }
     .photo-stat {
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       font-weight: 600;
       color: var(--text-muted);
     }
 
     .card-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.35rem;
-      font-weight: 600;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.6rem;
+      font-weight: 700;
       color: var(--text-main);
       margin-bottom: 4px;
     }
     .card-date {
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       color: var(--text-muted);
       margin-bottom: 16px;
     }
 
-    /* Сәнді минималистік батырмалар */
     .card-btn-group {
       display: flex;
       flex-direction: column;
@@ -183,7 +183,7 @@
     .btn-luxury {
       padding: 11px 16px;
       border-radius: var(--radius-sm);
-      font-size: 0.82rem;
+      font-size: 0.84rem;
       font-weight: 600;
       text-align: center;
       text-decoration: none;
@@ -195,16 +195,9 @@
       gap: 6px;
       transition: 0.15s;
     }
-    .btn-dark {
-      background: #121212;
-      color: #ffffff;
-    }
+    .btn-dark { background: #121212; color: #ffffff; }
     .btn-dark:hover { background: #262626; }
-    .btn-outline {
-      background: #ffffff;
-      color: #121212;
-      border: 1px solid var(--border);
-    }
+    .btn-outline { background: #ffffff; color: #121212; border: 1px solid var(--border); }
     .btn-outline:hover { background: #f7f6f4; }
     
     .btn-upgrade-vip {
@@ -214,7 +207,6 @@
       width: 100%;
     }
 
-    /* Төменгі дөңгелек орталық кнопка */
     .bottom-bar {
       position: fixed;
       bottom: 20px;
@@ -232,7 +224,7 @@
       border: none;
       padding: 14px 28px;
       border-radius: 40px;
-      font-size: 0.9rem;
+      font-size: 0.92rem;
       font-weight: 600;
       box-shadow: 0 10px 25px rgba(0,0,0,0.18);
       display: flex;
@@ -243,7 +235,6 @@
     }
     .btn-add-circle:active { transform: scale(0.96); }
 
-    /* Модаль терезе */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -276,12 +267,13 @@
     }
 
     .modal-window h3 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.4rem;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.6rem;
+      font-weight: 700;
       margin-bottom: 4px;
     }
     .modal-window p {
-      font-size: 0.82rem;
+      font-size: 0.84rem;
       color: var(--text-muted);
       margin-bottom: 20px;
     }
@@ -292,13 +284,13 @@
       gap: 6px;
       margin-bottom: 14px;
     }
-    .field label { font-size: 0.78rem; font-weight: 600; color: #555; }
+    .field label { font-size: 0.8rem; font-weight: 600; color: #555; }
     .field input {
       background: #faf9f7;
       border: 1px solid var(--border);
       padding: 12px 14px;
       border-radius: var(--radius-sm);
-      font-size: 0.9rem;
+      font-size: 0.92rem;
       outline: none;
     }
     .field input:focus { border-color: #121212; background: #fff; }
@@ -341,7 +333,7 @@
     <div class="header-inner">
       <a href="#" class="brand">ToyDuman</a>
       <div class="header-actions">
-        <a id="btn-admin-link" href="admin.html" style="display: none; font-size: 0.75rem; color: #b45309; font-weight: 700; text-decoration: none;">👑 Админ</a>
+        <a id="btn-admin-link" href="admin.html" style="display: none; font-size: 0.78rem; color: #b45309; font-weight: 700; text-decoration: none;">👑 Админ</a>
         <div class="user-tag" id="user-email">...</div>
         <button class="btn-logout" onclick="logout()">Шығу</button>
       </div>
@@ -362,14 +354,12 @@
     </div>
   </div>
 
-  <!-- Басты әдемі батырма -->
   <div class="bottom-bar">
     <button class="btn-add-circle" onclick="openCreateModal()">
       <span>+</span> Жаңа альбом ашу
     </button>
   </div>
 
-  <!-- Модаль: Той ашу -->
   <div class="modal-overlay" id="create-modal">
     <div class="modal-window">
       <button class="modal-close" onclick="closeCreateModal()">✕</button>
@@ -394,7 +384,7 @@
       <div class="field">
         <label>Басты мұқаба суреті:</label>
         <div class="file-drop" onclick="document.getElementById('cover-file-input').click()">
-          <span style="font-size: 0.82rem; color: #777;">📷 Фото таңдау</span>
+          <span style="font-size: 0.85rem; color: #777;">📷 Фото таңдау</span>
           <input type="file" id="cover-file-input" accept="image/*" onchange="previewCoverFile(event)">
         </div>
         <img id="cover-preview-img" class="preview-box" alt="Cover">
@@ -406,7 +396,6 @@
     </div>
   </div>
 
-  <!-- Модаль: QR көрсету -->
   <div class="modal-overlay" id="qr-modal">
     <div class="modal-window">
       <button class="modal-close" onclick="closeQrModal()">✕</button>
@@ -444,7 +433,6 @@
       currentUser = session.user;
       document.getElementById('user-email').innerText = currentUser.email;
 
-      // Бас админ поштасын тексеру
       const { data: settingData } = await supabaseClient
         .from('app_settings')
         .select('value')
