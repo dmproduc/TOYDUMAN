@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Той Альбомы — Басқару Панелі</title>
 
-  <!-- Supabase және ZIP жүктеу кітапханалары -->
+  <!-- Supabase v2.48.1 және ZIP кітапханалары -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -69,11 +69,11 @@
     async function loadGallery() {
       if (!slug) {
         document.getElementById('event-title').innerText = "Той коды көрсетілмеген";
-        document.getElementById('event-stats').innerText = "Сілтеме қате";
+        document.getElementById('event-stats').innerText = "Сілтемеде ?slug= жоқ";
         return;
       }
 
-      // Тойды базадан іздеу
+      // 1. Тойды базадан табу
       const { data: eventData, error: eventErr } = await supabaseClient
         .from('events')
         .select('*')
@@ -82,14 +82,14 @@
 
       if (eventErr || !eventData) {
         document.getElementById('event-title').innerText = "Той табылмады";
-        document.getElementById('event-stats').innerText = "Код: " + slug;
+        document.getElementById('event-stats').innerText = eventErr ? eventErr.message : "Код: " + slug;
         return;
       }
 
       currentEvent = eventData;
       document.getElementById('event-title').innerText = currentEvent.title + " — Галерея";
 
-      // Фотоларды алу
+      // 2. Фотоларды алу
       const { data: photos, error: photoErr } = await supabaseClient
         .from('event_photos')
         .select('*')
@@ -164,7 +164,7 @@
         saveAs(content, `${slug}_photos.zip`);
 
       } catch (err) {
-        alert("ZIP жасау кезінде қате: " + err.message);
+        alert("ZIP жасау қатесі: " + err.message);
       } finally {
         btn.disabled = false;
         btn.innerText = "📦 Барлығын ZIP-пен жүктеу";
