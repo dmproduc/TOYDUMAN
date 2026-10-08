@@ -19,12 +19,29 @@
     .logo { font-size: 1.4rem; font-weight: 800; color: #f59e0b; display: flex; align-items: center; gap: 8px; }
     .admin-badge { background: #dc2626; color: #fff; font-size: 0.72rem; padding: 4px 10px; border-radius: 20px; font-weight: 800; text-transform: uppercase; }
 
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 10px; }
+    /* Бас админді өзгерту панелі */
+    .admin-change-box {
+      background: #1c1917;
+      border: 1px solid #292524;
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .admin-change-box label { font-size: 0.85rem; color: #a8a29e; font-weight: 600; }
+    .admin-input-group { display: flex; gap: 8px; align-items: center; }
+    .admin-input { background: #0c0a09; border: 1px solid #292524; color: #fff; padding: 8px 14px; border-radius: 10px; font-size: 0.85rem; outline: none; width: 260px; }
+    .admin-input:focus { border-color: #f59e0b; }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
     .stat-card { background: #1c1917; border: 1px solid #292524; border-radius: 16px; padding: 18px; }
     .stat-val { font-size: 1.8rem; font-weight: 800; color: #f59e0b; margin-top: 6px; }
     .stat-lbl { font-size: 0.82rem; color: #a8a29e; }
 
-    .table-wrap { background: #1c1917; border: 1px solid #292524; border-radius: 20px; overflow-x: auto; margin-top: 10px; }
+    .table-wrap { background: #1c1917; border: 1px solid #292524; border-radius: 20px; overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem; }
     th { background: #292524; padding: 14px 16px; color: #d6d3d1; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; }
     td { padding: 14px 16px; border-bottom: 1px solid #292524; color: #f5f5f4; }
@@ -38,6 +55,7 @@
     .btn-vip:hover { background: #059669; }
     .btn-revoke { background: #ef4444; color: #fff; }
     .btn-link { background: #292524; color: #f59e0b; }
+    .btn-save-admin { background: #f59e0b; color: #000; font-weight: 800; }
 
     .search-input { background: #1c1917; border: 1px solid #292524; color: #fff; padding: 10px 16px; border-radius: 12px; font-size: 0.9rem; outline: none; width: 100%; max-width: 350px; }
     .search-input:focus { border-color: #f59e0b; }
@@ -53,10 +71,22 @@
         👑 ToyDuman Басқару Панелі <span class="admin-badge">Бас Админ</span>
       </div>
       <div style="display: flex; align-items: center; gap: 12px;">
-        <span id="admin-email-lbl" style="font-size: 0.85rem; color: #a8a29e;"></span>
+        <span id="current-user-email" style="font-size: 0.85rem; color: #a8a29e;"></span>
         <a href="dashboard.html" class="btn btn-link">← Кабинетке өту</a>
       </div>
     </header>
+
+    <!-- БАС АДМИН ПОШТАСЫН ӨЗГЕРТУ БЛОГЫ -->
+    <div class="admin-change-box">
+      <div>
+        <label>⚙️ Бас админ поштасы:</label>
+        <div style="font-size: 0.78rem; color: #78716c; margin-top: 2px;">Осы поштамен кірген адам ғана админканы басқара алады</div>
+      </div>
+      <div class="admin-input-group">
+        <input type="email" id="input-admin-email" class="admin-input" placeholder="жаңа_пошта@gmail.com">
+        <button class="btn btn-save-admin" onclick="saveNewAdminEmail()">Сақтау</button>
+      </div>
+    </div>
 
     <div class="stats-grid">
       <div class="stat-card">
@@ -99,7 +129,7 @@
 
   <div class="access-denied" id="denied-box" style="display: none;">
     <h2 style="font-size: 2rem; color: #ef4444; margin-bottom: 10px;">⛔ Қолжетімділік жабық!</h2>
-    <p style="color: #a8a29e; margin-bottom: 20px;">Бұл парақшаға тек бас админ поштасымен ғана кіруге болады.</p>
+    <p style="color: #a8a29e; margin-bottom: 20px;">Бұл парақшаға тек белгіленген Бас Админ ғана кіре алады.</p>
     <a href="dashboard.html" class="btn btn-link">Кабинетке қайту</a>
   </div>
 
@@ -108,33 +138,68 @@
     const SUPABASE_KEY = "sb_publishable_cOyPl30aOSb6pdxCRfRNQA_Tn6dBaZg";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // БАС АДМИННІҢ ПОШТАСЫ:
-    const ADMIN_EMAIL = "guldanaih@gmail.com"; 
-
     let allEvents = [];
     let photoCounts = {};
+    let currentAdminEmail = "";
 
     async function checkAdminAuth() {
       const { data: { session } } = await supabaseClient.auth.getSession();
-      if (!session || session.user.email !== ADMIN_EMAIL) {
+      if (!session) {
+        document.getElementById('denied-box').style.display = 'block';
+        return;
+      }
+
+      // Базадан қазіргі бас админ поштасын оқу
+      const { data: settingData } = await supabaseClient
+        .from('app_settings')
+        .select('value')
+        .eq('key', 'admin_email')
+        .single();
+
+      currentAdminEmail = settingData ? settingData.value : 'guldanaih@gmail.com';
+
+      // Кірген қолданушы бас админ бе?
+      if (session.user.email.toLowerCase() !== currentAdminEmail.toLowerCase()) {
         document.getElementById('denied-box').style.display = 'block';
         return;
       }
 
       document.getElementById('admin-content').style.display = 'flex';
-      document.getElementById('admin-email-lbl').innerText = session.user.email;
+      document.getElementById('current-user-email').innerText = session.user.email;
+      document.getElementById('input-admin-email').value = currentAdminEmail;
+
       loadAdminData();
     }
 
+    // Бас админ поштасын жаңасына ауыстыру функциясы
+    async function saveNewAdminEmail() {
+      const newEmail = document.getElementById('input-admin-email').value.trim().toLowerCase();
+      if (!newEmail || !newEmail.includes('@')) {
+        alert("Дұрыс пошта мекенжайын енгізіңіз!");
+        return;
+      }
+
+      if (!confirm(`Бас админ құқығын "${newEmail}" поштасына ауыстырғыңыз келетініне сенімдісіз бе?`)) return;
+
+      const { error } = await supabaseClient
+        .from('app_settings')
+        .upsert({ key: 'admin_email', value: newEmail });
+
+      if (error) {
+        alert("Қате: " + error.message);
+      } else {
+        alert(`✅ Сәтті сақталды! Енді бас админ: ${newEmail}`);
+        currentAdminEmail = newEmail;
+      }
+    }
+
     async function loadAdminData() {
-      // 1. Фотолар санын алу
       const { data: photos } = await supabaseClient.from('event_photos').select('event_id');
       photoCounts = {};
       if (photos) {
         photos.forEach(p => photoCounts[p.event_id] = (photoCounts[p.event_id] || 0) + 1);
       }
 
-      // 2. Барлық тойларды базадан алу
       const { data: events, error } = await supabaseClient
         .from('events')
         .select('*')
@@ -143,7 +208,6 @@
       if (error || !events) return;
       allEvents = events;
 
-      // Статистика
       const total = allEvents.length;
       const vipCount = allEvents.filter(e => e.plan_type === 'vip').length;
       document.getElementById('stat-total').innerText = total;
@@ -171,7 +235,7 @@
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td><b>${evt.user_email || 'Пошта сақталмаған (ескі той)'}</b></td>
+          <td><b>${evt.user_email || 'Пошта сақталмаған'}</b></td>
           <td>${evt.title}</td>
           <td><a href="${guestLink}" target="_blank" style="color: #f59e0b; text-decoration: none;">${evt.slug} ↗</a></td>
           <td>📷 ${count} фото</td>
@@ -198,8 +262,8 @@
 
     async function toggleVip(eventId, title, toVip) {
       const msg = toVip 
-        ? `"${title}" тойына VIP доступ бергіңіз келе ме? (Шектеусіз болады)`
-        : `"${title}" тойының VIP статусын өшіріп, Тегінге қайтарасыз ба?`;
+        ? `"${title}" тойына VIP доступ бергіңіз келе ме?`
+        : `"${title}" тойының VIP статусын өшіресіз бе?`;
 
       if (!confirm(msg)) return;
 
