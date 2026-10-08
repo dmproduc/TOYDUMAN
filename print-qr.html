@@ -3,101 +3,169 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Үстелге арналған QR — ToyDuman</title>
-  
+  <title>Үстелге арналған QR карточка — ToyDuman</title>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Plus+Jakarta+Sans:wght@500;700&display=swap" rel="stylesheet">
+
+  <!-- Қазақ тілін толық қолдайтын қаріптер -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #e2e8f0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 30px 10px; font-family: 'Plus Jakarta Sans', sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Onest', sans-serif; }
+    
+    body {
+      background-color: #f5f4f0;
+      color: #121212;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
 
-    .print-bar { margin-bottom: 20px; display: flex; gap: 10px; }
-    .btn-print { background: #2563eb; color: #fff; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 1rem; }
+    .no-print-bar {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 12px;
+    }
+    .btn-print {
+      background: #121212;
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
 
-    /* A5 форматындағы тейбл-тент картасы */
-    .table-card {
-      background: #ffffff;
+    /* Басып шығаруға арналған А5 өлшемді карточка */
+    .card-print {
       width: 148mm;
       min-height: 210mm;
-      padding: 16mm 14mm;
+      background: #ffffff;
+      padding: 18mm 14mm;
       border-radius: 8px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      border: 1px solid #eae8e4;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
       text-align: center;
-      border: 2px solid #e2e8f0;
       position: relative;
     }
 
-    .ornament-top { font-size: 1.6rem; color: #d97706; margin-bottom: 8px; }
-    .badge { background: #fef3c7; color: #b45309; padding: 4px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-
-    .event-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.2rem;
-      font-weight: 800;
-      color: #0f172a;
-      margin: 14px 0 6px 0;
-      line-height: 1.2;
-    }
-    .event-sub { font-size: 0.95rem; color: #64748b; }
-
-    .qr-container {
-      background: #fff;
-      padding: 16px;
-      border-radius: 20px;
-      border: 3px solid #0f172a;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-      margin: 18px 0;
+    .border-inner {
+      position: absolute;
+      inset: 8mm;
+      border: 1px solid #e2ded6;
+      border-radius: 4px;
+      pointer-events: none;
     }
 
-    .instruction {
-      background: #f8fafc;
-      border: 1px dashed #cbd5e1;
+    .card-top {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .event-couple-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 2.4rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+    .event-date-str {
+      font-size: 0.85rem;
+      color: #737373;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .instruction-lead {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #222;
+      margin-top: 10px;
+      line-height: 1.25;
+    }
+
+    /* QR-код блогы */
+    .qr-holder {
+      background: #ffffff;
+      padding: 14px;
+      border: 1px solid #e8e6e1;
       border-radius: 16px;
-      padding: 14px 18px;
-      width: 100%;
+      margin: 12px 0;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.03);
     }
-    .instruction h4 { font-size: 1rem; color: #0f172a; margin-bottom: 4px; font-weight: 800; }
-    .instruction p { font-size: 0.82rem; color: #475569; line-height: 1.4; }
 
-    .branding { font-size: 0.75rem; color: #94a3b8; font-weight: 600; margin-top: 10px; }
+    .card-bottom {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .guide-step {
+      font-size: 0.82rem;
+      color: #555;
+      line-height: 1.4;
+      max-width: 300px;
+    }
+    .brand-mark {
+      font-size: 0.7rem;
+      color: #999;
+      letter-spacing: 0.5px;
+      margin-top: 6px;
+    }
 
+    /* Баспаға жібергенде артық батырмаларды жасыру */
     @media print {
-      body { background: transparent; padding: 0; }
-      .print-bar { display: none; }
-      .table-card { box-shadow: none; border: none; width: 100%; height: 100%; }
+      body { background: #fff; padding: 0; }
+      .no-print-bar { display: none !important; }
+      .card-print {
+        box-shadow: none;
+        border: none;
+        width: 100%;
+        height: 100%;
+      }
     }
   </style>
 </head>
 <body>
 
-  <div class="print-bar">
-    <button class="btn-print" onclick="window.print()">🖨️ Басып шығару (Печать / PDF)</button>
+  <div class="no-print-bar">
+    <button class="btn-print" onclick="window.print()">🖨️ Басып шығару (Печать)</button>
   </div>
 
-  <div class="table-card">
-    <div>
-      <div class="ornament-top">✨ 💍 ✨</div>
-      <span class="badge">Құрметті қонақтар!</span>
-      <h1 class="event-title" id="card-title">Жүктелуде...</h1>
-      <p class="event-sub">Біздің қуанышымызға ортақтасқаныңызға рақмет!</p>
+  <div class="card-print">
+    <div class="border-inner"></div>
+
+    <div class="card-top">
+      <h1 class="event-couple-title" id="card-title">Жүктелуде...</h1>
+      <p class="event-date-str" id="card-date">Күні белгіленбеген</p>
+      <div class="instruction-lead">
+        Смартфондар қош келдіңіздер!<br>Фото түсіріп, естелік қалдырыңыз
+      </div>
     </div>
 
-    <div class="qr-container" id="qrcode"></div>
+    <div class="qr-holder" id="qr-box"></div>
 
-    <div class="instruction">
-      <h4>📸 Өз фотоларыңызбен бөлісіңіз!</h4>
-      <p>1. Камераңызды QR-кодқа бағыттаңыз<br>
-         2. Той барысында түсірген сәттеріңізді жүктеңіз<br>
-         3. Жас жұбайларға ақ тілегіңізді қалдырыңыз</p>
+    <div class="card-bottom">
+      <p class="guide-step">
+        Камераңызды осы QR-кодқа бағыттаңыз.<br>
+        Қосымша орнатудың қажеті жоқ!
+      </p>
+      <div class="brand-mark">ToyDuman • Цифрлық естелік альбомы</div>
     </div>
-
-    <div class="branding">Powered by ToyDuman • Әрбір сәт есте қалсын</div>
   </div>
 
   <script>
@@ -109,21 +177,34 @@
 
     async function init() {
       if (!slug) return;
-      const { data } = await supabaseClient.from('events').select('*').eq('slug', slug).single();
-      if (!data) return;
+
+      const { data, error } = await supabaseClient
+        .from('events')
+        .select('*')
+        .eq('slug', slug)
+        .single();
+
+      if (error || !data) {
+        document.getElementById('card-title').innerText = "Той табылмады";
+        return;
+      }
 
       document.getElementById('card-title').innerText = data.title;
+      if (data.event_date) {
+        document.getElementById('card-date').innerText = new Date(data.event_date).toLocaleDateString('kk-KZ');
+      }
 
-      const guestLink = `${window.location.origin}${window.location.pathname.replace('print-qr.html', '')}event.html?slug=${slug}`;
+      const guestLink = `${window.location.origin}${window.location.pathname.replace('print-qr.html', 'event.html')}?slug=${slug}`;
 
-      new QRCode(document.getElementById('qrcode'), {
+      new QRCode(document.getElementById('qr-box'), {
         text: guestLink,
-        width: 200,
-        height: 200,
-        colorDark: "#0f172a",
+        width: 170,
+        height: 170,
+        colorDark: "#121212",
         colorLight: "#ffffff"
       });
     }
+
     init();
   </script>
 </body>
