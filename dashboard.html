@@ -83,7 +83,6 @@
       font-weight: 700;
       padding: 6px 14px;
       border-radius: 20px;
-      transition: background 0.2s;
     }
     .btn-logout:hover { background: #fca5a5; color: #fff; }
 
@@ -93,9 +92,7 @@
       padding: 0 16px;
     }
 
-    .hero-title-box {
-      margin-bottom: 24px;
-    }
+    .hero-title-box { margin-bottom: 24px; }
     .hero-title-box h1 {
       font-family: 'Cormorant Garamond', Georgia, serif;
       font-size: 2.3rem;
@@ -103,11 +100,7 @@
       line-height: 1.2;
       color: var(--text-main);
     }
-    .hero-title-box p {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-top: 6px;
-    }
+    .hero-title-box p { font-size: 0.9rem; color: var(--text-muted); margin-top: 6px; }
 
     .events-grid {
       display: grid;
@@ -123,10 +116,7 @@
       display: flex;
       flex-direction: column;
       box-shadow: 0 4px 20px rgba(0,0,0,0.02);
-      transition: transform 0.2s, box-shadow 0.2s;
     }
-    .event-card:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.05); }
-
     .card-cover {
       width: 100%;
       height: 190px;
@@ -135,7 +125,6 @@
       background: #eae8e4;
       margin-bottom: 14px;
     }
-
     .card-top-info {
       display: flex;
       justify-content: space-between;
@@ -152,11 +141,7 @@
     }
     .status-free { background: #f2f0eb; color: #666; }
     .status-vip { background: #121212; color: #fff; }
-    .photo-stat {
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--text-muted);
-    }
+    .photo-stat { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
 
     .card-title {
       font-family: 'Cormorant Garamond', Georgia, serif;
@@ -165,23 +150,10 @@
       color: var(--text-main);
       margin-bottom: 4px;
     }
-    .card-date {
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      margin-bottom: 16px;
-    }
+    .card-date { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 16px; }
 
-    .card-btn-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: auto;
-    }
-    .btn-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
+    .card-btn-group { display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
+    .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
     .btn-luxury {
       padding: 11px 16px;
@@ -196,26 +168,12 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      transition: 0.15s;
     }
     .btn-dark { background: #121212; color: #ffffff; }
-    .btn-dark:hover { background: #262626; }
     .btn-outline { background: #ffffff; color: #121212; border: 1px solid var(--border); }
-    .btn-outline:hover { background: #f7f6f4; }
-    
-    .btn-upgrade-vip {
-      background: #faf5eb;
-      color: #b45309;
-      border: 1px solid #fde68a;
-      width: 100%;
-    }
-    .btn-slideshow {
-      background: #eff6ff;
-      color: #1d4ed8;
-      border: 1px solid #bfdbfe;
-    }
+    .btn-upgrade-vip { background: #faf5eb; color: #b45309; border: 1px solid #fde68a; width: 100%; }
+    .btn-slideshow { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
 
-    /* Төменгі үлкен батырма */
     .bottom-bar {
       position: fixed;
       bottom: 24px;
@@ -238,11 +196,8 @@
       align-items: center;
       gap: 10px;
       cursor: pointer;
-      transition: transform 0.15s;
     }
-    .btn-add-circle:active { transform: scale(0.96); }
 
-    /* Модаль терезе */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -272,12 +227,7 @@
       width: 32px;
       height: 32px;
       border-radius: 50%;
-      font-size: 1.1rem;
       cursor: pointer;
-      color: #555;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
     .modal-window h3 {
@@ -286,18 +236,9 @@
       font-weight: 700;
       margin-bottom: 4px;
     }
-    .modal-window p {
-      font-size: 0.84rem;
-      color: var(--text-muted);
-      margin-bottom: 20px;
-    }
+    .modal-window p { font-size: 0.84rem; color: var(--text-muted); margin-bottom: 20px; }
 
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 14px;
-    }
+    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
     .field label { font-size: 0.8rem; font-weight: 600; color: #555; }
     .field input {
       background: #faf9f7;
@@ -307,8 +248,6 @@
       font-size: 0.92rem;
       outline: none;
     }
-    .field input:focus { border-color: #121212; background: #fff; }
-
     .file-drop {
       border: 1px dashed var(--border);
       background: #faf9f7;
@@ -320,25 +259,9 @@
     .file-drop input { display: none; }
     .preview-box { width: 100%; height: 120px; object-fit: cover; border-radius: var(--radius-sm); display: none; margin-top: 10px; }
 
-    .qr-center {
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .qr-frame {
-      background: #fff;
-      padding: 16px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      margin: 16px 0;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--text-muted);
-    }
+    .qr-center { text-align: center; display: flex; flex-direction: column; align-items: center; }
+    .qr-frame { background: #fff; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius-md); margin: 16px 0; }
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
   </style>
 </head>
 <body>
@@ -349,7 +272,7 @@
       <div class="header-actions">
         <a id="btn-admin-link" href="admin.html" style="display: none; font-size: 0.78rem; color: #b45309; font-weight: 700; text-decoration: none;">👑 Админ</a>
         <div class="user-tag" id="user-email">...</div>
-        <button class="btn-logout" id="logout-button" onclick="window.logout()">Шығу</button>
+        <button class="btn-logout" onclick="window.logout()">Шығу</button>
       </div>
     </div>
   </header>
@@ -369,7 +292,7 @@
   </div>
 
   <div class="bottom-bar">
-    <button class="btn-add-circle" id="open-create-btn" onclick="window.openCreateModal()">
+    <button class="btn-add-circle" onclick="window.openCreateModal()">
       <span>＋</span> Жаңа альбом ашу
     </button>
   </div>
@@ -440,11 +363,8 @@
     let selectedCoverFile = null;
     let currentGuestLink = "";
 
-    // 1. БАРЛЫҚ БАТЫРМАЛАР МЕН ФУНКЦИЯЛАРДЫ БІРДЕН WINDOW ОБЪЕКТІСІНЕ БАЙЛАУ (ешқашан өшіп қалмайды)
     window.logout = async function() {
-      try {
-        await supabaseClient.auth.signOut();
-      } catch(e) {}
+      try { await supabaseClient.auth.signOut(); } catch(e) {}
       localStorage.clear();
       window.location.href = "auth.html";
     };
@@ -498,7 +418,6 @@
       alert("Сілтеме көшірілді!");
     };
 
-    // 2. СЕССИЯНЫ ОҚУ
     function getLocalUser() {
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
@@ -513,7 +432,6 @@
     }
 
     async function start() {
-      // Алдымен жедел түрде localStorage-ден алып қоямыз
       const cached = getLocalUser();
       if (cached) {
         currentUser = cached;
@@ -521,7 +439,6 @@
         loadMyEvents();
       }
 
-      // Сосын ресми сессияны аламыз
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (!session && !currentUser) {
         window.location.href = "auth.html";
@@ -534,16 +451,9 @@
         if (!cached) loadMyEvents();
       }
 
-      // Админка сілтемесін артқы фонмен тексеру (еш кедергісіз)
-      setTimeout(async () => {
-        try {
-          const { data } = await supabaseClient.from('app_settings').select('value').eq('key', 'admin_email').maybeSingle();
-          const adminEmail = (data && data.value) ? data.value : 'guldanaih@gmail.com';
-          if (currentUser && currentUser.email && currentUser.email.toLowerCase() === adminEmail.toLowerCase()) {
-            document.getElementById('btn-admin-link').style.display = 'inline-block';
-          }
-        } catch(e) {}
-      }, 500);
+      if (currentUser && currentUser.email && currentUser.email.toLowerCase() === 'guldanaih@gmail.com') {
+        document.getElementById('btn-admin-link').style.display = 'inline-block';
+      }
     }
 
     async function loadMyEvents() {
@@ -633,6 +543,7 @@
       });
     }
 
+    // НАҚТЫ ЖӘНЕ ҚАТЕСІЗ БАЗАҒА ЖАЗУ
     window.submitNewEvent = async function() {
       const title = document.getElementById('event-title').value.trim();
       let slug = document.getElementById('event-slug').value.trim().toLowerCase();
@@ -669,6 +580,7 @@
           }
         }
 
+        // Базаға тікелей енгізу
         const { error } = await supabaseClient.from('events').insert([{
           user_id: currentUser.id,
           user_email: currentUser.email,
@@ -682,11 +594,8 @@
         }]);
 
         if (error) {
-          if (error.code === '23505') {
-            alert("Бұл код бос емес! Басқа сөз жазыңыз.");
-          } else {
-            alert("Қате: " + error.message);
-          }
+          console.error("Supabase Error:", error);
+          alert("База қатесі: " + error.message);
           return;
         }
 
@@ -697,8 +606,10 @@
         selectedCoverFile = null;
 
         await loadMyEvents();
+        alert("✅ Жаңа альбом сәтті ашылды!");
       } catch (err) {
-        alert("Қате: " + err.message);
+        console.error("Catch Error:", err);
+        alert("Жүйелік қате: " + err.message);
       } finally {
         btn.disabled = false;
         btn.innerText = "Альбомды құру";
