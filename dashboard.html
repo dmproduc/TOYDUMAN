@@ -340,7 +340,7 @@
       <a href="dashboard.html" class="brand">ToyDuman</a>
       <div class="header-actions">
         <a id="btn-admin-link" href="admin.html" style="display: none; font-size: 0.78rem; color: #b45309; font-weight: 700; text-decoration: none;">👑 Админ</a>
-        <div class="user-tag" id="user-email">Жүктелуде...</div>
+        <div class="user-tag" id="user-email">Кіру тексерілуде...</div>
         <button class="btn-logout" onclick="logout()">Шығу</button>
       </div>
     </div>
@@ -431,42 +431,72 @@
     let currentUser = null;
     let selectedCoverFile = null;
     let currentGuestLink = "";
+    let isInitialized = false;
 
-    async function checkAuth() {
-      try {
-        const { data: { session }, error } = await supabaseClient.auth.getSession();
-        if (error || !session) {
-          window.location.href = "auth.html";
-          return;
-        }
+    // Сессияны тайм-аутпен (3 сек) қауіпсіз тексеру
+    function getSessionWithTimeout(ms = 3000) {
+      return Promise.race([
+        supabaseClient.auth.getSession(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), ms))
+      ]);
+    }
 
-        currentUser = session.user;
-        document.getElementById('user-email').innerText = currentUser.email;
+    async function applyUserSession(user) {
+      if (!user) {
+        window.location.href = "auth.html";
+        return;
+      }
+      currentUser = user;
+      document.getElementById('user-email').innerText = currentUser.email || 'Қолданушы';
 
-        // Бас админ поштасын қауіпсіз тексеру
-        try {
-          const { data: settingData } = await supabaseClient
-            .from('app_settings')
-            .select('value')
-            .eq('key', 'admin_email')
-            .maybeSingle();
-
-          const adminEmail = (settingData && settingData.value) ? settingData.value : 'guldanaih@gmail.com';
+      // Бас админ бе, жоқ па — қауіпсіз тексеру (қатып қалмауы үшін бөлек)
+      supabaseClient
+        .from('app_settings')
+        .select('value')
+        .eq('key', 'admin_email')
+        .maybeSingle()
+        .then(({ data }) => {
+          const adminEmail = (data && data.value) ? data.value : 'guldanaih@gmail.com';
           if (currentUser.email && currentUser.email.toLowerCase() === adminEmail.toLowerCase()) {
             document.getElementById('btn-admin-link').style.display = 'inline-block';
           }
-        } catch(e) {}
+        }).catch(() => {});
 
-        loadMyEvents();
-      } catch (err) {
+      loadMyEvents();
+    }
+
+    async function checkAuth() {
+      if (isInitialized) return;
+
+      try {
+        const { data, error } = await getSessionWithTimeout(3000);
+        if (error || !data || !data.session) {
+          window.location.href = "auth.html";
+          return;
+        }
+        isInitialized = true;
+        applyUserSession(data.session.user);
+      } catch (e) {
+        // Егер 3 секундта жауап болмаса, auth.html-ге жібереміз
         window.location.href = "auth.html";
       }
     }
+
+    // Авторизация өзгергенін қадағалау
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+      if (session && session.user && !isInitialized) {
+        isInitialized = true;
+        applyUserSession(session.user);
+      } else if (!session && isInitialized) {
+        window.location.href = "auth.html";
+      }
+    });
 
     async function logout() {
       try {
         await supabaseClient.auth.signOut();
       } finally {
+        localStorage.clear();
         window.location.href = "auth.html";
       }
     }
