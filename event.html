@@ -44,34 +44,10 @@
     .caption-box { background: #1a1a1a; border: 1px solid #333; border-radius: 24px; width: 100%; max-width: 400px; padding: 22px; display: flex; flex-direction: column; gap: 12px; }
     .caption-box h4 { font-family: 'Playfair Display', serif; font-size: 1.25rem; color: #fff; }
     .caption-input { background: #0d0d0d; border: 1px solid #333; border-radius: 12px; padding: 12px 14px; color: #fff; font-size: 0.9rem; outline: none; width: 100%; }
-    
-    /* ДАУЫСТЫҚ ХАБАРЛАМА (АУДИО-ТІЛЕК) БЛОГЫ */
-    .voice-box {
-      background: #242424;
-      border: 1px solid #333;
-      border-radius: 14px;
-      padding: 10px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .btn-record {
-      background: #dc2626;
-      color: #fff;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 20px;
-      font-size: 0.78rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .btn-record.recording {
-      animation: pulse 1s infinite;
-      background: #ef4444;
-    }
+
+    .voice-box { background: #242424; border: 1px solid #333; border-radius: 14px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; }
+    .btn-record { background: #dc2626; color: #fff; border: none; padding: 8px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; cursor: pointer; }
+    .btn-record.recording { animation: pulse 1s infinite; background: #ef4444; }
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
     .btn-send-final { background: #fff; color: #000; border: none; padding: 14px; border-radius: 14px; font-size: 0.95rem; font-weight: 700; cursor: pointer; margin-top: 4px; }
@@ -84,6 +60,16 @@
     .feed-meta { padding: 8px 10px; display: flex; flex-direction: column; gap: 2px; }
     .feed-author { font-size: 0.75rem; font-weight: 700; color: #eee; }
     .feed-wish { font-size: 0.72rem; color: #999; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .error-card {
+      background: #181818;
+      border: 1px solid #333;
+      padding: 30px 20px;
+      border-radius: 20px;
+      text-align: center;
+      margin-top: 50px;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -94,42 +80,50 @@
       <span class="badge-sent" id="shots-badge">✓ 25 кадр</span>
     </div>
 
-    <div class="viewfinder-card">
-      <img id="bg-cover" class="hero-bg-preview" src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80" alt="Cover">
-      <div class="camera-frame-overlay">
-        <div style="font-size: 0.68rem; color: rgba(255,255,255,0.4);">ToyDuman Cam • 35mm</div>
-        <div class="frame-center-cross">+</div>
-        <div class="frame-hint" id="frame-hint">Төмендегі ақ түймені басып фото түсіріңіз</div>
-      </div>
-      <img id="preview-img" class="preview-capture" alt="Preview">
+    <div class="error-card" id="error-card">
+      <div style="font-size: 2.5rem; margin-bottom: 10px;">⚠️</div>
+      <h3 style="margin-bottom: 6px;">Той табылмады</h3>
+      <p style="font-size: 0.85rem; color: #888;">Сілтеме қате немесе бұл іс-шара өшірілген.</p>
     </div>
 
-    <div class="controls-panel">
-      <label class="btn-gallery-select">
-        <span>🖼️</span> Галереядан қосу
-        <input type="file" id="file-input-gallery" accept="image/*" onchange="handleFile(event)">
-      </label>
-      <input type="file" id="file-input-camera" accept="image/*" capture="environment" style="display: none;" onchange="handleFile(event)">
-
-      <div class="film-counter-strip">
-        <span class="counter-num" id="cnt-prev">23</span>
-        <span class="counter-current" id="cnt-cur">24</span>
-        <span class="counter-num" id="cnt-next">25</span>
+    <div id="camera-section">
+      <div class="viewfinder-card">
+        <img id="bg-cover" class="hero-bg-preview" src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80" alt="Cover">
+        <div class="camera-frame-overlay">
+          <div style="font-size: 0.68rem; color: rgba(255,255,255,0.4);">ToyDuman Cam • 35mm</div>
+          <div class="frame-center-cross">+</div>
+          <div class="frame-hint" id="frame-hint">Төмендегі ақ түймені басып фото түсіріңіз</div>
+        </div>
+        <img id="preview-img" class="preview-capture" alt="Preview">
       </div>
 
-      <div class="shutter-wrapper">
-        <button class="shutter-btn" onclick="triggerCamera()">
-          <div class="shutter-inner"></div>
-        </button>
-      </div>
-    </div>
+      <div class="controls-panel">
+        <label class="btn-gallery-select">
+          <span>🖼️</span> Галереядан қосу
+          <input type="file" id="file-input-gallery" accept="image/*" onchange="handleFile(event)">
+        </label>
+        <input type="file" id="file-input-camera" accept="image/*" capture="environment" style="display: none;" onchange="handleFile(event)">
 
-    <div class="feed-section">
-      <div class="feed-heading">
-        <span>Түсірілген кадрлар</span>
-        <span id="feed-count">0 фото</span>
+        <div class="film-counter-strip">
+          <span class="counter-num" id="cnt-prev">23</span>
+          <span class="counter-current" id="cnt-cur">24</span>
+          <span class="counter-num" id="cnt-next">25</span>
+        </div>
+
+        <div class="shutter-wrapper">
+          <button class="shutter-btn" onclick="triggerCamera()">
+            <div class="shutter-inner"></div>
+          </button>
+        </div>
       </div>
-      <div class="feed-grid" id="feed-grid"></div>
+
+      <div class="feed-section">
+        <div class="feed-heading">
+          <span>Түсірілген кадрлар</span>
+          <span id="feed-count">0 фото</span>
+        </div>
+        <div class="feed-grid" id="feed-grid"></div>
+      </div>
     </div>
   </div>
 
@@ -139,7 +133,6 @@
       <input type="text" id="guest-name" class="caption-input" placeholder="Сіздің есіміңіз">
       <textarea id="guest-wish" class="caption-input" rows="2" placeholder="Ақ тілегіңіз (міндетті емес)"></textarea>
 
-      <!-- АУДИО-ТІЛЕК ЖАЗУ -->
       <div class="voice-box">
         <span id="voice-status" style="font-size: 0.78rem; color: #aaa;">🎙️ Дауыстық тілек (15 сек)</span>
         <button type="button" id="btn-record" class="btn-record" onclick="toggleRecording()">Жазу</button>
@@ -167,21 +160,47 @@
     try { myPhotos = JSON.parse(localStorage.getItem(`td_shots_${slug}`)) || []; } catch(e) {}
 
     async function init() {
-      if (!slug) return;
-      const { data } = await supabaseClient.from('events').select('*').eq('slug', slug).single();
-      if (!data) return;
-      currentEvent = data;
+      if (!slug) {
+        showError();
+        return;
+      }
 
-      document.getElementById('event-title').innerText = currentEvent.title;
-      if (currentEvent.cover_url) document.getElementById('bg-cover').src = currentEvent.cover_url;
+      try {
+        const { data, error } = await supabaseClient
+          .from('events')
+          .select('*')
+          .eq('slug', slug)
+          .maybeSingle();
 
-      updateCounterUI();
-      renderFeed();
+        if (error || !data) {
+          showError();
+          return;
+        }
+
+        currentEvent = data;
+        document.getElementById('event-title').innerText = currentEvent.title;
+        if (currentEvent.cover_url) {
+          document.getElementById('bg-cover').src = currentEvent.cover_url;
+        }
+
+        updateCounterUI();
+        renderFeed();
+      } catch (err) {
+        showError();
+      }
+    }
+
+    function showError() {
+      document.getElementById('camera-section').style.display = 'none';
+      document.getElementById('error-card').style.display = 'block';
+      document.getElementById('event-title').innerText = 'Қате';
+      document.getElementById('shots-badge').style.display = 'none';
     }
 
     function updateCounterUI() {
-      const isVip = currentEvent && currentEvent.plan_type === 'vip';
-      const maxLimit = isVip ? 9999 : 25;
+      if (!currentEvent) return;
+      const isVip = currentEvent.plan_type === 'vip';
+      const maxLimit = isVip ? 9999 : (currentEvent.shot_limit || 25);
       const remain = Math.max(0, maxLimit - myPhotos.length);
 
       document.getElementById('cnt-cur').innerText = isVip ? '∞' : remain;
@@ -191,9 +210,13 @@
     }
 
     function triggerCamera() {
-      const isVip = currentEvent && currentEvent.plan_type === 'vip';
-      if (!isVip && myPhotos.length >= 25) {
-        alert("Сіздің 25 кадрлық тегін лимитіңіз таусылды!");
+      if (!currentEvent) {
+        alert("Той жүктелмеді! Бетті қайта жаңартыңыз.");
+        return;
+      }
+      const isVip = currentEvent.plan_type === 'vip';
+      if (!isVip && myPhotos.length >= (currentEvent.shot_limit || 25)) {
+        alert("Сіздің тегін лимитіңіз таусылды!");
         return;
       }
       document.getElementById('file-input-camera').click();
@@ -230,7 +253,6 @@
       document.getElementById('caption-modal').style.display = 'flex';
     }
 
-    // ДАУЫСТЫҚ ТІЛЕК ЖАЗУ ЛОГИКАСЫ
     async function toggleRecording() {
       const btn = document.getElementById('btn-record');
       const status = document.getElementById('voice-status');
@@ -268,6 +290,10 @@
     }
 
     async function uploadPhoto() {
+      if (!currentEvent) {
+        alert("Той жүктелмеді! Бетті қайта жаңартыңыз.");
+        return;
+      }
       if (!compressedBlob) return;
 
       const btn = document.getElementById('btn-save');
@@ -276,7 +302,12 @@
 
       try {
         const fileName = `${currentEvent.id}/${Date.now()}_img.jpg`;
-        await supabaseClient.storage.from('photos').upload(fileName, compressedBlob, { contentType: 'image/jpeg' });
+        const { error: uploadErr } = await supabaseClient.storage
+          .from('photos')
+          .upload(fileName, compressedBlob, { contentType: 'image/jpeg' });
+
+        if (uploadErr) throw uploadErr;
+
         const { data: urlData } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
         const photoUrl = urlData.publicUrl;
 
@@ -291,13 +322,15 @@
         const author = document.getElementById('guest-name').value.trim() || 'Қонақ';
         const wish = document.getElementById('guest-wish').value.trim() || '';
 
-        await supabaseClient.from('event_photos').insert([{
+        const { error: insertErr } = await supabaseClient.from('event_photos').insert([{
           event_id: currentEvent.id,
           photo_url: photoUrl,
           audio_url: audioUrl,
           author_name: author,
           wishes: wish
         }]);
+
+        if (insertErr) throw insertErr;
 
         myPhotos.unshift({ photo_url: photoUrl, author_name: author, wishes: wish });
         localStorage.setItem(`td_shots_${slug}`, JSON.stringify(myPhotos));
@@ -310,6 +343,7 @@
 
         updateCounterUI();
         renderFeed();
+        alert("✅ Естелік сәтті қосылды!");
       } catch (err) {
         alert("Қате: " + err.message);
       } finally {
