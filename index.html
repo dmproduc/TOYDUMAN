@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>ToyDuman — Тойға арналған ортақ цифрлық фотоальбом</title>
 
+  <!-- Қазақ тілін 100% қолдайтын арнайы Google Fonts (Cyrillic + Kazakh) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
@@ -16,12 +17,18 @@
       --text: #121212;
       --text-muted: #666666;
       --border: #eae8e4;
-      --accent: #121212;
       --gold: #b45309;
       --radius: 20px;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+      font-family: 'Onest', -apple-system, BlinkMacSystemFont, sans-serif; 
+      -webkit-tap-highlight-color: transparent; 
+    }
+    
     body { background-color: var(--bg); color: var(--text); overflow-x: hidden; line-height: 1.6; }
 
     /* Навигация (Header) */
@@ -29,7 +36,7 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(252, 251, 249, 0.92);
+      background: rgba(252, 251, 249, 0.94);
       backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--border);
       padding: 14px 20px;
@@ -42,8 +49,8 @@
       align-items: center;
     }
     .logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.5rem;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.8rem;
       font-weight: 700;
       color: var(--text);
       text-decoration: none;
@@ -57,7 +64,7 @@
     .nav-links a {
       text-decoration: none;
       color: var(--text-muted);
-      font-size: 0.88rem;
+      font-size: 0.9rem;
       font-weight: 500;
       transition: color 0.2s;
     }
@@ -114,18 +121,18 @@
       margin-bottom: 20px;
     }
     .hero h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: 3.2rem;
-      font-weight: 600;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 3.4rem;
+      font-weight: 700;
       line-height: 1.15;
-      letter-spacing: -1px;
-      max-width: 820px;
+      letter-spacing: -0.5px;
+      max-width: 860px;
       margin-bottom: 20px;
     }
     .hero p {
       font-size: 1.1rem;
       color: var(--text-muted);
-      max-width: 600px;
+      max-width: 620px;
       margin-bottom: 32px;
     }
     .hero-cta {
@@ -141,9 +148,9 @@
       text-decoration: none;
       padding: 15px 32px;
       border-radius: 30px;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 600;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.12);
       transition: transform 0.2s;
     }
     .btn-main:hover { transform: translateY(-2px); }
@@ -154,11 +161,11 @@
       text-decoration: none;
       padding: 15px 28px;
       border-radius: 30px;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 600;
     }
 
-    /* Интерактивті Mockup превью */
+    /* Интерактивті Mockup экран */
     .mockup-wrap {
       width: 100%;
       max-width: 780px;
@@ -195,10 +202,14 @@
       position: relative;
       z-index: 2;
     }
-    .mockup-info h3 { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: #fff; }
-    .mockup-info p { font-size: 0.85rem; color: #ddd; margin-top: 4px; }
+    .mockup-info h3 { 
+      font-family: 'Cormorant Garamond', Georgia, serif; 
+      font-size: 2rem; 
+      color: #fff; 
+    }
+    .mockup-info p { font-size: 0.88rem; color: #ddd; margin-top: 4px; }
 
-    /* Құндылықтар бөлімі (Value Props) */
+    /* Секциялар */
     .section {
       max-width: 1100px;
       margin: 80px auto;
@@ -210,9 +221,10 @@
       margin: 0 auto 50px auto;
     }
     .section-head h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.2rem;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 2.6rem;
       margin-bottom: 12px;
+      line-height: 1.2;
     }
     .section-head p { font-size: 0.95rem; color: var(--text-muted); }
 
@@ -243,7 +255,7 @@
       font-weight: 700;
     }
     .feature-card p {
-      font-size: 0.88rem;
+      font-size: 0.9rem;
       color: var(--text-muted);
       line-height: 1.6;
     }
@@ -260,20 +272,19 @@
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 24px;
-      position: relative;
     }
     .step-num {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.4rem;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 2.6rem;
       font-weight: 700;
-      color: #ccc;
+      color: #bbb;
       line-height: 1;
       margin-bottom: 12px;
     }
     .step-item h4 { font-size: 1rem; margin-bottom: 6px; font-weight: 700; }
-    .step-item p { font-size: 0.82rem; color: var(--text-muted); }
+    .step-item p { font-size: 0.85rem; color: var(--text-muted); }
 
-    /* Тарифтер бөлімі */
+    /* Тарифтер */
     .pricing-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -310,11 +321,11 @@
     }
     .price-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 6px; }
     .price-sum { font-size: 2rem; font-weight: 800; margin-bottom: 18px; }
-    .price-features { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; font-size: 0.88rem; }
+    .price-features { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; font-size: 0.9rem; }
     .price-card:not(.featured) .price-features { color: var(--text-muted); }
     .price-card.featured .price-features { color: #bbb; }
 
-    /* Footer / Байланыс */
+    /* Footer */
     footer {
       background: #121212;
       color: #fff;
@@ -332,8 +343,8 @@
       padding-bottom: 40px;
     }
     .footer-brand h3 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.6rem;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.8rem;
       margin-bottom: 8px;
     }
     .footer-brand p { font-size: 0.85rem; color: #888; max-width: 320px; }
@@ -353,9 +364,8 @@
       color: #666;
     }
 
-    /* Мобильді бейімдеу */
     @media (max-width: 768px) {
-      .hero h1 { font-size: 2.2rem; }
+      .hero h1 { font-size: 2.3rem; }
       .nav-links { display: none; }
       .mockup-screen { height: 260px; }
     }
@@ -363,7 +373,6 @@
 </head>
 <body>
 
-  <!-- Басты шапка -->
   <header>
     <div class="nav-container">
       <a href="index.html" class="logo">ToyDuman</a>
@@ -382,7 +391,6 @@
     </div>
   </header>
 
-  <!-- Hero секциясы -->
   <section class="hero">
     <div class="hero-badge">✨ Заманауи той тренді 2026</div>
     <h1>Тойыңыздың барлық шынайы кадрлары — бір ортақ цифрлық альбомда</h1>
@@ -393,7 +401,6 @@
       <a href="https://wa.me/77067091805?text=Сәлеметсіз бе! ToyDuman туралы толығырақ білгім келеді." target="_blank" class="btn-secondary">WhatsApp-пен кеңесу 💬</a>
     </div>
 
-    <!-- Интерактивті Mockup экран -->
     <div class="mockup-wrap">
       <div class="mockup-screen">
         <div class="mockup-info">
@@ -404,7 +411,6 @@
     </div>
   </section>
 
-  <!-- Құндылығы (Неге ToyDuman?) -->
   <section class="section" id="about">
     <div class="section-head">
       <h2>Неліктен бұл сіздің тойыңызға қажет?</h2>
@@ -432,7 +438,6 @@
     </div>
   </section>
 
-  <!-- Қалай жұмыс істейді? -->
   <section class="section" id="how-it-works">
     <div class="section-head">
       <h2>Барлығы 3 қадамда</h2>
@@ -460,7 +465,6 @@
     </div>
   </section>
 
-  <!-- Тарифтер -->
   <section class="section" id="pricing">
     <div class="section-head">
       <h2>Қолжетімді тарифтер</h2>
@@ -468,7 +472,6 @@
     </div>
 
     <div class="pricing-grid">
-      <!-- Тегін -->
       <div class="price-card">
         <div class="price-title">Тегін сынақ</div>
         <div class="price-sum">0 ₸</div>
@@ -482,7 +485,6 @@
         <a href="auth.html" class="btn-main" style="text-align: center; background: #eae8e4; color: #121212;">Сынап көру</a>
       </div>
 
-      <!-- VIP -->
       <div class="price-card featured">
         <div class="badge-pop">Хит • Толық пакет</div>
         <div class="price-title">VIP Альбом</div>
@@ -500,7 +502,6 @@
     </div>
   </section>
 
-  <!-- Footer / Байланыс -->
   <footer id="contact">
     <div class="footer-container">
       <div class="footer-brand">
