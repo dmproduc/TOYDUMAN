@@ -15,12 +15,12 @@
   <style>
     :root {
       --bg: #fcfbf9;
-      --card-bg: rgba(255, 255, 255, 0.85);
+      --card-bg: rgba(255, 255, 255, 0.9);
       --text-main: #121212;
       --text-muted: #6b7280;
       --border-subtle: rgba(0, 0, 0, 0.08);
-      --glass-btn-bg: rgba(244, 242, 238, 0.8);
-      --glass-btn-border: rgba(0, 0, 0, 0.08);
+      --glass-btn-bg: rgba(244, 242, 238, 0.85);
+      --glass-btn-border: rgba(0, 0, 0, 0.1);
       --radius-lg: 24px;
       --radius-md: 14px;
     }
@@ -172,7 +172,7 @@
     }
     .card-date { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 14px; }
 
-    /* APPLE GLASS СТИЛІНДЕГІ КНОПКАЛАР ТОРЫ */
+    /* Apple Glass кнопкалар стилі */
     .card-btn-group { display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
     .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
@@ -198,7 +198,7 @@
     }
     .btn-glass:active {
       transform: scale(0.97);
-      background: rgba(230, 228, 222, 0.9);
+      background: rgba(230, 228, 222, 0.95);
     }
     .btn-glass-primary {
       background: #121212;
@@ -210,19 +210,19 @@
       background: #2a2a2a;
     }
     .btn-glass-vip {
-      background: linear-gradient(135deg, rgba(254, 243, 199, 0.9) 0%, rgba(253, 230, 138, 0.9) 100%);
+      background: linear-gradient(135deg, rgba(254, 243, 199, 0.95) 0%, rgba(253, 230, 138, 0.95) 100%);
       color: #92400e;
       border-color: rgba(245, 158, 11, 0.3);
       font-weight: 700;
     }
     .btn-glass-slideshow {
-      background: rgba(239, 246, 255, 0.9);
+      background: rgba(239, 246, 255, 0.95);
       color: #1d4ed8;
-      border-color: rgba(191, 219, 254, 0.8);
+      border-color: rgba(191, 219, 254, 0.9);
       font-weight: 700;
     }
 
-    /* ТӨМЕНГІ БАТЫРМА */
+    /* Төменгі үлкен түйме */
     .bottom-bar {
       position: fixed;
       bottom: 20px;
@@ -234,11 +234,11 @@
       padding: 0 20px;
     }
     .btn-add-main {
-      background: rgba(18, 18, 18, 0.92);
+      background: rgba(18, 18, 18, 0.94);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       padding: 14px 28px;
       border-radius: 40px;
       font-size: 0.92rem;
@@ -252,11 +252,11 @@
     }
     .btn-add-main:active { transform: scale(0.96); }
 
-    /* МОДАЛЬ ТЕРЕЗЕ */
+    /* Модаль терезе */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.55);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       z-index: 100;
@@ -266,7 +266,7 @@
       padding: 16px;
     }
     .modal-window {
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.96);
       backdrop-filter: blur(20px);
       width: 100%;
       max-width: 420px;
@@ -484,17 +484,11 @@
       return null;
     }
 
-    function verifyAdmin(email) {
+    function checkAdminStatus(email) {
       if (!email) return;
       if (email.toLowerCase() === DEFAULT_ADMIN.toLowerCase()) {
         document.getElementById('btn-admin-link').style.display = 'inline-flex';
       }
-      supabaseClient.from('app_settings').select('value').eq('key', 'admin_email').maybeSingle()
-        .then(({ data }) => {
-          if (data && data.value && email.toLowerCase() === data.value.toLowerCase()) {
-            document.getElementById('btn-admin-link').style.display = 'inline-flex';
-          }
-        }).catch(() => {});
     }
 
     async function init() {
@@ -502,7 +496,7 @@
       if (cached) {
         currentUser = cached;
         document.getElementById('user-email').innerText = currentUser.email;
-        verifyAdmin(currentUser.email);
+        checkAdminStatus(currentUser.email);
         loadMyEvents();
       }
 
@@ -515,7 +509,7 @@
       if (session && session.user) {
         currentUser = session.user;
         document.getElementById('user-email').innerText = currentUser.email;
-        verifyAdmin(currentUser.email);
+        checkAdminStatus(currentUser.email);
         if (!cached) loadMyEvents();
       }
     }
