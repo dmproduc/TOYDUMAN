@@ -2,102 +2,208 @@
 <html lang="kk">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Кіру / Тіркелу — ToyDuman</title>
 
-  <!-- Supabase JS кітапханасы (жаңа кілттерді қолдайтын ресми нұсқасы) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
 
+  <!-- Қазақ әріптерін 100% қолдайтын арнайы қаріптер -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: #0b0c10; color: #c5c6c7; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-    
-    .auth-card {
-      width: 100%;
-      max-width: 400px;
-      background: #1f2833;
-      border: 1px solid #2f3e46;
-      border-radius: 20px;
-      padding: 30px;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+    :root {
+      --bg: #fcfbf9;
+      --card-bg: #ffffff;
+      --text: #121212;
+      --text-muted: #737373;
+      --border: #eae8e4;
+      --accent: #121212;
+      --radius: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Onest', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
     }
 
-    .logo { text-align: center; font-size: 1.6rem; font-weight: 800; color: #fff; letter-spacing: 1px; }
-    .logo span { color: #66fcf1; }
+    /* Басты карточка */
+    .auth-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 400px;
+      padding: 36px 28px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
 
-    .lang-switcher { display: flex; justify-content: center; gap: 6px; margin-bottom: 6px; }
-    .lang-btn { background: #0b0c10; border: 1px solid #334; color: #888; padding: 4px 12px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 700; }
-    .lang-btn.active { background: #66fcf1; color: #0b0c10; border-color: #66fcf1; }
+    .brand-logo {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+    }
 
-    h2 { font-size: 1.25rem; color: #fff; text-align: center; }
+    .auth-sub {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 26px;
+    }
 
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-    label { font-size: 0.85rem; color: #aaa; }
-    input {
-      background: #0b0c10;
-      border: 1px solid #45a29e;
-      border-radius: 10px;
-      padding: 12px;
-      color: #fff;
-      font-size: 0.95rem;
+    /* Кіру / Тіркелу таңдау түймесі */
+    .tab-switch {
+      background: #f2f0eb;
+      border-radius: 30px;
+      padding: 4px;
+      display: flex;
+      width: 100%;
+      margin-bottom: 22px;
+    }
+    .tab-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 9px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 24px;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: #ffffff;
+      color: var(--text);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    /* Форма өрістері */
+    .form-group {
+      width: 100%;
+      text-align: left;
+      margin-bottom: 14px;
+    }
+    .form-group label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #444;
+      display: block;
+      margin-bottom: 6px;
+    }
+    .form-group input {
+      width: 100%;
+      background: #faf9f7;
+      border: 1px solid var(--border);
+      padding: 13px 14px;
+      border-radius: 12px;
+      font-size: 0.92rem;
+      color: var(--text);
       outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .form-group input:focus {
+      border-color: #121212;
+      background: #ffffff;
     }
 
-    .btn {
-      background: #66fcf1;
-      color: #0b0c10;
+    /* Негізгі қара түйме */
+    .btn-submit {
+      width: 100%;
+      background: #121212;
+      color: #ffffff;
       border: none;
       padding: 14px;
-      border-radius: 10px;
-      font-weight: 700;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      font-weight: 600;
       cursor: pointer;
-      font-size: 1rem;
-      margin-top: 6px;
-      transition: 0.2s;
+      margin-top: 10px;
+      transition: opacity 0.2s, transform 0.1s;
     }
-    .btn:active { transform: scale(0.98); }
+    .btn-submit:hover { opacity: 0.92; }
+    .btn-submit:active { transform: scale(0.98); }
 
-    .toggle-text { font-size: 0.85rem; text-align: center; color: #888; cursor: pointer; margin-top: 4px; }
-    .toggle-text span { color: #66fcf1; text-decoration: underline; }
+    /* Хабарлама блогы */
+    .msg-box {
+      width: 100%;
+      font-size: 0.82rem;
+      padding: 10px 12px;
+      border-radius: 10px;
+      margin-top: 14px;
+      display: none;
+      text-align: center;
+    }
+    .msg-box.error { background: #fef2f2; color: #dc2626; border: 1px solid #fee2e2; }
+    .msg-box.success { background: #f0fdf4; color: #16a34a; border: 1px solid #dcfce7; }
 
-    .msg { font-size: 0.85rem; text-align: center; display: none; padding: 10px; border-radius: 8px; }
-    .msg.error { background: rgba(230, 57, 70, 0.2); color: #ff6b6b; border: 1px solid #ff6b6b; }
-    .msg.success { background: rgba(102, 252, 241, 0.2); color: #66fcf1; border: 1px solid #66fcf1; }
+    /* Артқа қайту сілтемесі */
+    .back-home {
+      margin-top: 24px;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.84rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.2s;
+    }
+    .back-home:hover { color: var(--text); }
   </style>
 </head>
 <body>
 
   <div class="auth-card">
-    <div class="logo">TOY<span>DUMAN</span></div>
-    
-    <div class="lang-switcher">
-      <button class="lang-btn active" id="btn-kz" onclick="setLang('kz')">KZ</button>
-      <button class="lang-btn" id="btn-ru" onclick="setLang('ru')">RU</button>
+    <a href="index.html" class="brand-logo">ToyDuman</a>
+    <p class="auth-sub" id="form-subtitle">Жеке кабинетке кіру</p>
+
+    <!-- Тәртіп ауыстыру: Кіру немесе Тіркелу -->
+    <div class="tab-switch">
+      <button type="button" class="tab-btn active" id="tab-login" onclick="setMode('login')">Кіру</button>
+      <button type="button" class="tab-btn" id="tab-register" onclick="setMode('register')">Тіркелу</button>
     </div>
 
-    <h2 id="card-title">Жеке кабинетке кіру</h2>
-
-    <div class="msg" id="alert-box"></div>
+    <!-- Форма -->
+    <div class="form-group">
+      <label>Электронды пошта (Gmail):</label>
+      <input type="email" id="email" placeholder="mysaly@gmail.com" required>
+    </div>
 
     <div class="form-group">
-      <label id="lbl-email">Электронды пошта (Email):</label>
-      <input type="email" id="email" placeholder="example@mail.com">
+      <label>Құпия сөз:</label>
+      <input type="password" id="password" placeholder="Кемінде 6 таңба" required>
     </div>
 
-    <div class="form-group">
-      <label id="lbl-pass">Құпиясөз (Пароль):</label>
-      <input type="password" id="password" placeholder="Кемінде 6 таңба">
-    </div>
+    <button type="button" class="btn-submit" id="submit-btn" onclick="handleSubmit()">
+      Кіру
+    </button>
 
-    <button class="btn" id="btn-submit" onclick="handleAuth()">Кіру</button>
-
-    <div class="toggle-text" id="toggle-mode" onclick="toggleAuthMode()">
-      Аккаунтыңыз жоқ па? <span id="toggle-action">Тіркелу</span>
-    </div>
+    <div class="msg-box" id="msg-box"></div>
   </div>
+
+  <a href="index.html" class="back-home">← Басты бетке оралу</a>
 
   <script>
     const SUPABASE_URL = "https://heuqifmvwrzkvtcarrdt.supabase.co";
@@ -105,122 +211,86 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let isLoginMode = true;
-    let curLang = localStorage.getItem('toyduman_lang') || 'kz';
 
-    const texts = {
-      kz: {
-        loginTitle: "Жеке кабинетке кіру",
-        registerTitle: "Жаңа аккаунт ашу",
-        lblEmail: "Электронды пошта (Email):",
-        lblPass: "Құпиясөз (Пароль):",
-        btnLogin: "Кіру",
-        btnRegister: "Тіркелу",
-        toggleToReg: "Аккаунтыңыз жоқ па? <span>Тіркелу</span>",
-        toggleToLog: "Аккаунтыңыз бар ма? <span>Кіру</span>",
-        fillAll: "Барлық жолдарды толтырыңыз!",
-        regSuccess: "Тіркелу сәтті өтті! Кабинетке өтуде...",
-        passShort: "Пароль кемінде 6 таңбадан тұруы керек!"
-      },
-      ru: {
-        loginTitle: "Вход в личный кабинет",
-        registerTitle: "Регистрация аккаунта",
-        lblEmail: "Электронная почта (Email):",
-        lblPass: "Пароль:",
-        btnLogin: "Войти",
-        btnRegister: "Зарегистрироваться",
-        toggleToReg: "Нет аккаунта? <span>Регистрация</span>",
-        toggleToLog: "Уже есть аккаунт? <span>Войти</span>",
-        fillAll: "Заполните все поля!",
-        regSuccess: "Регистрация успешна! Переход в кабинет...",
-        passShort: "Пароль должен быть не менее 6 символов!"
-      }
-    };
-
-    function setLang(lang) {
-      curLang = lang;
-      localStorage.setItem('toyduman_lang', lang);
-      document.getElementById('btn-kz').classList.toggle('active', lang === 'kz');
-      document.getElementById('btn-ru').classList.toggle('active', lang === 'ru');
-
-      const t = texts[lang];
-      document.getElementById('lbl-email').innerText = t.lblEmail;
-      document.getElementById('lbl-pass').innerText = t.lblPass;
-
-      if (isLoginMode) {
-        document.getElementById('card-title').innerText = t.loginTitle;
-        document.getElementById('btn-submit').innerText = t.btnLogin;
-        document.getElementById('toggle-mode').innerHTML = t.toggleToReg;
-      } else {
-        document.getElementById('card-title').innerText = t.registerTitle;
-        document.getElementById('btn-submit').innerText = t.btnRegister;
-        document.getElementById('toggle-mode').innerHTML = t.toggleToLog;
-      }
+    function setMode(mode) {
+      isLoginMode = (mode === 'login');
+      document.getElementById('tab-login').classList.toggle('active', isLoginMode);
+      document.getElementById('tab-register').classList.toggle('active', !isLoginMode);
+      
+      document.getElementById('form-subtitle').innerText = isLoginMode ? 'Жеке кабинетке кіру' : 'Жаңа аккаунт ашу';
+      document.getElementById('submit-btn').innerText = isLoginMode ? 'Кіру' : 'Тіркелу';
+      hideMsg();
     }
 
-    function toggleAuthMode() {
-      isLoginMode = !isLoginMode;
-      setLang(curLang);
-      hideAlert();
-    }
-
-    function showAlert(text, type) {
-      const box = document.getElementById('alert-box');
-      box.className = `msg ${type}`;
+    function showMsg(text, isError = true) {
+      const box = document.getElementById('msg-box');
+      box.className = `msg-box ${isError ? 'error' : 'success'}`;
       box.innerText = text;
       box.style.display = 'block';
     }
 
-    function hideAlert() {
-      document.getElementById('alert-box').style.display = 'none';
+    function hideMsg() {
+      document.getElementById('msg-box').style.display = 'none';
     }
 
-    async function handleAuth() {
+    async function handleSubmit() {
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value.trim();
-      const t = texts[curLang];
+      const btn = document.getElementById('submit-btn');
 
       if (!email || !password) {
-        showAlert(t.fillAll, 'error');
+        showMsg("Пошта мен құпия сөзді толық енгізіңіз!");
         return;
       }
-
       if (password.length < 6) {
-        showAlert(t.passShort, 'error');
+        showMsg("Құпия сөз кемінде 6 таңбадан тұруы керек!");
         return;
       }
 
-      const btn = document.getElementById('btn-submit');
       btn.disabled = true;
-      btn.style.opacity = '0.6';
+      btn.innerText = "Күте тұрыңыз...";
+      hideMsg();
 
       try {
         if (isLoginMode) {
-          const { data, error } = await supabaseClient.auth.signInWithPassword({
-            email: email,
-            password: password
-          });
+          // Кіру
+          const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
           if (error) throw error;
           window.location.href = "dashboard.html";
         } else {
-          const { data, error } = await supabaseClient.auth.signUp({
-            email: email,
-            password: password
-          });
+          // Тіркелу
+          const { data, error } = await supabaseClient.auth.signUp({ email, password });
           if (error) throw error;
-          showAlert(t.regSuccess, 'success');
-          setTimeout(() => {
+          
+          if (data.session) {
             window.location.href = "dashboard.html";
-          }, 1500);
+          } else {
+            showMsg("Тіркелу сәтті! Енді осы деректермен кіре аласыз.", false);
+            setMode('login');
+          }
         }
       } catch (err) {
-        showAlert(err.message, 'error');
+        let errorMsg = err.message;
+        if (errorMsg.includes("Invalid login credentials")) {
+          errorMsg = "Пошта немесе құпия сөз қате!";
+        } else if (errorMsg.includes("User already registered")) {
+          errorMsg = "Бұл пошта бойынша аккаунт тіркеліп қойған. Кіру түймесін басыңыз.";
+        }
+        showMsg(errorMsg, true);
       } finally {
         btn.disabled = false;
-        btn.style.opacity = '1';
+        btn.innerText = isLoginMode ? 'Кіру' : 'Тіркелу';
       }
     }
 
-    setLang(curLang);
+    // Егер адам жүйеге кіріп қойған болса, бірден кабинетке жіберу
+    async function autoRedirectIfLoggedIn() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session) {
+        window.location.href = "dashboard.html";
+      }
+    }
+    autoRedirectIfLoggedIn();
   </script>
 </body>
 </html>
