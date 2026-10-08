@@ -8,7 +8,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   
-  <!-- Қазақ әріптерін қолдайтын қаріптер -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -205,6 +204,11 @@
       color: #b45309;
       border: 1px solid #fde68a;
       width: 100%;
+    }
+    .btn-slideshow {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
     }
 
     .bottom-bar {
@@ -499,6 +503,8 @@
         const isVip = evt.plan_type === 'vip';
         const guestLink = `${currentOrigin}event.html?slug=${evt.slug}`;
         const galleryLink = `${currentOrigin}gallery.html?slug=${evt.slug}`;
+        const printLink = `${currentOrigin}print-qr.html?slug=${evt.slug}`;
+        const slideLink = `${currentOrigin}slideshow.html?slug=${evt.slug}`;
         const dateFormatted = evt.event_date ? new Date(evt.event_date).toLocaleDateString('kk-KZ') : 'Күні жоқ';
 
         const defaultCover = 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80';
@@ -522,7 +528,11 @@
               <button class="btn-luxury btn-upgrade-vip" onclick="openWhatsAppUpgrade('${evt.title}')">
                 💎 VIP-ке көшіру (WhatsApp)
               </button>
-            ` : ''}
+            ` : `
+              <a class="btn-luxury btn-slideshow" href="${slideLink}" target="_blank">
+                📺 Экранға Live Слайд-шоу
+              </a>
+            `}
             
             <a class="btn-luxury btn-dark" href="${guestLink}" target="_blank">
               👁️ Қонақ көзімен қарау
@@ -536,6 +546,11 @@
                 🖼️ Галерея
               </a>
             </div>
+
+            <!-- Тейбл-тент / А5 басу батырмасы -->
+            <a class="btn-luxury btn-outline" href="${printLink}" target="_blank" style="width: 100%;">
+              🖨️ A5 Карточка басу (Печать)
+            </a>
           </div>
         `;
         listEl.appendChild(card);
