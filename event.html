@@ -5,76 +5,129 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Той қонағының парақшасы — ToyDuman</title>
 
-  <!-- Supabase v2.48.1 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: #0b0c10; color: #c5c6c7; min-height: 100vh; padding: 15px; display: flex; flex-direction: column; align-items: center; }
-    .container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 16px; }
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --pill-bg: #f1f5f9;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --input-bg: #f8fafc;
+      --shadow-sm: 0 4px 15px rgba(0,0,0,0.05);
+    }
 
-    .header { text-align: center; margin-top: 10px; }
-    .header h1 { font-size: 1.5rem; color: #fff; }
-    .header p { font-size: 0.85rem; color: #45a29e; margin-top: 4px; }
+    [data-theme="dark"] {
+      --bg: #0b0f17;
+      --card-bg: #151d2a;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #263346;
+      --pill-bg: #1e293b;
+      --accent: #3b82f6;
+      --accent-hover: #60a5fa;
+      --input-bg: #0b0f17;
+      --shadow-sm: 0 4px 15px rgba(0,0,0,0.4);
+    }
 
-    .lang-switcher { display: flex; justify-content: center; gap: 6px; }
-    .lang-btn { background: #1f2833; border: 1px solid #45a29e; color: #c5c6c7; padding: 4px 10px; border-radius: 8px; cursor: pointer; font-size: 0.75rem; }
-    .lang-btn.active { background: #66fcf1; color: #0b0c10; font-weight: bold; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; transition: background-color 0.2s, color 0.2s, border-color 0.2s; }
+    body { background-color: var(--bg); color: var(--text); min-height: 100vh; padding: 16px; display: flex; flex-direction: column; align-items: center; }
+    .container { width: 100%; max-width: 460px; display: flex; flex-direction: column; gap: 16px; }
 
-    .card { background: #1f2833; border: 1px solid #2f3e46; border-radius: 16px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+    .top-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+    .lang-switcher { display: flex; gap: 6px; }
+    .lang-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--text-muted); padding: 5px 12px; border-radius: 20px; cursor: pointer; font-size: 0.78rem; font-weight: 700; }
+    .lang-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-    .counter { text-align: center; font-size: 0.9rem; margin-bottom: 12px; color: #66fcf1; font-weight: 600; }
+    .theme-toggle {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .header { text-align: center; margin-top: 4px; }
+    .header h1 { font-size: 1.45rem; font-weight: 800; color: var(--text); }
+    .header p { font-size: 0.85rem; color: var(--accent); margin-top: 4px; font-weight: 600; }
+
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 20px; box-shadow: var(--shadow-sm); }
+
+    .counter { text-align: center; font-size: 0.88rem; margin-bottom: 14px; color: var(--accent); font-weight: 700; }
 
     .upload-zone {
-      border: 2px dashed #45a29e;
-      border-radius: 12px;
-      padding: 20px 10px;
+      border: 2px dashed var(--accent);
+      border-radius: 16px;
+      padding: 22px 14px;
       text-align: center;
       cursor: pointer;
-      background: rgba(102, 252, 241, 0.03);
+      background: rgba(37, 99, 235, 0.04);
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 8px;
     }
     .upload-zone input { display: none; }
-    .upload-zone span { font-size: 2rem; }
-    .upload-zone p { font-size: 0.85rem; color: #fff; }
+    .upload-zone span { font-size: 2.2rem; }
+    .upload-zone p { font-size: 0.85rem; color: var(--text); font-weight: 600; }
 
-    .preview-img { width: 100%; max-height: 220px; object-fit: contain; border-radius: 8px; display: none; margin-top: 10px; }
+    .preview-img { width: 100%; max-height: 240px; object-fit: contain; border-radius: 12px; display: none; margin-top: 12px; border: 1px solid var(--border); }
 
-    .form-group { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
-    label { font-size: 0.8rem; color: #aaa; }
-    input, textarea { background: #0b0c10; border: 1px solid #45a29e; border-radius: 8px; padding: 10px; color: #fff; font-size: 0.9rem; outline: none; width: 100%; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
+    label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
+    input, textarea { background: var(--input-bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: var(--text); font-size: 0.9rem; outline: none; width: 100%; }
+    input:focus, textarea:focus { border-color: var(--accent); }
 
-    .btn { background: #66fcf1; color: #0b0c10; border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; font-size: 0.95rem; margin-top: 12px; }
+    .btn { background: var(--accent); color: #fff; border: none; padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; width: 100%; font-size: 0.95rem; margin-top: 14px; }
+    .btn:active { transform: scale(0.98); }
     .btn:disabled { opacity: 0.5; }
 
-    .msg { font-size: 0.85rem; text-align: center; padding: 8px; border-radius: 6px; display: none; margin-top: 10px; }
-    .msg.error { background: rgba(255, 77, 77, 0.15); color: #ff6b6b; border: 1px solid #ff6b6b; }
-    .msg.success { background: rgba(102, 252, 241, 0.15); color: #66fcf1; border: 1px solid #66fcf1; }
+    .msg { font-size: 0.85rem; text-align: center; padding: 10px; border-radius: 10px; display: none; margin-top: 12px; }
+    .msg.error { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid #ef4444; }
+    .msg.success { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid #10b981; }
 
-    .feed-title { font-size: 1.1rem; color: #fff; margin-top: 10px; }
-    .feed { display: flex; flex-direction: column; gap: 12px; }
-    .feed-item { background: #1f2833; border: 1px solid #2f3e46; border-radius: 12px; overflow: hidden; }
-    .feed-item img { width: 100%; display: block; max-height: 350px; object-fit: cover; }
-    .feed-info { padding: 10px 12px; }
-    .feed-author { font-weight: 700; color: #66fcf1; font-size: 0.85rem; }
-    .feed-caption { font-size: 0.85rem; color: #ddd; margin-top: 4px; }
-    .empty-feed { text-align: center; color: #777; font-size: 0.85rem; padding: 15px; }
+    .feed-title { font-size: 1.15rem; font-weight: 800; color: var(--text); margin-top: 12px; }
+    .feed { display: flex; flex-direction: column; gap: 14px; }
+    .feed-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-sm); }
+    .feed-item img { width: 100%; display: block; max-height: 380px; object-fit: cover; }
+    .feed-info { padding: 12px 14px; }
+    .feed-author { font-weight: 700; color: var(--accent); font-size: 0.85rem; }
+    .feed-caption { font-size: 0.85rem; color: var(--text); margin-top: 4px; }
+    .empty-feed { text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 20px; }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <div class="lang-switcher">
-      <button class="lang-btn active" id="btn-kz" onclick="setLang('kz')">KZ</button>
-      <button class="lang-btn" id="btn-ru" onclick="setLang('ru')">RU</button>
+    <div class="top-controls">
+      <div class="lang-switcher">
+        <button class="lang-btn active" id="btn-kz" onclick="setLang('kz')">KZ</button>
+        <button class="lang-btn" id="btn-ru" onclick="setLang('ru')">RU</button>
+      </div>
+      <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()" title="Режимді ауыстыру">🌙</button>
     </div>
 
     <div class="header">
       <h1 id="event-title">Жүктелуде...</h1>
-      <p id="event-subtitle">Үйлену тойы • Сәтті сәттер мен ақ тілектер ✨</p>
+      <p id="event-subtitle">Сәтті сәттер мен ақ тілектер ✨</p>
     </div>
 
     <div class="card" id="form-card">
@@ -94,7 +147,7 @@
       </div>
 
       <div class="form-group">
-        <label id="lbl-wish">Жас жұбайларға тілек (міндетті емес):</label>
+        <label id="lbl-wish">Жас жұбайларға/иесіне тілек (міндетті емес):</label>
         <textarea id="guest-wish" rows="2" placeholder="Бақытты болыңыздар!"></textarea>
       </div>
 
@@ -118,7 +171,6 @@
     let selectedFile = null;
     let guestLimit = 25;
 
-    // Әр қонақтың телефонына жеке сақталатын құпия кілт
     let myPhotosList = [];
     try {
       myPhotosList = JSON.parse(localStorage.getItem(`my_photos_${slug}`)) || [];
@@ -126,26 +178,44 @@
       myPhotosList = [];
     }
 
+    // Режим (Theme)
+    function initTheme() {
+      const savedTheme = localStorage.getItem('toyduman_theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      updateThemeBtn(savedTheme);
+    }
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const target = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', target);
+      localStorage.setItem('toyduman_theme', target);
+      updateThemeBtn(target);
+    }
+    function updateThemeBtn(theme) {
+      document.getElementById('theme-btn').innerText = theme === 'dark' ? '☀️' : '🌙';
+    }
+    initTheme();
+
     const texts = {
       kz: {
-        subtitle: "Үйлену тойы • Сәтті сәттер мен ақ тілектер ✨",
+        subtitle: "Сәтті сәттер мен ақ тілектер ✨",
         lblUpload: "Фото түсіру немесе галереядан таңдау",
         lblName: "Сіздің есіміңіз:",
-        lblWish: "Жас жұбайларға тілек (міндетті емес):",
+        lblWish: "Ақ тілегіңіз (міндетті емес):",
         btnSend: "Жүктеу",
         feed: "Менің жүктеген естеліктерім",
         remain: "Қалған лимитіңіз: ",
         limitOver: "Сіз өз лимитіңізді толық пайдаландыңыз!",
         selectPhoto: "Алдымен фото таңдаңыз!",
         success: "Фото сәтті жүктелді! Рақмет!",
-        notFound: "Той табылмады немесе жабық 😔",
+        notFound: "Іс-шара табылмады немесе жабық 😔",
         noPhotos: "Сіз әлі фото жүктеген жоқсыз 📷"
       },
       ru: {
-        subtitle: "Свадебное торжество • Памятные моменты и пожелания ✨",
+        subtitle: "Памятные моменты и тёплые пожелания ✨",
         lblUpload: "Сделать фото или выбрать из галереи",
         lblName: "Ваше имя:",
-        lblWish: "Пожелание молодожёнам (необязательно):",
+        lblWish: "Ваше пожелание (необязательно):",
         btnSend: "Опубликовать",
         feed: "Мои загруженные фотографии",
         remain: "Ваш лимит: ",
@@ -242,7 +312,6 @@
         const fileExt = selectedFile.name.split('.').pop();
         const fileName = `${currentEvent.id}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
 
-        // Storage-ге салу
         const { error: uploadErr } = await supabaseClient.storage
           .from('photos')
           .upload(fileName, selectedFile);
@@ -257,7 +326,6 @@
         const author = document.getElementById('guest-name').value.trim() || 'Қонақ';
         const wish = document.getElementById('guest-wish').value.trim();
 
-        // Базаға жазу
         const { error: dbErr } = await supabaseClient
           .from('event_photos')
           .insert([{
@@ -269,7 +337,6 @@
 
         if (dbErr) throw dbErr;
 
-        // Қонақтың өз телефонындағы жеке тізіміне сақтау
         myPhotosList.unshift({
           photo_url: publicUrl,
           author_name: author,
@@ -284,7 +351,6 @@
         msgBox.innerText = texts[curLang].success;
         msgBox.style.display = 'block';
 
-        // Форманы тазарту
         document.getElementById('preview').style.display = 'none';
         document.getElementById('file-input').value = '';
         document.getElementById('guest-wish').value = '';
@@ -302,7 +368,6 @@
       }
     }
 
-    // Тек осы қонақтың салған суреттерін ғана шығару
     function renderMyFeed() {
       const feedBox = document.getElementById('feed-list');
       feedBox.innerHTML = '';
