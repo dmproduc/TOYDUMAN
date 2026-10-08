@@ -7,19 +7,18 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
 
-  <!-- Қазақ әріптерін 100% қолдайтын арнайы қаріптер -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
       --bg: #fcfbf9;
-      --card-bg: #ffffff;
+      --card-bg: rgba(255, 255, 255, 0.94);
       --text: #121212;
-      --text-muted: #737373;
-      --border: #eae8e4;
-      --accent: #121212;
+      --text-muted: #6b7280;
+      --border-subtle: rgba(0, 0, 0, 0.08);
+      --glass-input-bg: rgba(244, 242, 238, 0.85);
       --radius: 24px;
     }
 
@@ -42,15 +41,16 @@
       padding: 24px 16px;
     }
 
-    /* Басты карточка */
     .auth-card {
       background: var(--card-bg);
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-subtle);
       border-radius: var(--radius);
       width: 100%;
       max-width: 400px;
-      padding: 36px 28px;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.04);
+      padding: 36px 26px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -64,18 +64,18 @@
       color: var(--text);
       text-decoration: none;
       letter-spacing: -0.5px;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
 
     .auth-sub {
-      font-size: 0.88rem;
+      font-size: 0.86rem;
       color: var(--text-muted);
-      margin-bottom: 26px;
+      margin-bottom: 24px;
     }
 
-    /* Кіру / Тіркелу таңдау түймесі */
+    /* Кіру / Тіркелу қосқышы (iOS Segmented Control) */
     .tab-switch {
-      background: #f2f0eb;
+      background: rgba(0, 0, 0, 0.05);
       border-radius: 30px;
       padding: 4px;
       display: flex;
@@ -92,33 +92,32 @@
       border-radius: 24px;
       cursor: pointer;
       color: var(--text-muted);
-      transition: all 0.2s;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .tab-btn.active {
       background: #ffffff;
       color: var(--text);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
     }
 
-    /* Форма өрістері */
     .form-group {
       width: 100%;
       text-align: left;
       margin-bottom: 14px;
     }
     .form-group label {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 600;
-      color: #444;
+      color: #4b5563;
       display: block;
       margin-bottom: 6px;
     }
     .form-group input {
       width: 100%;
-      background: #faf9f7;
-      border: 1px solid var(--border);
+      background: var(--glass-input-bg);
+      border: 1px solid var(--border-subtle);
       padding: 13px 14px;
-      border-radius: 12px;
+      border-radius: 14px;
       font-size: 0.92rem;
       color: var(--text);
       outline: none;
@@ -129,7 +128,6 @@
       background: #ffffff;
     }
 
-    /* Негізгі қара түйме */
     .btn-submit {
       width: 100%;
       background: #121212;
@@ -137,34 +135,35 @@
       border: none;
       padding: 14px;
       border-radius: 14px;
-      font-size: 0.95rem;
-      font-weight: 600;
+      font-size: 0.94rem;
+      font-weight: 700;
       cursor: pointer;
       margin-top: 10px;
-      transition: opacity 0.2s, transform 0.1s;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+      transition: transform 0.1s, opacity 0.2s;
     }
-    .btn-submit:hover { opacity: 0.92; }
-    .btn-submit:active { transform: scale(0.98); }
+    .btn-submit:active { transform: scale(0.97); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
 
-    /* Хабарлама блогы */
     .msg-box {
       width: 100%;
       font-size: 0.82rem;
-      padding: 10px 12px;
-      border-radius: 10px;
+      padding: 10px 14px;
+      border-radius: 12px;
       margin-top: 14px;
       display: none;
       text-align: center;
+      line-height: 1.4;
     }
     .msg-box.error { background: #fef2f2; color: #dc2626; border: 1px solid #fee2e2; }
     .msg-box.success { background: #f0fdf4; color: #16a34a; border: 1px solid #dcfce7; }
 
-    /* Артқа қайту сілтемесі */
     .back-home {
       margin-top: 24px;
       text-decoration: none;
       color: var(--text-muted);
       font-size: 0.84rem;
+      font-weight: 500;
       display: inline-flex;
       align-items: center;
       gap: 6px;
@@ -179,26 +178,26 @@
     <a href="index.html" class="brand-logo">ToyDuman</a>
     <p class="auth-sub" id="form-subtitle">Жеке кабинетке кіру</p>
 
-    <!-- Тәртіп ауыстыру: Кіру немесе Тіркелу -->
     <div class="tab-switch">
       <button type="button" class="tab-btn active" id="tab-login" onclick="setMode('login')">Кіру</button>
       <button type="button" class="tab-btn" id="tab-register" onclick="setMode('register')">Тіркелу</button>
     </div>
 
-    <!-- Форма -->
-    <div class="form-group">
-      <label>Электронды пошта (Gmail):</label>
-      <input type="email" id="email" placeholder="mysaly@gmail.com" required>
-    </div>
+    <form onsubmit="handleSubmit(event)" style="width: 100%;">
+      <div class="form-group">
+        <label>Электронды пошта (Email):</label>
+        <input type="email" id="email" placeholder="mysaly@gmail.com" required autocomplete="email">
+      </div>
 
-    <div class="form-group">
-      <label>Құпия сөз:</label>
-      <input type="password" id="password" placeholder="Кемінде 6 таңба" required>
-    </div>
+      <div class="form-group">
+        <label>Құпия сөз:</label>
+        <input type="password" id="password" placeholder="Кемінде 6 таңба" required autocomplete="current-password">
+      </div>
 
-    <button type="button" class="btn-submit" id="submit-btn" onclick="handleSubmit()">
-      Кіру
-    </button>
+      <button type="submit" class="btn-submit" id="submit-btn">
+        Кіру
+      </button>
+    </form>
 
     <div class="msg-box" id="msg-box"></div>
   </div>
@@ -233,7 +232,9 @@
       document.getElementById('msg-box').style.display = 'none';
     }
 
-    async function handleSubmit() {
+    async function handleSubmit(e) {
+      if (e) e.preventDefault();
+
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value.trim();
       const btn = document.getElementById('submit-btn');
@@ -248,49 +249,49 @@
       }
 
       btn.disabled = true;
-      btn.innerText = "Күте тұрыңыз...";
+      btn.innerText = "Күте тұрыңыз... ⏳";
       hideMsg();
 
       try {
         if (isLoginMode) {
-          // Кіру
           const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
           if (error) throw error;
           window.location.href = "dashboard.html";
         } else {
-          // Тіркелу
           const { data, error } = await supabaseClient.auth.signUp({ email, password });
           if (error) throw error;
           
-          if (data.session) {
+          if (data && data.session) {
             window.location.href = "dashboard.html";
           } else {
-            showMsg("Тіркелу сәтті! Енді осы деректермен кіре аласыз.", false);
+            showMsg("Тіркелу сәтті өтті! Енді «Кіру» түймесі арқылы жүйеге кіріңіз.", false);
             setMode('login');
           }
         }
       } catch (err) {
-        let errorMsg = err.message;
-        if (errorMsg.includes("Invalid login credentials")) {
-          errorMsg = "Пошта немесе құпия сөз қате!";
-        } else if (errorMsg.includes("User already registered")) {
-          errorMsg = "Бұл пошта бойынша аккаунт тіркеліп қойған. Кіру түймесін басыңыз.";
+        let msg = err.message;
+        if (msg.includes("Invalid login credentials")) {
+          msg = "Пошта немесе құпия сөз қате!";
+        } else if (msg.includes("User already registered")) {
+          msg = "Бұл пошта бойынша аккаунт бар. «Кіру» түймесін басыңыз.";
         }
-        showMsg(errorMsg, true);
+        showMsg(msg, true);
       } finally {
         btn.disabled = false;
         btn.innerText = isLoginMode ? 'Кіру' : 'Тіркелу';
       }
     }
 
-    // Егер адам жүйеге кіріп қойған болса, бірден кабинетке жіберу
-    async function autoRedirectIfLoggedIn() {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (session) {
-        window.location.href = "dashboard.html";
-      }
+    // Егер бұрыннан сессиясы бар болса, кабинетке өту
+    async function autoCheck() {
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session && session.user) {
+          window.location.href = "dashboard.html";
+        }
+      } catch (err) {}
     }
-    autoRedirectIfLoggedIn();
+    autoCheck();
   </script>
 </body>
 </html>
