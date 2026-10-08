@@ -6,7 +6,6 @@
   <title>Той қонағының парақшасы — ToyDuman</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
-  <!-- Шрифтер: Playfair + Caveat (Қолжазба Polaroid үшін) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -18,216 +17,63 @@
       --text: #1c1917;
       --text-muted: #78716c;
       --accent: #d97706;
-      --accent-hover: #b45309;
       --border: #e7e5e4;
       --shadow: 0 10px 25px -5px rgba(0,0,0,0.06);
     }
-
-    [data-theme="dark"] {
-      --bg: #0c0a09;
-      --card-bg: #1c1917;
-      --text: #f5f5f4;
-      --text-muted: #a8a29e;
-      --accent: #f59e0b;
-      --accent-hover: #fbbf24;
-      --border: #292524;
-      --shadow: 0 10px 25px -5px rgba(0,0,0,0.4);
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.2s, color 0.2s; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
     body { background-color: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 50px; display: flex; flex-direction: column; align-items: center; }
 
-    /* 4. HERO BANNER МҰҚАБА + ТАЙМЕР */
     .hero-banner {
-      width: 100%;
-      height: 240px;
-      position: relative;
+      width: 100%; height: 230px; position: relative;
       background: linear-gradient(180deg, rgba(0,0,0,0.1), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80') center/cover;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      align-items: center;
-      padding: 20px;
-      text-align: center;
-      color: #fff;
+      display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding: 20px; text-align: center; color: #fff;
     }
-    .hero-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.8rem;
-      font-weight: 800;
-      text-shadow: 0 2px 8px rgba(0,0,0,0.6);
-    }
-    .timer-wrap {
-      display: flex;
-      gap: 8px;
-      margin-top: 8px;
-      background: rgba(0, 0, 0, 0.45);
-      backdrop-filter: blur(8px);
-      padding: 6px 14px;
-      border-radius: 30px;
-      border: 1px solid rgba(255,255,255,0.2);
-    }
-    .timer-item { font-size: 0.75rem; font-weight: 700; color: #fef3c7; }
-
-    /* 6. МУЗЫКАЛЫҚ ОЙНАТҚЫШ (FLOATING DISK) */
-    .music-widget {
-      position: fixed;
-      top: 16px;
-      right: 16px;
-      z-index: 100;
-      background: rgba(255,255,255,0.85);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--border);
-      border-radius: 30px;
-      padding: 6px 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.1);
-    }
-    .music-disk {
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      background: #0f172a;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.8rem;
-    }
-    .music-disk.spinning {
-      animation: spin 3s linear infinite;
-    }
-    @keyframes spin { 100% { transform: rotate(360deg); } }
-    .music-text { font-size: 0.75rem; font-weight: 700; color: var(--text); }
+    .hero-title { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 800; text-shadow: 0 2px 8px rgba(0,0,0,0.6); }
+    .timer-wrap { margin-top: 8px; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); padding: 6px 14px; border-radius: 30px; font-size: 0.75rem; font-weight: 700; color: #fef3c7; }
 
     .container { width: 100%; max-width: 480px; padding: 0 16px; margin-top: -20px; z-index: 10; display: flex; flex-direction: column; gap: 16px; }
-
     .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 20px; box-shadow: var(--shadow); }
     .counter { text-align: center; font-size: 0.88rem; margin-bottom: 12px; color: var(--accent); font-weight: 700; }
 
-    .upload-zone {
-      border: 2px dashed var(--accent);
-      border-radius: 16px;
-      padding: 20px 14px;
-      text-align: center;
-      cursor: pointer;
-      background: rgba(217, 119, 6, 0.04);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-    }
+    .upload-zone { border: 2px dashed var(--accent); border-radius: 16px; padding: 20px 14px; text-align: center; cursor: pointer; background: rgba(217, 119, 6, 0.04); display: flex; flex-direction: column; align-items: center; gap: 6px; }
     .upload-zone input { display: none; }
-    .upload-zone span { font-size: 2.2rem; }
-    .upload-zone p { font-size: 0.85rem; color: var(--text); font-weight: 600; }
-
     .preview-img { width: 100%; max-height: 240px; object-fit: contain; border-radius: 12px; display: none; margin-top: 10px; border: 1px solid var(--border); }
 
-    /* 5. АУДИО ЖАЗУ (ГОЛОСОВОЕ) */
+    /* Голосовой жазу батырмасы */
     .audio-recorder-box {
-      margin-top: 12px;
-      background: var(--bg);
-      border: 1px dashed var(--border);
-      border-radius: 14px;
-      padding: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      margin-top: 12px; background: #fdfaf6; border: 1px dashed var(--border); border-radius: 14px; padding: 12px; display: flex; align-items: center; justify-content: space-between;
     }
-    .btn-record {
-      background: #ef4444;
-      color: #fff;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .btn-record.recording {
-      animation: pulse 1s infinite;
-      background: #dc2626;
-    }
+    .btn-record { background: #ef4444; color: #fff; border: none; padding: 9px 15px; border-radius: 20px; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+    .btn-record.recording { animation: pulse 1s infinite; background: #dc2626; }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     .audio-status { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; }
 
     .form-group { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
     label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
-    input, textarea { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: var(--text); font-size: 0.9rem; outline: none; width: 100%; }
+    input, textarea { background: #faf7f2; border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: var(--text); font-size: 0.9rem; outline: none; width: 100%; }
 
     .btn { background: var(--accent); color: #fff; border: none; padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; width: 100%; font-size: 0.95rem; margin-top: 14px; }
     .msg { font-size: 0.85rem; text-align: center; padding: 10px; border-radius: 10px; display: none; margin-top: 12px; }
-    .msg.error { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid #ef4444; }
-    .msg.success { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid #10b981; }
+    .msg.error { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+    .msg.success { background: rgba(16, 185, 129, 0.1); color: #10b981; }
 
-    /* 2. POLAROID / VINTAGE КАРТОЧКАЛАРЫ */
+    /* Polaroid естеліктер */
     .feed-title { font-size: 1.2rem; font-weight: 800; color: var(--text); margin-top: 14px; text-align: center; }
     .feed { display: flex; flex-direction: column; gap: 24px; padding: 10px 4px; }
-
-    .polaroid-card {
-      background: #ffffff;
-      padding: 12px 12px 18px 12px;
-      border-radius: 4px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.12), 0 2px 5px rgba(0,0,0,0.06);
-      transform: rotate(-1deg);
-      border: 1px solid rgba(0,0,0,0.06);
-      transition: transform 0.2s;
-    }
-    .polaroid-card:nth-child(even) { transform: rotate(1.2deg); }
-    .polaroid-card:hover { transform: scale(1.02) rotate(0deg); }
-
-    .polaroid-img {
-      width: 100%;
-      height: 320px;
-      object-fit: cover;
-      background: #f1f5f9;
-      display: block;
-    }
-    .polaroid-content {
-      padding: 14px 6px 4px 6px;
-      text-align: center;
-    }
-    .polaroid-wish {
-      font-family: 'Caveat', cursive;
-      font-size: 1.45rem;
-      color: #1e293b;
-      line-height: 1.25;
-      margin-bottom: 6px;
-    }
-    .polaroid-author {
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: #b45309;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-    }
-    .audio-player-custom {
-      width: 100%;
-      height: 32px;
-      margin-top: 8px;
-    }
-    .empty-feed { text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 20px; }
+    .polaroid-card { background: #ffffff; padding: 12px 12px 18px 12px; border-radius: 4px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border: 1px solid rgba(0,0,0,0.06); }
+    .polaroid-img { width: 100%; height: 300px; object-fit: cover; display: block; border-radius: 2px; }
+    .polaroid-content { padding: 12px 6px 4px 6px; text-align: center; }
+    .polaroid-wish { font-family: 'Caveat', cursive; font-size: 1.45rem; color: #1e293b; line-height: 1.25; margin-bottom: 6px; }
+    .polaroid-author { font-size: 0.8rem; font-weight: 700; color: #b45309; text-transform: uppercase; }
+    .audio-player-custom { width: 100%; height: 34px; margin-top: 10px; }
   </style>
 </head>
 <body>
 
-  <!-- 6. Музыкалық ойнатқыш (Қосу/Өшіру) -->
-  <div class="music-widget" onclick="toggleMusic()">
-    <div class="music-disk" id="disk-icon">🎵</div>
-    <span class="music-text" id="music-lbl">Әуенді қосу</span>
-  </div>
-  <audio id="bg-audio" loop src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=wedding-love-story-112194.mp3"></audio>
-
-  <!-- 4. Hero Баннер және кері санақ таймері -->
   <div class="hero-banner">
     <h1 class="hero-title" id="event-title">Жүктелуде...</h1>
     <div class="timer-wrap" id="timer-box">
-      <span class="timer-item" id="timer-val">Той басталғанға дейін уақыт есептелуде...</span>
+      <span id="timer-val">Есептелуде...</span>
     </div>
   </div>
 
@@ -235,22 +81,21 @@
     <div class="card" id="form-card">
       <div class="counter" id="shot-counter">Қалған лимит: есептелуде...</div>
 
-      <!-- Фото таңдау аймағы -->
       <div class="upload-zone" onclick="document.getElementById('file-input').click()">
-        <span>📸</span>
-        <p>Камерамен түсіру немесе галереядан таңдау</p>
+        <span style="font-size: 2.2rem;">📸</span>
+        <p style="font-weight: 600;">Камерамен түсіру немесе галереядан таңдау</p>
         <input type="file" id="file-input" accept="image/*" onchange="previewFile(event)">
       </div>
       <img id="preview" class="preview-img" alt="Preview">
 
-      <!-- 5. Аудио жазба түймесі (Микрофон) -->
+      <!-- Дауыстық тілек (Голосовое) жазу блогы -->
       <div class="audio-recorder-box">
         <button type="button" class="btn-record" id="rec-btn" onclick="toggleRecording()">
           <span id="rec-icon">🎙️</span> <span id="rec-txt">Дауысты тілек жазу</span>
         </button>
         <span class="audio-status" id="rec-status">Жазылмаған</span>
       </div>
-      <audio id="recorded-audio-preview" controls style="width: 100%; display: none; margin-top: 8px; height: 32px;"></audio>
+      <audio id="recorded-audio-preview" controls style="width: 100%; display: none; margin-top: 10px; height: 32px;"></audio>
 
       <div class="form-group">
         <label>Сіздің есіміңіз:</label>
@@ -258,7 +103,7 @@
       </div>
 
       <div class="form-group">
-        <label>Жас жұбайларға ақ тілек (Polaroid карточкасында көрінеді):</label>
+        <label>Жас жұбайларға ақ тілек:</label>
         <textarea id="guest-wish" rows="2" placeholder="Бақытты болыңыздар, мәңгі бірге!"></textarea>
       </div>
 
@@ -266,7 +111,6 @@
       <div class="msg" id="msg-box"></div>
     </div>
 
-    <!-- 2. Polaroid стиліндегі естеліктер лентасы -->
     <div class="feed-title">🎞️ Менің Polaroid естеліктерім</div>
     <div class="feed" id="feed-list"></div>
   </div>
@@ -282,63 +126,35 @@
     let compressedBlob = null;
     let guestLimit = 25;
 
-    // 5. Микрофон жазбалары айнымалылары
+    // ДЫБЫС ЖАЗУ ЖӘНЕ АВТОМАТТЫ ФОРМАТ ТАҢДАУ
     let mediaRecorder = null;
     let audioChunks = [];
     let audioBlob = null;
     let isRecording = false;
+    let selectedMimeType = '';
 
     let myPhotosList = [];
     try {
       myPhotosList = JSON.parse(localStorage.getItem(`my_photos_${slug}`)) || [];
     } catch(e) { myPhotosList = []; }
 
-    // 6. Музыканы қосу/өшіру функциясы
-    let isMusicPlaying = false;
-    function toggleMusic() {
-      const audio = document.getElementById('bg-audio');
-      const disk = document.getElementById('disk-icon');
-      const lbl = document.getElementById('music-text');
-      if (isMusicPlaying) {
-        audio.pause();
-        disk.classList.remove('spinning');
-        document.getElementById('music-lbl').innerText = 'Әуенді қосу';
-        isMusicPlaying = false;
-      } else {
-        audio.play().then(() => {
-          disk.classList.add('spinning');
-          document.getElementById('music-lbl').innerText = 'Әуен қосулы';
-          isMusicPlaying = true;
-        }).catch(() => {
-          alert("Браузер автоматты әуенге рұқсат бермеді, батырманы қайта басыңыз!");
-        });
-      }
-    }
-
-    // 4. Кері санақ таймері
-    function startTimer(targetDateStr) {
-      if (!targetDateStr) {
-        document.getElementById('timer-box').style.display = 'none';
-        return;
-      }
-      const targetDate = new Date(targetDateStr).getTime();
-      function update() {
-        const now = new Date().getTime();
-        const diff = targetDate - now;
-        if (diff <= 0) {
-          document.getElementById('timer-val').innerText = "🎉 Мереке басталды! Құтты болсын! 🎉";
-          return;
+    // Телефонның қай форматты қолдайтынын анықтау
+    function getSupportedMimeType() {
+      const types = [
+        'audio/mp4',
+        'audio/aac',
+        'audio/webm;codecs=opus',
+        'audio/webm',
+        'audio/ogg'
+      ];
+      for (let t of types) {
+        if (MediaRecorder.isTypeSupported(t)) {
+          return t;
         }
-        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        document.getElementById('timer-val').innerText = `⏳ Тойға дейін: ${d} күн ${h} сағат ${m} минут`;
       }
-      update();
-      setInterval(update, 60000);
+      return '';
     }
 
-    // 5. Микрофонмен дауыс жазу функциясы
     async function toggleRecording() {
       const recBtn = document.getElementById('rec-btn');
       const recStatus = document.getElementById('rec-status');
@@ -346,16 +162,24 @@
       if (!isRecording) {
         try {
           const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          mediaRecorder = new MediaRecorder(stream);
+          
+          selectedMimeType = getSupportedMimeType();
+          const options = selectedMimeType ? { mimeType: selectedMimeType } : {};
+          
+          mediaRecorder = new MediaRecorder(stream, options);
           audioChunks = [];
 
-          mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+          mediaRecorder.ondataavailable = e => {
+            if (e.data.size > 0) audioChunks.push(e.data);
+          };
+
           mediaRecorder.onstop = () => {
-            audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            const mime = selectedMimeType || 'audio/webm';
+            audioBlob = new Blob(audioChunks, { type: mime });
             const preview = document.getElementById('recorded-audio-preview');
             preview.src = URL.createObjectURL(audioBlob);
             preview.style.display = 'block';
-            recStatus.innerText = "✅ Жазылды";
+            recStatus.innerText = "✅ Дайын (тыңдап көріңіз)";
           };
 
           mediaRecorder.start();
@@ -364,7 +188,7 @@
           document.getElementById('rec-txt').innerText = "Тоқтату ⏹️";
           recStatus.innerText = "🔴 Жазылуда...";
         } catch (err) {
-          alert("Микрофонға рұқсат берілмеді: " + err.message);
+          alert("Микрофонға рұқсат беріңіз: " + err.message);
         }
       } else {
         mediaRecorder.stop();
@@ -386,6 +210,27 @@
       startTimer(currentEvent.event_date);
       updateLimitUI();
       renderPolaroidFeed();
+    }
+
+    function startTimer(targetDateStr) {
+      if (!targetDateStr) {
+        document.getElementById('timer-box').style.display = 'none';
+        return;
+      }
+      const targetDate = new Date(targetDateStr).getTime();
+      function update() {
+        const diff = targetDate - new Date().getTime();
+        if (diff <= 0) {
+          document.getElementById('timer-val').innerText = "🎉 Мереке басталды! 🎉";
+          return;
+        }
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        document.getElementById('timer-val').innerText = `⏳ Тойға дейін: ${d} күн ${h} сағат ${m} мин`;
+      }
+      update();
+      setInterval(update, 60000);
     }
 
     function updateLimitUI() {
@@ -438,8 +283,13 @@
 
         let finalAudioUrl = null;
         if (audioBlob) {
-          const audioName = `${currentEvent.id}/${Date.now()}_voice.webm`;
-          await supabaseClient.storage.from('photos').upload(audioName, audioBlob, { contentType: 'audio/webm' });
+          const ext = selectedMimeType.includes('mp4') ? 'mp4' : 'webm';
+          const audioName = `${currentEvent.id}/${Date.now()}_voice.${ext}`;
+          
+          await supabaseClient.storage.from('photos').upload(audioName, audioBlob, { 
+            contentType: audioBlob.type || 'audio/webm' 
+          });
+          
           const { data: audioData } = supabaseClient.storage.from('photos').getPublicUrl(audioName);
           finalAudioUrl = audioData.publicUrl;
         }
@@ -462,7 +312,7 @@
         renderPolaroidFeed();
 
         msgBox.className = 'msg success';
-        msgBox.innerText = "✨ Polaroid естелігі сәтті қосылды!";
+        msgBox.innerText = "✨ Polaroid естелігі сәтті сақталды!";
         msgBox.style.display = 'block';
 
         document.getElementById('preview').style.display = 'none';
@@ -484,12 +334,11 @@
       }
     }
 
-    // 2. Polaroid карточкаларын көрсету
     function renderPolaroidFeed() {
       const feed = document.getElementById('feed-list');
       feed.innerHTML = '';
       if (myPhotosList.length === 0) {
-        feed.innerHTML = '<div class="empty-feed">Әзірге Polaroid фотолары жоқ 📷</div>';
+        feed.innerHTML = '<div style="text-align:center; color:#78716c; font-size:0.85rem; padding:20px;">Әзірге фотолар жоқ 📷</div>';
         return;
       }
       myPhotosList.forEach(item => {
@@ -500,7 +349,11 @@
           <div class="polaroid-content">
             <div class="polaroid-wish">"${item.wishes}"</div>
             <div class="polaroid-author">❤️ ${item.author_name}</div>
-            ${item.audio_url ? `<audio class="audio-player-custom" controls src="${item.audio_url}"></audio>` : ''}
+            ${item.audio_url ? `
+              <audio class="audio-player-custom" controls preload="none">
+                <source src="${item.audio_url}">
+              </audio>
+            ` : ''}
           </div>
         `;
         feed.appendChild(div);
