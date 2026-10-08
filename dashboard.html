@@ -253,11 +253,6 @@
       font-weight: 800;
       box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);
     }
-    .btn-admin-give-vip {
-      background: #10b981;
-      color: #fff;
-      font-weight: 800;
-    }
 
     .empty-box {
       text-align: center;
@@ -409,6 +404,8 @@
         ✨ TOY<span>DUMAN</span>
       </div>
       <div class="header-right">
+        <!-- Егер бас админ кірсе, оған арнайы Админка батырмасы шығады -->
+        <a id="btn-to-admin" href="admin.html" class="user-pill" style="display: none; background: #fef3c7; color: #b45309; text-decoration: none;">👑 Бас Админка</a>
         <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()" title="Режимді ауыстыру">🌙</button>
         <div class="user-pill">
           <span id="user-email">Жүктелуде...</span>
@@ -512,8 +509,9 @@
     const SUPABASE_KEY = "sb_publishable_cOyPl30aOSb6pdxCRfRNQA_Tn6dBaZg";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // СЕНІҢ WHATSAPP НӨМІРІҢ:
+    // СЕНІҢ WHATSAPP НӨМІРІҢ ЖӘНЕ БАС АДМИН ПОШТАҢ:
     const MY_WHATSAPP_PHONE = "77067091805"; 
+    const ADMIN_EMAIL = "guldanaih@gmail.com";
 
     let currentUser = null;
     let selectedCoverFile = null;
@@ -543,6 +541,12 @@
       }
       currentUser = session.user;
       document.getElementById('user-email').innerText = currentUser.email;
+
+      // Бас админ кіргенін тексеру
+      if (currentUser.email === ADMIN_EMAIL) {
+        document.getElementById('btn-to-admin').style.display = 'inline-block';
+      }
+
       loadMyEvents();
     }
 
@@ -560,31 +564,9 @@
       preview.style.display = 'block';
     }
 
-    // ТІКЕЛЕЙ WHATSAPP-ҚА ӨТУ (+77067091805 нөміріне барады)
     function openWhatsAppUpgrade(title) {
       const text = encodeURIComponent(`Сәлеметсіз бе! Мен ToyDuman-дағы "${title}" іс-шарасына толық VIP қолжетімділік алғым келеді.`);
       window.open(`https://wa.me/${MY_WHATSAPP_PHONE}?text=${text}`, '_blank');
-    }
-
-    // СЕН БАСАТЫН ТҮЙМЕ: ДОСТУП БЕРУ (VIP ҚЫЛУ)
-    async function grantVipAccess(eventId, title) {
-      if (!confirm(`"${title}" іс-шарасына VIP доступ бересіз бе?`)) return;
-
-      const { error } = await supabaseClient
-        .from('events')
-        .update({
-          plan_type: 'vip',
-          shot_limit: 9999,
-          is_paid: true
-        })
-        .eq('id', eventId);
-
-      if (error) {
-        alert("Қате: " + error.message);
-      } else {
-        alert(`✅ "${title}" енді ресми түрде VIP! Барлық шектеулер алынып тасталды.`);
-        loadMyEvents();
-      }
     }
 
     async function loadMyEvents() {
@@ -646,11 +628,6 @@
                 💎 VIP-ке өту (WhatsApp)
               </button>
             ` : ''}
-
-            <!-- Доступ беру батырмасы -->
-            <button class="btn-action btn-admin-give-vip" onclick="grantVipAccess('${evt.id}', '${evt.title}')">
-              ${isVip ? '✅ VIP берілген' : '⚡ VIP доступ беру'}
-            </button>
 
             <a class="btn-action btn-action-preview" href="${guestLink}" target="_blank">👁️ Предосмотр</a>
             <div class="action-row">
@@ -722,6 +699,7 @@
 
         const { error } = await supabaseClient.from('events').insert([{
           user_id: currentUser ? currentUser.id : null,
+          user_email: currentUser ? currentUser.email : null,
           title: title,
           slug: slug,
           event_date: date || null,
