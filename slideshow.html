@@ -4,87 +4,123 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Live Слайд-шоу — ToyDuman</title>
-  
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #000; color: #fff; width: 100vw; height: 100vh; overflow: hidden; font-family: 'Plus Jakarta Sans', sans-serif; display: flex; align-items: center; justify-content: center; }
-
-    .slide-wrapper {
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Onest', sans-serif; }
+    
+    body {
+      background-color: #0d0d0d;
+      color: #fff;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
       display: flex;
-      align-items: center;
+      flex-direction: column;
       justify-content: center;
-      opacity: 0;
-      transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .slide-wrapper.active { opacity: 1; }
-
-    .slide-bg {
-      position: absolute;
-      width: 110%; height: 110%;
-      object-fit: cover;
-      filter: blur(25px) brightness(0.35);
-      transform: scale(1.05);
-    }
-
-    .main-image {
-      position: relative;
-      max-width: 90vw;
-      max-height: 82vh;
-      border-radius: 20px;
-      box-shadow: 0 25px 60px rgba(0,0,0,0.8);
-      z-index: 10;
-      animation: gentleZoom 6s infinite alternate ease-in-out;
-    }
-    @keyframes gentleZoom {
-      from { transform: scale(1); }
-      to { transform: scale(1.03); }
-    }
-
-    .caption-card {
-      position: absolute;
-      bottom: 40px;
-      background: rgba(15, 23, 42, 0.75);
-      backdrop-filter: blur(16px);
-      padding: 16px 30px;
-      border-radius: 40px;
-      z-index: 20;
-      display: flex;
       align-items: center;
-      gap: 15px;
-      border: 1px solid rgba(255,255,255,0.15);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
-    .caption-author { font-size: 1.15rem; font-weight: 800; color: #60a5fa; }
-    .caption-wish { font-size: 1.15rem; color: #fff; font-family: 'Playfair Display', serif; font-style: italic; }
 
-    .waiting-screen { text-align: center; font-size: 1.8rem; color: #64748b; font-weight: 700; z-index: 5; }
+    /* Артқы бұлдыр фон (Blur backdrop) */
+    .bg-blur {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      filter: blur(40px) brightness(0.35);
+      transform: scale(1.1);
+      transition: background-image 1.2s ease-in-out;
+      z-index: 1;
+    }
+
+    /* Негізгі фото контейнері */
+    .slide-wrapper {
+      position: relative;
+      z-index: 2;
+      max-width: 90vw;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .slide-img {
+      max-width: 85vw;
+      max-height: 68vh;
+      object-fit: contain;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: opacity 0.8s ease-in-out;
+    }
+
+    /* Фото авторы мен тілегі */
+    .slide-caption {
+      margin-top: 18px;
+      text-align: center;
+      max-width: 700px;
+      animation: fadeIn 1s;
+    }
+    .author-name {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+    .wish-text {
+      font-size: 1.1rem;
+      color: #ddd;
+      margin-top: 4px;
+      font-style: italic;
+    }
+
+    /* Жоғарғы жақтағы той аты */
+    .top-brand {
+      position: absolute;
+      top: 24px;
+      left: 30px;
+      z-index: 10;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.5rem;
+      color: rgba(255,255,255,0.8);
+      font-weight: 600;
+    }
+
+    .empty-state {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      color: #888;
+      font-size: 1.2rem;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
 
-  <div class="waiting-screen" id="waiting">✨ Суреттер жүктелуін күтуде... ✨</div>
+  <div class="top-brand" id="event-title">ToyDuman Live</div>
+  <div class="bg-blur" id="bg-blur"></div>
 
-  <div class="slide-wrapper" id="slide1">
-    <img class="slide-bg" id="bg1">
-    <img class="main-image" id="img1">
-    <div class="caption-card" id="card1">
-      <span class="caption-author" id="author1"></span>
-      <span class="caption-wish" id="wish1"></span>
+  <div class="slide-wrapper" id="slide-box" style="display: none;">
+    <img id="current-img" class="slide-img" src="" alt="Live Photo">
+    <div class="slide-caption">
+      <div class="author-name" id="author-name"></div>
+      <div class="wish-text" id="wish-text"></div>
     </div>
   </div>
 
-  <div class="slide-wrapper" id="slide2">
-    <img class="slide-bg" id="bg2">
-    <img class="main-image" id="img2">
-    <div class="caption-card" id="card2">
-      <span class="caption-author" id="author2"></span>
-      <span class="caption-wish" id="wish2"></span>
-    </div>
+  <div class="empty-state" id="empty-state">
+    Қонақтардың алғашқы кадрлары күтілуде... 📸
   </div>
 
   <script>
@@ -94,59 +130,71 @@
 
     const slug = new URLSearchParams(window.location.search).get('slug');
 
+    let currentEvent = null;
     let photos = [];
     let currentIndex = 0;
-    let activeSlot = 1;
 
-    async function fetchPhotos() {
+    async function initSlideshow() {
       if (!slug) return;
-      const { data: eventData } = await supabaseClient.from('events').select('id').eq('slug', slug).single();
-      if (!eventData) return;
 
+      const { data: eventData } = await supabaseClient
+        .from('events')
+        .select('*')
+        .eq('slug', slug)
+        .single();
+
+      if (!eventData) return;
+      currentEvent = eventData;
+      document.getElementById('event-title').innerText = `${currentEvent.title} • Live`;
+
+      await loadPhotos();
+      startCarousel();
+
+      // Жаңа фото түскенде автоматты түрде базадан әр 10 секунд сайын тексеру
+      setInterval(loadPhotos, 10000);
+    }
+
+    async function loadPhotos() {
       const { data } = await supabaseClient
         .from('event_photos')
         .select('*')
-        .eq('event_id', eventData.id)
+        .eq('event_id', currentEvent.id)
         .order('created_at', { ascending: false });
 
       if (data && data.length > 0) {
         photos = data;
-        document.getElementById('waiting').style.display = 'none';
+        document.getElementById('empty-state').style.display = 'none';
+        document.getElementById('slide-box').style.display = 'flex';
       }
     }
 
-    function showNextSlide() {
+    function showSlide(index) {
       if (photos.length === 0) return;
+      const item = photos[index];
 
-      const photo = photos[currentIndex];
-      const targetSlot = activeSlot === 1 ? 2 : 1;
-      const currentSlide = document.getElementById(`slide${activeSlot}`);
-      const nextSlide = document.getElementById(`slide${targetSlot}`);
+      const img = document.getElementById('current-img');
+      img.style.opacity = '0';
 
-      document.getElementById(`bg${targetSlot}`).src = photo.photo_url;
-      document.getElementById(`img${targetSlot}`).src = photo.photo_url;
-      document.getElementById(`author${targetSlot}`).innerText = "👤 " + (photo.author_name || 'Қонақ');
-      document.getElementById(`wish${targetSlot}`).innerText = photo.wishes ? `«${photo.wishes}»` : '';
-
-      nextSlide.classList.add('active');
-      currentSlide.classList.remove('active');
-
-      activeSlot = targetSlot;
-      currentIndex = (currentIndex + 1) % photos.length;
+      setTimeout(() => {
+        img.src = item.photo_url;
+        document.getElementById('bg-blur').style.backgroundImage = `url('${item.photo_url}')`;
+        document.getElementById('author-name').innerText = item.author_name || 'Қонақ';
+        document.getElementById('wish-text').innerText = item.wishes ? `"${item.wishes}"` : '';
+        img.style.opacity = '1';
+      }, 400);
     }
 
-    async function init() {
-      await fetchPhotos();
-      if (photos.length > 0) showNextSlide();
+    function startCarousel() {
+      if (photos.length > 0) showSlide(0);
 
-      // Әр 5 секунд сайын сурет ауысып отырады
-      setInterval(showNextSlide, 5000);
-
-      // Әр 15 секунд сайын жаңа түскен суреттерді базадан автоматты түрде қосып отырады
-      setInterval(fetchPhotos, 15000);
+      setInterval(() => {
+        if (photos.length === 0) return;
+        currentIndex = (currentIndex + 1) % photos.length;
+        showSlide(currentIndex);
+      }, 5000); // Әр 5 секунд сайын ауысады
     }
 
-    init();
+    initSlideshow();
   </script>
 </body>
 </html>
