@@ -60,16 +60,16 @@
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
     .user-tag {
-      font-size: 0.78rem;
-      color: var(--text-muted);
+      font-size: 0.8rem;
+      color: var(--text-main);
       background: #f2f0eb;
-      padding: 6px 12px;
+      padding: 6px 14px;
       border-radius: 20px;
-      font-weight: 500;
-      max-width: 150px;
+      font-weight: 600;
+      max-width: 200px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -77,11 +77,13 @@
     .btn-logout {
       background: none;
       border: none;
-      font-size: 0.75rem;
-      color: #999;
+      font-size: 0.82rem;
+      color: #ef4444;
       cursor: pointer;
-      font-weight: 600;
+      font-weight: 700;
+      padding: 4px 8px;
     }
+    .btn-logout:hover { text-decoration: underline; }
 
     .container {
       max-width: 860px;
@@ -242,7 +244,7 @@
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(0, 0, 0, 0.5);
       backdrop-filter: blur(8px);
       z-index: 100;
       display: none;
@@ -265,7 +267,7 @@
       right: 20px;
       background: none;
       border: none;
-      font-size: 1.2rem;
+      font-size: 1.4rem;
       cursor: pointer;
       color: #888;
     }
@@ -335,10 +337,10 @@
 
   <header>
     <div class="header-inner">
-      <a href="#" class="brand">ToyDuman</a>
+      <a href="dashboard.html" class="brand">ToyDuman</a>
       <div class="header-actions">
         <a id="btn-admin-link" href="admin.html" style="display: none; font-size: 0.78rem; color: #b45309; font-weight: 700; text-decoration: none;">👑 Админ</a>
-        <div class="user-tag" id="user-email">...</div>
+        <div class="user-tag" id="user-email">Жүктелуде...</div>
         <button class="btn-logout" onclick="logout()">Шығу</button>
       </div>
     </div>
@@ -353,7 +355,7 @@
     <div class="events-grid" id="events-list"></div>
 
     <div class="empty-state" id="empty-state" style="display: none;">
-      <p style="font-size: 1.1rem; margin-bottom: 6px;">Әзірге оқиға ашылмаған</p>
+      <p style="font-size: 1.1rem; margin-bottom: 6px; color: var(--text-main); font-weight: 600;">Әзірге оқиға ашылмаған</p>
       <p style="font-size: 0.85rem;">Төмендегі түймені басып, алғашқы цифрлық альбомыңызды құрыңыз</p>
     </div>
   </div>
@@ -364,6 +366,7 @@
     </button>
   </div>
 
+  <!-- Модаль: Той ашу -->
   <div class="modal-overlay" id="create-modal">
     <div class="modal-window">
       <button class="modal-close" onclick="closeCreateModal()">✕</button>
@@ -372,12 +375,12 @@
 
       <div class="field">
         <label>Іс-шара атауы (Жұптың есімі):</label>
-        <input type="text" id="event-title" placeholder="Мысалы: Amir & Zhanna">
+        <input type="text" id="event-title" placeholder="Мысалы: Бауыржан & Аружан">
       </div>
 
       <div class="field">
-        <label>Сілтеме коды (латын әріптерімен):</label>
-        <input type="text" id="event-slug" placeholder="amir-zhanna">
+        <label>Сілтеме коды (тек латынша):</label>
+        <input type="text" id="event-slug" placeholder="bauyrzhan-aruzhan">
       </div>
 
       <div class="field">
@@ -400,6 +403,7 @@
     </div>
   </div>
 
+  <!-- Модаль: QR көрсету -->
   <div class="modal-overlay" id="qr-modal">
     <div class="modal-window">
       <button class="modal-close" onclick="closeQrModal()">✕</button>
@@ -429,31 +433,42 @@
     let currentGuestLink = "";
 
     async function checkAuth() {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (!session) {
+      try {
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+        if (error || !session) {
+          window.location.href = "auth.html";
+          return;
+        }
+
+        currentUser = session.user;
+        document.getElementById('user-email').innerText = currentUser.email;
+
+        // Бас админ поштасын қауіпсіз тексеру
+        try {
+          const { data: settingData } = await supabaseClient
+            .from('app_settings')
+            .select('value')
+            .eq('key', 'admin_email')
+            .maybeSingle();
+
+          const adminEmail = (settingData && settingData.value) ? settingData.value : 'guldanaih@gmail.com';
+          if (currentUser.email && currentUser.email.toLowerCase() === adminEmail.toLowerCase()) {
+            document.getElementById('btn-admin-link').style.display = 'inline-block';
+          }
+        } catch(e) {}
+
+        loadMyEvents();
+      } catch (err) {
         window.location.href = "auth.html";
-        return;
       }
-      currentUser = session.user;
-      document.getElementById('user-email').innerText = currentUser.email;
-
-      const { data: settingData } = await supabaseClient
-        .from('app_settings')
-        .select('value')
-        .eq('key', 'admin_email')
-        .single();
-
-      const adminEmail = settingData ? settingData.value : 'guldanaih@gmail.com';
-      if (currentUser.email.toLowerCase() === adminEmail.toLowerCase()) {
-        document.getElementById('btn-admin-link').style.display = 'inline-block';
-      }
-
-      loadMyEvents();
     }
 
     async function logout() {
-      await supabaseClient.auth.signOut();
-      window.location.href = "auth.html";
+      try {
+        await supabaseClient.auth.signOut();
+      } finally {
+        window.location.href = "auth.html";
+      }
     }
 
     function previewCoverFile(e) {
@@ -474,6 +489,8 @@
       const listEl = document.getElementById('events-list');
       const emptyEl = document.getElementById('empty-state');
       listEl.innerHTML = '';
+
+      if (!currentUser) return;
 
       const { data: events, error } = await supabaseClient
         .from('events')
@@ -547,7 +564,6 @@
               </a>
             </div>
 
-            <!-- Тейбл-тент / А5 басу батырмасы -->
             <a class="btn-luxury btn-outline" href="${printLink}" target="_blank" style="width: 100%;">
               🖨️ A5 Карточка басу (Печать)
             </a>
@@ -590,11 +606,20 @@
       const date = document.getElementById('event-date').value;
       const btn = document.getElementById('btn-submit');
 
-      if (!title || !slug) { alert("Атауы мен кодты толтырыңыз!"); return; }
+      if (!title || !slug) { 
+        alert("Атауы мен сілтеме кодын толтырыңыз!"); 
+        return; 
+      }
+
+      if (!currentUser) {
+        alert("Қайта кіріңіз, сессия табылмады!");
+        window.location.href = "auth.html";
+        return;
+      }
 
       slug = slug.replace(/[^a-z0-9_-]/g, '-');
       btn.disabled = true;
-      btn.innerText = "Құрылуда...";
+      btn.innerText = "Құрылуда... ⏳";
 
       try {
         let coverUrl = null;
@@ -624,7 +649,11 @@
         }]);
 
         if (error) {
-          alert(error.code === '23505' ? "Бұл код бос емес!" : error.message);
+          if (error.code === '23505') {
+            alert("Бұл код бос емес! Басқа сөз жазыңыз.");
+          } else {
+            alert("Қате: " + error.message);
+          }
           return;
         }
 
