@@ -5,36 +5,63 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Той Альбомы — Басқару Панелі</title>
 
-  <!-- Supabase v2.48.1 және ZIP кітапханалары -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: #0b0c10; color: #c5c6c7; min-height: 100vh; padding: 20px; }
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --danger: #ef4444;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b0f17;
+      --card-bg: #151d2a;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #263346;
+      --accent: #3b82f6;
+      --accent-hover: #60a5fa;
+      --danger: #f87171;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; transition: background-color 0.2s, color 0.2s; }
+    body { background-color: var(--bg); color: var(--text); min-height: 100vh; padding: 20px; }
     .container { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
 
-    .top-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; border-bottom: 1px solid #1f2833; padding-bottom: 15px; }
-    .title-box h1 { font-size: 1.6rem; color: #fff; }
-    .title-box p { font-size: 0.85rem; color: #45a29e; margin-top: 4px; }
+    .top-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+    .title-box h1 { font-size: 1.6rem; font-weight: 800; color: var(--text); }
+    .title-box p { font-size: 0.88rem; color: var(--text-muted); margin-top: 4px; }
 
-    .action-btns { display: flex; gap: 10px; }
-    .btn { background: #66fcf1; color: #0b0c10; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; text-decoration: none; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px; }
+    .action-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn { background: var(--accent); color: #fff; border: none; padding: 10px 16px; border-radius: 10px; font-weight: 700; cursor: pointer; text-decoration: none; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; }
     .btn:active { transform: scale(0.98); }
-    .btn-back { background: #1f2833; color: #fff; border: 1px solid #45a29e; }
-    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-secondary { background: var(--card-bg); color: var(--text); border: 1px solid var(--border); }
+    .btn-live { background: #10b981; }
 
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-top: 10px; }
-    .photo-card { background: #1f2833; border: 1px solid #2f3e46; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s; }
-    .photo-card:hover { transform: translateY(-4px); }
-    .photo-card img { width: 100%; height: 220px; object-fit: cover; cursor: pointer; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; margin-top: 10px; }
+    .photo-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; position: relative; box-shadow: var(--shadow-sm); }
+    .photo-card img { width: 100%; height: 230px; object-fit: cover; }
     .info { padding: 12px; display: flex; flex-direction: column; gap: 4px; flex-grow: 1; }
-    .author { font-size: 0.85rem; font-weight: bold; color: #66fcf1; }
-    .wish { font-size: 0.8rem; color: #ddd; word-break: break-word; }
-    .time { font-size: 0.7rem; color: #777; margin-top: auto; padding-top: 6px; }
+    .author { font-size: 0.85rem; font-weight: 700; color: var(--accent); }
+    .wish { font-size: 0.82rem; color: var(--text); word-break: break-word; }
+    .footer-card { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 8px; border-top: 1px solid var(--border); }
+    .time { font-size: 0.72rem; color: var(--text-muted); }
+    .btn-del { background: none; border: none; color: var(--danger); font-size: 0.8rem; font-weight: 700; cursor: pointer; }
 
-    .empty-state { text-align: center; padding: 60px 20px; color: #777; font-size: 1.1rem; }
+    .empty-state { text-align: center; padding: 70px 20px; color: var(--text-muted); font-size: 1.1rem; }
   </style>
 </head>
 <body>
@@ -46,8 +73,10 @@
         <p id="event-stats">Фотолар тексерілуде...</p>
       </div>
       <div class="action-btns">
-        <a href="dashboard.html" class="btn btn-back">Кабинетке қайту</a>
-        <button id="btn-zip" class="btn" onclick="downloadAllZip()">📦 Барлығын ZIP-пен жүктеу</button>
+        <a href="dashboard.html" class="btn btn-secondary">← Кабинетке</a>
+        <a id="btn-slideshow" class="btn btn-live" href="#" target="_blank">📺 Слайд-шоу (LED)</a>
+        <button id="btn-wishes" class="btn btn-secondary" onclick="exportWishesTxt()">📝 Тілектерді жүктеу</button>
+        <button id="btn-zip" class="btn" onclick="downloadAllZip()">📦 ZIP жүктеу</button>
       </div>
     </div>
 
@@ -66,43 +95,32 @@
     let currentEvent = null;
     let photoList = [];
 
-    async function loadGallery() {
-      if (!slug) {
-        document.getElementById('event-title').innerText = "Той коды көрсетілмеген";
-        document.getElementById('event-stats').innerText = "Сілтемеде ?slug= жоқ";
-        return;
-      }
+    // Түнгі режим
+    const savedTheme = localStorage.getItem('toyduman_theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
 
-      // 1. Тойды базадан табу
-      const { data: eventData, error: eventErr } = await supabaseClient
+    async function loadGallery() {
+      if (!slug) return;
+
+      const { data: eventData } = await supabaseClient
         .from('events')
         .select('*')
         .eq('slug', slug)
         .single();
 
-      if (eventErr || !eventData) {
-        document.getElementById('event-title').innerText = "Той табылмады";
-        document.getElementById('event-stats').innerText = eventErr ? eventErr.message : "Код: " + slug;
-        return;
-      }
-
+      if (!eventData) return;
       currentEvent = eventData;
       document.getElementById('event-title').innerText = currentEvent.title + " — Галерея";
+      document.getElementById('btn-slideshow').href = `slideshow.html?slug=${slug}`;
 
-      // 2. Фотоларды алу
-      const { data: photos, error: photoErr } = await supabaseClient
+      const { data: photos } = await supabaseClient
         .from('event_photos')
         .select('*')
         .eq('event_id', currentEvent.id)
         .order('created_at', { ascending: false });
 
-      if (photoErr) {
-        alert("Фотоларды жүктеу қатесі: " + photoErr.message);
-        return;
-      }
-
       photoList = photos || [];
-      document.getElementById('event-stats').innerText = `Жалпы фото саны: ${photoList.length}`;
+      document.getElementById('event-stats').innerText = `Жалпы суреттер: ${photoList.length} дана`;
 
       const grid = document.getElementById('photos-grid');
       const emptyState = document.getElementById('empty-state');
@@ -112,37 +130,76 @@
         emptyState.style.display = 'block';
         return;
       }
-
       emptyState.style.display = 'none';
 
       photoList.forEach(item => {
         const card = document.createElement('div');
         card.className = 'photo-card';
-        const dateStr = new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        
+        card.id = `card-${item.id}`;
+        const timeStr = new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
         card.innerHTML = `
           <a href="${item.photo_url}" target="_blank">
-            <img src="${item.photo_url}" loading="lazy" alt="Той фотосы">
+            <img src="${item.photo_url}" loading="lazy">
           </a>
           <div class="info">
             <div class="author">👤 ${item.author_name || 'Қонақ'}</div>
             ${item.wishes ? `<div class="wish">💬 ${item.wishes}</div>` : ''}
-            <div class="time">🕒 ${dateStr}</div>
+            <div class="footer-card">
+              <span class="time">🕒 ${timeStr}</span>
+              <button class="btn-del" onclick="deletePhoto('${item.id}', '${item.photo_url}')">🗑️ Өшіру</button>
+            </div>
           </div>
         `;
         grid.appendChild(card);
       });
     }
 
+    // Фотоны өшіру (Модерация)
+    async function deletePhoto(id, photoUrl) {
+      if (!confirm("Бұл суретті өшіргіңіз келетініне сенімдісіз бе?")) return;
+
+      try {
+        await supabaseClient.from('event_photos').delete().eq('id', id);
+
+        // UI-дан лезде алып тастау
+        const card = document.getElementById(`card-${id}`);
+        if (card) card.remove();
+
+        photoList = photoList.filter(p => p.id !== id);
+        document.getElementById('event-stats').innerText = `Жалпы суреттер: ${photoList.length} дана`;
+      } catch (err) {
+        alert("Өшіру қатесі: " + err.message);
+      }
+    }
+
+    // Тілектер кітабын .txt файлымен жүктеп алу
+    function exportWishesTxt() {
+      const wishes = photoList.filter(p => p.wishes && p.wishes.trim() !== '');
+      if (wishes.length === 0) {
+        alert("Әзірге қонақтар тілек қалдырмаған!");
+        return;
+      }
+
+      let text = `✨ ${currentEvent.title} — ҚОНАҚТАРДЫҢ АҚ ТІЛЕКТЕРІ ✨\n\n`;
+      wishes.forEach((w, i) => {
+        text += `${i + 1}. [${w.author_name}]: "${w.wishes}"\n`;
+      });
+
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      saveAs(blob, `${slug}_tilekter.txt`);
+    }
+
+    // ZIP архивпен барлығын жүктеп алу
     async function downloadAllZip() {
       if (photoList.length === 0) {
-        alert("Жүктейтін фотолар жоқ!");
+        alert("Жүктейтін сурет жоқ!");
         return;
       }
 
       const btn = document.getElementById('btn-zip');
       btn.disabled = true;
-      btn.innerText = "Архив дайындалуда... ⏳";
+      btn.innerText = "Жүктелуде... ⏳";
 
       try {
         const zip = new JSZip();
@@ -150,24 +207,21 @@
 
         for (let i = 0; i < photoList.length; i++) {
           const p = photoList[i];
-          btn.innerText = `Жүктелуде: ${i + 1}/${photoList.length}...`;
-          
-          const response = await fetch(p.photo_url);
-          const blob = await response.blob();
-          
+          btn.innerText = `${i + 1}/${photoList.length}...`;
+          const res = await fetch(p.photo_url);
+          const blob = await res.blob();
           const cleanAuthor = (p.author_name || 'qonaq').replace(/[^a-zA-Z0-9а-яА-ЯёЁ]/g, '_');
           folder.file(`${i + 1}_${cleanAuthor}.jpg`, blob);
         }
 
-        btn.innerText = "Архив қысылуда... 📦";
+        btn.innerText = "Қысылуда... 📦";
         const content = await zip.generateAsync({ type: "blob" });
         saveAs(content, `${slug}_photos.zip`);
-
       } catch (err) {
-        alert("ZIP жасау қатесі: " + err.message);
+        alert("Қате: " + err.message);
       } finally {
         btn.disabled = false;
-        btn.innerText = "📦 Барлығын ZIP-пен жүктеу";
+        btn.innerText = "📦 ZIP жүктеу";
       }
     }
 
