@@ -440,4 +440,234 @@
       </div>
 
       <div class="form-group">
-        <label>Қысқаша сі
+        <label>Қысқаша сілтеме коды (латынша):</label>
+        <input type="text" id="event-slug" placeholder="bauyrzhan-aruzhan">
+      </div>
+
+      <div class="form-group">
+        <label>Мереке өтетін күн:</label>
+        <input type="date" id="event-date">
+      </div>
+
+      <div class="form-group">
+        <label>Бір қонаққа кадр шектеуі:</label>
+        <select id="event-limit">
+          <option value="15">15 кадр</option>
+          <option value="25" selected>25 кадр</option>
+          <option value="50">50 кадр</option>
+          <option value="999">Шектеусіз (Лимитсіз)</option>
+        </select>
+      </div>
+
+      <button class="btn-create" id="btn-submit" onclick="submitNewEvent()">🎉 Мерекені ашу & QR жасау</button>
+    </div>
+  </div>
+
+  <!-- Модаль 2: QR көрсету -->
+  <div class="modal-overlay" id="qr-modal">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeQrModal()">✕</button>
+      <div class="qr-modal-body">
+        <h2 id="modal-qr-title" style="font-size: 1.25rem; font-weight: 800; color: var(--text);">QR-код</h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Қонақтар үстеліне қою үшін басып шығарыңыз немесе көшіріңіз</p>
+
+        <div class="qr-box-wrap" id="qrcode-container"></div>
+        <div class="link-copy-box" id="modal-qr-link"></div>
+
+        <div style="display: flex; gap: 8px; width: 100%;">
+          <a id="modal-album-btn" class="btn-action btn-action-album" style="flex: 1; padding: 12px;" href="#" target="_blank">🖼️ Альбомды ашу</a>
+          <button class="btn-action btn-action-qr" style="flex: 1; padding: 12px;" onclick="copyLink()">📋 Сілтемені көшіру</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://heuqifmvwrzkvtcarrdt.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_cOyPl30aOSb6pdxCRfRNQA_Tn6dBaZg";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let currentUser = null;
+
+    // Режимді (Theme) басқару
+    function initTheme() {
+      const savedTheme = localStorage.getItem('toyduman_theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      updateThemeBtn(savedTheme);
+    }
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const target = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', target);
+      localStorage.setItem('toyduman_theme', target);
+      updateThemeBtn(target);
+    }
+    function updateThemeBtn(theme) {
+      document.getElementById('theme-btn').innerText = theme === 'dark' ? '☀️' : '🌙';
+    }
+    initTheme();
+
+    async function checkAuth() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) {
+        window.location.href = "auth.html";
+        return;
+      }
+      currentUser = session.user;
+      document.getElementById('user-email').innerText = currentUser.email;
+      loadMyEvents();
+    }
+
+    async function logout() {
+      await supabaseClient.auth.signOut();
+      window.location.href = "auth.html";
+    }
+
+    // Тойлар мен олардың фото санын жүктеу
+    async function loadMyEvents() {
+      const listEl = document.getElementById('events-list');
+      const emptyEl = document.getElementById('empty-state');
+      listEl.innerHTML = '';
+
+      // 1. Тойлар тізімін алу
+      const { data: events, error } = await supabaseClient
+        .from('events')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error || !events || events.length === 0) {
+        emptyEl.style.display = 'block';
+        return;
+      }
+
+      emptyEl.style.display = 'none';
+
+      // 2. Фотолардың санын алу
+      const { data: photosData } = await supabaseClient
+        .from('event_photos')
+        .select('event_id');
+
+      const photoCounts = {};
+      if (photosData) {
+        photosData.forEach(p => {
+          photoCounts[p.event_id] = (photoCounts[p.event_id] || 0) + 1;
+        });
+      }
+
+      const currentOrigin = window.location.origin + window.location.pathname.replace('dashboard.html', '');
+
+      events.forEach(evt => {
+        const count = photoCounts[evt.id] || 0;
+        const guestLink = `${currentOrigin}event.html?slug=${evt.slug}`;
+        const galleryLink = `${currentOrigin}gallery.html?slug=${evt.slug}`;
+        const dateFormatted = evt.event_date ? new Date(evt.event_date).toLocaleDateString('kk-KZ') : 'Күні белгіленбеген';
+
+        const card = document.createElement('div');
+        card.className = 'event-card';
+        card.innerHTML = `
+          <div class="badge-wrap">
+            <span class="event-badge">✨ Белсенді</span>
+            <span class="photo-count-badge">📷 ${count} фото</span>
+          </div>
+          <h3 class="event-card-title">${evt.title}</h3>
+          <div class="event-meta">
+            <span>📅 Өтетін күні: <b>${dateFormatted}</b></span>
+            <span>📸 Қонақ лимиті: <b>${evt.shot_limit >= 999 ? 'Шектеусіз' : evt.shot_limit + ' кадр'}</b></span>
+            <span>🔗 Код: <b>${evt.slug}</b></span>
+          </div>
+          <div class="card-actions">
+            <button class="btn-action btn-action-qr" onclick="showQrModal('${evt.title}', '${guestLink}', '${galleryLink}')">📲 QR-код</button>
+            <a class="btn-action btn-action-album" href="${galleryLink}" target="_blank">🖼️ Фотоальбом</a>
+          </div>
+        `;
+        listEl.appendChild(card);
+      });
+    }
+
+    function openCreateModal() { document.getElementById('create-modal').style.display = 'flex'; }
+    function closeCreateModal() { document.getElementById('create-modal').style.display = 'none'; }
+    function closeQrModal() { document.getElementById('qr-modal').style.display = 'none'; }
+
+    let currentGuestLink = '';
+    function showQrModal(title, guestLink, galleryLink) {
+      currentGuestLink = guestLink;
+      document.getElementById('modal-qr-title').innerText = title;
+      document.getElementById('modal-qr-link').innerText = guestLink;
+      document.getElementById('modal-album-btn').href = galleryLink;
+
+      const qrb = document.getElementById('qrcode-container');
+      qrb.innerHTML = '';
+      new QRCode(qrb, {
+        text: guestLink,
+        width: 190,
+        height: 190,
+        colorDark: "#0f172a",
+        colorLight: "#ffffff"
+      });
+
+      document.getElementById('qr-modal').style.display = 'flex';
+    }
+
+    function copyLink() {
+      navigator.clipboard.writeText(currentGuestLink);
+      alert("Сілтеме көшірілді! Қонақтарға жібере аласыз.");
+    }
+
+    async function submitNewEvent() {
+      const title = document.getElementById('event-title').value.trim();
+      let slug = document.getElementById('event-slug').value.trim().toLowerCase();
+      const date = document.getElementById('event-date').value;
+      const limit = parseInt(document.getElementById('event-limit').value);
+      const btn = document.getElementById('btn-submit');
+
+      if (!title || !slug) {
+        alert("Той атауы мен қысқаша сілтемені толтырыңыз!");
+        return;
+      }
+
+      slug = slug.replace(/[^a-z0-9_-]/g, '-');
+      btn.disabled = true;
+      btn.innerText = "Құрылуда... ⏳";
+
+      try {
+        const { error } = await supabaseClient
+          .from('events')
+          .insert([{
+            user_id: currentUser ? currentUser.id : null,
+            title: title,
+            slug: slug,
+            event_date: date || null,
+            shot_limit: limit,
+            default_lang: 'kz'
+          }]);
+
+        if (error) {
+          if (error.code === '23505') {
+            alert("Бұл қысқаша код бұрыннан бар! Басқаша сөз ойлап табыңыз.");
+          } else {
+            alert("Қате: " + error.message);
+          }
+          return;
+        }
+
+        closeCreateModal();
+        document.getElementById('event-title').value = '';
+        document.getElementById('event-slug').value = '';
+
+        await loadMyEvents();
+
+        const currentOrigin = window.location.origin + window.location.pathname.replace('dashboard.html', '');
+        showQrModal(title, `${currentOrigin}event.html?slug=${slug}`, `${currentOrigin}gallery.html?slug=${slug}`);
+
+      } catch (err) {
+        alert("Жүйелік қате: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "🎉 Мерекені ашу & QR жасау";
+      }
+    }
+
+    checkAuth();
+  </script>
+</body>
+</html>
