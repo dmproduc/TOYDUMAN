@@ -340,7 +340,7 @@
       <a href="dashboard.html" class="brand">ToyDuman</a>
       <div class="header-actions">
         <a id="btn-admin-link" href="admin.html" style="display: none; font-size: 0.78rem; color: #b45309; font-weight: 700; text-decoration: none;">👑 Админ</a>
-        <div class="user-tag" id="user-email">Кіру тексерілуде...</div>
+        <div class="user-tag" id="user-email">Жүктелуде...</div>
         <button class="btn-logout" onclick="logout()">Шығу</button>
       </div>
     </div>
@@ -431,74 +431,68 @@
     let currentUser = null;
     let selectedCoverFile = null;
     let currentGuestLink = "";
-    let isInitialized = false;
 
-    // Сессияны тайм-аутпен (3 сек) қауіпсіз тексеру
-    function getSessionWithTimeout(ms = 3000) {
-      return Promise.race([
-        supabaseClient.auth.getSession(),
-        new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), ms))
-      ]);
+    // 1. Жергілікті localStorage-тен токенді бірден тексеру (Қатып қалмаудың басты кепілі)
+    function getStoredUser() {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.includes('-auth-token')) {
+          try {
+            const data = JSON.parse(localStorage.getItem(key));
+            if (data && data.user) return data.user;
+          } catch(e) {}
+        }
+      }
+      return null;
     }
 
-    async function applyUserSession(user) {
-      if (!user) {
+    async function initDashboard() {
+      // Алдымен localStorage-тен оқимыз
+      const localUser = getStoredUser();
+      if (localUser) {
+        currentUser = localUser;
+        document.getElementById('user-email').innerText = currentUser.email || 'Қолданушы';
+        loadMyEvents();
+      }
+
+      // Сосын Supabase арқылы нақты сессияны растаймыз
+      const { data: { session } } = await supabaseClient.auth.getSession();
+
+      if (!session && !currentUser) {
         window.location.href = "auth.html";
         return;
       }
-      currentUser = user;
-      document.getElementById('user-email').innerText = currentUser.email || 'Қолданушы';
 
-      // Бас админ бе, жоқ па — қауіпсіз тексеру (қатып қалмауы үшін бөлек)
-      supabaseClient
-        .from('app_settings')
-        .select('value')
-        .eq('key', 'admin_email')
-        .maybeSingle()
-        .then(({ data }) => {
-          const adminEmail = (data && data.value) ? data.value : 'guldanaih@gmail.com';
+      if (session && session.user) {
+        currentUser = session.user;
+        document.getElementById('user-email').innerText = currentUser.email || 'Қолданушы';
+
+        // Админ тексеру
+        try {
+          const { data: settingData } = await supabaseClient
+            .from('app_settings')
+            .select('value')
+            .eq('key', 'admin_email')
+            .maybeSingle();
+
+          const adminEmail = (settingData && settingData.value) ? settingData.value : 'guldanaih@gmail.com';
           if (currentUser.email && currentUser.email.toLowerCase() === adminEmail.toLowerCase()) {
             document.getElementById('btn-admin-link').style.display = 'inline-block';
           }
-        }).catch(() => {});
+        } catch(e) {}
 
-      loadMyEvents();
-    }
-
-    async function checkAuth() {
-      if (isInitialized) return;
-
-      try {
-        const { data, error } = await getSessionWithTimeout(3000);
-        if (error || !data || !data.session) {
-          window.location.href = "auth.html";
-          return;
+        if (!localUser) {
+          loadMyEvents();
         }
-        isInitialized = true;
-        applyUserSession(data.session.user);
-      } catch (e) {
-        // Егер 3 секундта жауап болмаса, auth.html-ге жібереміз
-        window.location.href = "auth.html";
       }
     }
-
-    // Авторизация өзгергенін қадағалау
-    supabaseClient.auth.onAuthStateChange((event, session) => {
-      if (session && session.user && !isInitialized) {
-        isInitialized = true;
-        applyUserSession(session.user);
-      } else if (!session && isInitialized) {
-        window.location.href = "auth.html";
-      }
-    });
 
     async function logout() {
       try {
         await supabaseClient.auth.signOut();
-      } finally {
-        localStorage.clear();
-        window.location.href = "auth.html";
-      }
+      } catch(e) {}
+      localStorage.clear();
+      window.location.href = "auth.html";
     }
 
     function previewCoverFile(e) {
@@ -516,11 +510,10 @@
     }
 
     async function loadMyEvents() {
+      if (!currentUser) return;
       const listEl = document.getElementById('events-list');
       const emptyEl = document.getElementById('empty-state');
       listEl.innerHTML = '';
-
-      if (!currentUser) return;
 
       const { data: events, error } = await supabaseClient
         .from('events')
@@ -702,7 +695,7 @@
       }
     }
 
-    checkAuth();
+    initDashboard();
   </script>
 </body>
 </html>
