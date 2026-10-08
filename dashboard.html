@@ -3,68 +3,65 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Басқару Панелі — ToyDuman</title>
+  <title>Басқару Панелі — ToyDuman Luxury</title>
   
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg: #f8fafc;
+      --bg: #faf7f2;
       --card-bg: #ffffff;
-      --text: #0f172a;
-      --text-muted: #64748b;
-      --border: #e2e8f0;
-      --header-bg: rgba(255, 255, 255, 0.85);
-      --pill-bg: #f1f5f9;
-      --accent: #2563eb;
-      --accent-hover: #1d4ed8;
-      --modal-bg: #ffffff;
-      --input-bg: #f8fafc;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-      --shadow-md: 0 10px 25px -5px rgba(0,0,0,0.06);
+      --text: #1c1917;
+      --text-muted: #78716c;
+      --accent: #d97706;
+      --accent-hover: #b45309;
+      --border: #e7e5e4;
+      --header-bg: rgba(250, 247, 242, 0.9);
+      --pill-bg: #f5f0e8;
+      --shadow-sm: 0 4px 20px rgba(0,0,0,0.04);
+      --shadow-md: 0 12px 30px rgba(217, 119, 6, 0.12);
     }
 
     [data-theme="dark"] {
-      --bg: #0b0f17;
-      --card-bg: #151d2a;
-      --text: #f1f5f9;
-      --text-muted: #94a3b8;
-      --border: #263346;
-      --header-bg: rgba(21, 29, 42, 0.85);
-      --pill-bg: #1e293b;
-      --accent: #3b82f6;
-      --accent-hover: #60a5fa;
-      --modal-bg: #151d2a;
-      --input-bg: #0b0f17;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
-      --shadow-md: 0 10px 25px -5px rgba(0,0,0,0.4);
+      --bg: #0c0a09;
+      --card-bg: #1c1917;
+      --text: #f5f5f4;
+      --text-muted: #a8a29e;
+      --accent: #f59e0b;
+      --accent-hover: #fbbf24;
+      --border: #292524;
+      --header-bg: rgba(12, 10, 9, 0.9);
+      --pill-bg: #292524;
+      --shadow-sm: 0 4px 20px rgba(0,0,0,0.4);
+      --shadow-md: 0 12px 30px rgba(0,0,0,0.6);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; transition: background-color 0.2s, color 0.2s, border-color 0.2s; }
-    body { background-color: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 90px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.2s, color 0.2s; }
+    body { background-color: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 95px; }
 
     header {
       background: var(--header-bg);
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--border);
       position: sticky;
       top: 0;
       z-index: 40;
-      padding: 14px 20px;
+      padding: 16px 20px;
     }
     .header-inner {
-      max-width: 900px;
+      max-width: 950px;
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
     .logo {
-      font-size: 1.35rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.55rem;
       font-weight: 800;
       letter-spacing: -0.5px;
       color: var(--text);
@@ -77,15 +74,15 @@
     .header-right {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
     .theme-toggle {
       background: var(--pill-bg);
       border: 1px solid var(--border);
       color: var(--text);
-      width: 36px;
-      height: 36px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
       cursor: pointer;
       display: flex;
@@ -99,7 +96,7 @@
       align-items: center;
       gap: 10px;
       background: var(--pill-bg);
-      padding: 6px 14px;
+      padding: 6px 16px;
       border-radius: 30px;
       font-size: 0.82rem;
       font-weight: 600;
@@ -113,43 +110,41 @@
       font-size: 0.8rem;
       cursor: pointer;
       font-weight: 700;
-      padding-left: 6px;
     }
 
     .container {
-      max-width: 900px;
-      margin: 28px auto;
+      max-width: 950px;
+      margin: 32px auto;
       padding: 0 20px;
     }
 
     .section-title-wrap {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      margin-bottom: 22px;
+      margin-bottom: 26px;
+      text-align: left;
     }
     .section-title {
-      font-size: 1.45rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.85rem;
       font-weight: 800;
       color: var(--text);
     }
     .section-desc {
-      font-size: 0.88rem;
+      font-size: 0.9rem;
       color: var(--text-muted);
-      margin-top: 4px;
+      margin-top: 6px;
     }
 
     .events-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 22px;
     }
 
     .event-card {
       background: var(--card-bg);
-      border-radius: 18px;
+      border-radius: 20px;
       border: 1px solid var(--border);
-      padding: 22px;
+      padding: 24px;
       box-shadow: var(--shadow-sm);
       display: flex;
       flex-direction: column;
@@ -158,20 +153,21 @@
     .event-card:hover {
       transform: translateY(-4px);
       box-shadow: var(--shadow-md);
+      border-color: var(--accent);
     }
     .badge-wrap {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
     .event-badge {
-      background: rgba(37, 99, 235, 0.12);
+      background: rgba(217, 119, 6, 0.12);
       color: var(--accent);
       font-size: 0.72rem;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 8px;
+      font-weight: 800;
+      padding: 5px 12px;
+      border-radius: 12px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
@@ -179,43 +175,41 @@
       background: var(--pill-bg);
       color: var(--text);
       border: 1px solid var(--border);
-      font-size: 0.75rem;
+      font-size: 0.76rem;
       font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
+      padding: 5px 12px;
+      border-radius: 14px;
     }
 
     .event-card-title {
-      font-size: 1.2rem;
-      font-weight: 700;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem;
+      font-weight: 800;
       color: var(--text);
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
     .event-meta {
-      font-size: 0.82rem;
+      font-size: 0.84rem;
       color: var(--text-muted);
       display: flex;
       flex-direction: column;
-      gap: 5px;
-      margin-bottom: 20px;
+      gap: 6px;
+      margin-bottom: 22px;
     }
     .event-meta b { color: var(--text); }
 
     .card-actions {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      gap: 10px;
       margin-top: auto;
     }
     .btn-action {
       text-align: center;
-      padding: 9px 12px;
-      border-radius: 10px;
-      font-size: 0.82rem;
-      font-weight: 600;
+      padding: 11px;
+      border-radius: 12px;
+      font-size: 0.84rem;
+      font-weight: 700;
       text-decoration: none;
       cursor: pointer;
       border: none;
@@ -226,26 +220,26 @@
 
     .empty-box {
       text-align: center;
-      padding: 60px 20px;
+      padding: 70px 20px;
       background: var(--card-bg);
-      border-radius: 20px;
+      border-radius: 24px;
       border: 2px dashed var(--border);
     }
 
     .bottom-nav {
       position: fixed;
-      bottom: 16px;
+      bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
       background: var(--card-bg);
       backdrop-filter: blur(16px);
       border: 1px solid var(--border);
-      box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+      box-shadow: 0 16px 36px rgba(0,0,0,0.14);
       border-radius: 40px;
-      padding: 6px 14px;
+      padding: 6px 18px;
       display: flex;
       align-items: center;
-      gap: 24px;
+      gap: 28px;
       z-index: 50;
     }
     .nav-item {
@@ -257,25 +251,24 @@
       border: none;
       color: var(--text-muted);
       font-size: 0.72rem;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
-      padding: 6px 12px;
-      border-radius: 20px;
+      padding: 6px 10px;
     }
     .nav-item.active { color: var(--accent); }
     .nav-item svg { width: 22px; height: 22px; }
 
     .nav-add-btn {
-      width: 54px;
-      height: 54px;
-      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
       border-radius: 50%;
       border: 3px solid var(--card-bg);
       color: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.35);
+      box-shadow: 0 8px 20px rgba(217, 119, 6, 0.4);
       cursor: pointer;
     }
     .nav-add-btn:active { transform: scale(0.92); }
@@ -284,8 +277,8 @@
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(15, 23, 42, 0.55);
-      backdrop-filter: blur(6px);
+      background: rgba(28, 25, 23, 0.6);
+      backdrop-filter: blur(8px);
       z-index: 100;
       display: none;
       align-items: center;
@@ -293,11 +286,11 @@
       padding: 20px;
     }
     .modal-card {
-      background: var(--modal-bg);
+      background: var(--card-bg);
       width: 100%;
       max-width: 480px;
       border-radius: 24px;
-      padding: 28px;
+      padding: 30px;
       border: 1px solid var(--border);
       position: relative;
     }
@@ -314,19 +307,10 @@
       color: var(--text);
     }
 
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 14px;
-    }
-    .form-group label {
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--text);
-    }
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .form-group label { font-size: 0.82rem; font-weight: 700; color: var(--text); }
     .form-group input, .form-group select {
-      background: var(--input-bg);
+      background: var(--pill-bg);
       border: 1px solid var(--border);
       padding: 12px 14px;
       border-radius: 12px;
@@ -334,9 +318,7 @@
       color: var(--text);
       outline: none;
     }
-    .form-group input:focus, .form-group select:focus {
-      border-color: var(--accent);
-    }
+    .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
 
     .btn-create {
       background: var(--accent);
@@ -344,37 +326,16 @@
       border: none;
       padding: 14px;
       border-radius: 12px;
-      font-weight: 700;
+      font-weight: 800;
       font-size: 1rem;
       width: 100%;
       cursor: pointer;
-      margin-top: 8px;
+      margin-top: 10px;
     }
 
-    .qr-modal-body {
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .qr-box-wrap {
-      background: #fff;
-      padding: 16px;
-      border-radius: 16px;
-      border: 1px solid var(--border);
-      margin: 16px 0;
-    }
-    .link-copy-box {
-      background: var(--input-bg);
-      padding: 10px 14px;
-      border-radius: 10px;
-      font-size: 0.8rem;
-      color: var(--text);
-      word-break: break-all;
-      border: 1px solid var(--border);
-      width: 100%;
-      margin-bottom: 14px;
-    }
+    .qr-modal-body { text-align: center; display: flex; flex-direction: column; align-items: center; }
+    .qr-box-wrap { background: #fff; padding: 18px; border-radius: 18px; border: 2px solid var(--border); margin: 16px 0; }
+    .link-copy-box { background: var(--pill-bg); padding: 10px 14px; border-radius: 10px; font-size: 0.8rem; color: var(--text); word-break: break-all; border: 1px solid var(--border); width: 100%; margin-bottom: 14px; }
   </style>
 </head>
 <body>
@@ -396,17 +357,15 @@
 
   <div class="container">
     <div class="section-title-wrap">
-      <div>
-        <h1 class="section-title">Менің мерекелерім</h1>
-        <p class="section-desc">Сіз ашқан іс-шаралар, фотоальбомдар мен QR-кодтар</p>
-      </div>
+      <h1 class="section-title">Менің мерекелерім</h1>
+      <p class="section-desc">Ашылған тойлар, естеліктер мен QR басқару</p>
     </div>
 
     <div class="events-grid" id="events-list"></div>
 
     <div class="empty-box" id="empty-state" style="display: none;">
-      <div style="font-size: 3rem;">📁</div>
-      <h3 style="color: var(--text);">Әзірге ешқандай іс-шара ашылмаған</h3>
+      <div style="font-size: 3rem;">💍</div>
+      <h3 style="color: var(--text); font-family: 'Playfair Display', serif; margin-top: 10px;">Әзірге ешқандай іс-шара ашылмаған</h3>
       <p style="color: var(--text-muted); margin-top: 6px;">Төмендегі «+» батырмасын басып, алғашқы мерекеңізді құрыңыз!</p>
     </div>
   </div>
@@ -427,20 +386,19 @@
     </button>
   </div>
 
-  <!-- Модаль 1: Жаңа іс-шара құру -->
   <div class="modal-overlay" id="create-modal">
     <div class="modal-card">
       <button class="modal-close" onclick="closeCreateModal()">✕</button>
-      <h2 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 6px; color: var(--text);">Жаңа іс-шара құру</h2>
+      <h2 style="font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 800; margin-bottom: 6px; color: var(--text);">Жаңа іс-шара құру</h2>
       <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">Мереке атын және қонақтарға арналған сілтемені енгізіңіз</p>
 
       <div class="form-group">
-        <label>Іс-шара түрі мен атауы:</label>
+        <label>Іс-шара атауы (Жұптың есімі):</label>
         <input type="text" id="event-title" placeholder="Мысалы: Бауыржан & Аружан">
       </div>
 
       <div class="form-group">
-        <label>Қысқаша сілтеме коды (латынша):</label>
+        <label>Қысқаша код (тек латынша):</label>
         <input type="text" id="event-slug" placeholder="bauyrzhan-aruzhan">
       </div>
 
@@ -459,24 +417,23 @@
         </select>
       </div>
 
-      <button class="btn-create" id="btn-submit" onclick="submitNewEvent()">🎉 Мерекені ашу & QR жасау</button>
+      <button class="btn-create" id="btn-submit" onclick="submitNewEvent()">✨ Мерекені ашу & QR жасау</button>
     </div>
   </div>
 
-  <!-- Модаль 2: QR көрсету -->
   <div class="modal-overlay" id="qr-modal">
     <div class="modal-card">
       <button class="modal-close" onclick="closeQrModal()">✕</button>
       <div class="qr-modal-body">
-        <h2 id="modal-qr-title" style="font-size: 1.25rem; font-weight: 800; color: var(--text);">QR-код</h2>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Қонақтар үстеліне қою үшін басып шығарыңыз немесе көшіріңіз</p>
+        <h2 id="modal-qr-title" style="font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 800; color: var(--text);">QR-код</h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Қонақтар үстеліне арналған сілтеме</p>
 
         <div class="qr-box-wrap" id="qrcode-container"></div>
         <div class="link-copy-box" id="modal-qr-link"></div>
 
         <div style="display: flex; gap: 8px; width: 100%;">
-          <a id="modal-album-btn" class="btn-action btn-action-album" style="flex: 1; padding: 12px;" href="#" target="_blank">🖼️ Альбомды ашу</a>
-          <button class="btn-action btn-action-qr" style="flex: 1; padding: 12px;" onclick="copyLink()">📋 Сілтемені көшіру</button>
+          <a id="modal-album-btn" class="btn-action btn-action-album" style="flex: 1;" href="#" target="_blank">🖼️ Галерея</a>
+          <button class="btn-action btn-action-qr" style="flex: 1;" onclick="copyLink()">📋 Көшіру</button>
         </div>
       </div>
     </div>
@@ -489,7 +446,6 @@
 
     let currentUser = null;
 
-    // Режимді (Theme) басқару
     function initTheme() {
       const savedTheme = localStorage.getItem('toyduman_theme') || 'light';
       document.documentElement.setAttribute('data-theme', savedTheme);
@@ -523,35 +479,29 @@
       window.location.href = "auth.html";
     }
 
-    // Тойлар мен олардың фото санын жүктеу
     async function loadMyEvents() {
       const listEl = document.getElementById('events-list');
       const emptyEl = document.getElementById('empty-state');
       listEl.innerHTML = '';
 
-      // 1. Тойлар тізімін алу
-      const { data: events, error } = await supabaseClient
+      const { data: events } = await supabaseClient
         .from('events')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error || !events || events.length === 0) {
+      if (!events || events.length === 0) {
         emptyEl.style.display = 'block';
         return;
       }
-
       emptyEl.style.display = 'none';
 
-      // 2. Фотолардың санын алу
       const { data: photosData } = await supabaseClient
         .from('event_photos')
         .select('event_id');
 
       const photoCounts = {};
       if (photosData) {
-        photosData.forEach(p => {
-          photoCounts[p.event_id] = (photoCounts[p.event_id] || 0) + 1;
-        });
+        photosData.forEach(p => photoCounts[p.event_id] = (photoCounts[p.event_id] || 0) + 1);
       }
 
       const currentOrigin = window.location.origin + window.location.pathname.replace('dashboard.html', '');
@@ -571,13 +521,13 @@
           </div>
           <h3 class="event-card-title">${evt.title}</h3>
           <div class="event-meta">
-            <span>📅 Өтетін күні: <b>${dateFormatted}</b></span>
-            <span>📸 Қонақ лимиті: <b>${evt.shot_limit >= 999 ? 'Шектеусіз' : evt.shot_limit + ' кадр'}</b></span>
+            <span>📅 Күні: <b>${dateFormatted}</b></span>
+            <span>📸 Лимит: <b>${evt.shot_limit >= 999 ? 'Шектеусіз' : evt.shot_limit + ' кадр'}</b></span>
             <span>🔗 Код: <b>${evt.slug}</b></span>
           </div>
           <div class="card-actions">
             <button class="btn-action btn-action-qr" onclick="showQrModal('${evt.title}', '${guestLink}', '${galleryLink}')">📲 QR-код</button>
-            <a class="btn-action btn-action-album" href="${galleryLink}" target="_blank">🖼️ Фотоальбом</a>
+            <a class="btn-action btn-action-album" href="${galleryLink}" target="_blank">🖼️ Галерея</a>
           </div>
         `;
         listEl.appendChild(card);
@@ -601,7 +551,7 @@
         text: guestLink,
         width: 190,
         height: 190,
-        colorDark: "#0f172a",
+        colorDark: "#1c1917",
         colorLight: "#ffffff"
       });
 
@@ -610,7 +560,7 @@
 
     function copyLink() {
       navigator.clipboard.writeText(currentGuestLink);
-      alert("Сілтеме көшірілді! Қонақтарға жібере аласыз.");
+      alert("Сілтеме көшірілді!");
     }
 
     async function submitNewEvent() {
@@ -620,50 +570,39 @@
       const limit = parseInt(document.getElementById('event-limit').value);
       const btn = document.getElementById('btn-submit');
 
-      if (!title || !slug) {
-        alert("Той атауы мен қысқаша сілтемені толтырыңыз!");
-        return;
-      }
+      if (!title || !slug) { alert("Атауы мен сілтемені толтырыңыз!"); return; }
 
       slug = slug.replace(/[^a-z0-9_-]/g, '-');
       btn.disabled = true;
       btn.innerText = "Құрылуда... ⏳";
 
       try {
-        const { error } = await supabaseClient
-          .from('events')
-          .insert([{
-            user_id: currentUser ? currentUser.id : null,
-            title: title,
-            slug: slug,
-            event_date: date || null,
-            shot_limit: limit,
-            default_lang: 'kz'
-          }]);
+        const { error } = await supabaseClient.from('events').insert([{
+          user_id: currentUser ? currentUser.id : null,
+          title: title,
+          slug: slug,
+          event_date: date || null,
+          shot_limit: limit,
+          default_lang: 'kz'
+        }]);
 
         if (error) {
-          if (error.code === '23505') {
-            alert("Бұл қысқаша код бұрыннан бар! Басқаша сөз ойлап табыңыз.");
-          } else {
-            alert("Қате: " + error.message);
-          }
+          alert(error.code === '23505' ? "Бұл код бос емес!" : error.message);
           return;
         }
 
         closeCreateModal();
         document.getElementById('event-title').value = '';
         document.getElementById('event-slug').value = '';
-
         await loadMyEvents();
 
         const currentOrigin = window.location.origin + window.location.pathname.replace('dashboard.html', '');
         showQrModal(title, `${currentOrigin}event.html?slug=${slug}`, `${currentOrigin}gallery.html?slug=${slug}`);
-
       } catch (err) {
-        alert("Жүйелік қате: " + err.message);
+        alert("Қате: " + err.message);
       } finally {
         btn.disabled = false;
-        btn.innerText = "🎉 Мерекені ашу & QR жасау";
+        btn.innerText = "✨ Мерекені ашу & QR жасау";
       }
     }
 
