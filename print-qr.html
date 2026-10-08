@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Үстелге арналған QR — ToyDuman</title>
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Plus+Jakarta+Sans:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #e2e8f0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 30px 10px; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+    .print-bar { margin-bottom: 20px; display: flex; gap: 10px; }
+    .btn-print { background: #2563eb; color: #fff; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 1rem; }
+
+    /* A5 форматындағы тейбл-тент картасы */
+    .table-card {
+      background: #ffffff;
+      width: 148mm;
+      min-height: 210mm;
+      padding: 16mm 14mm;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      text-align: center;
+      border: 2px solid #e2e8f0;
+      position: relative;
+    }
+
+    .ornament-top { font-size: 1.6rem; color: #d97706; margin-bottom: 8px; }
+    .badge { background: #fef3c7; color: #b45309; padding: 4px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+
+    .event-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 14px 0 6px 0;
+      line-height: 1.2;
+    }
+    .event-sub { font-size: 0.95rem; color: #64748b; }
+
+    .qr-container {
+      background: #fff;
+      padding: 16px;
+      border-radius: 20px;
+      border: 3px solid #0f172a;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+      margin: 18px 0;
+    }
+
+    .instruction {
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: 16px;
+      padding: 14px 18px;
+      width: 100%;
+    }
+    .instruction h4 { font-size: 1rem; color: #0f172a; margin-bottom: 4px; font-weight: 800; }
+    .instruction p { font-size: 0.82rem; color: #475569; line-height: 1.4; }
+
+    .branding { font-size: 0.75rem; color: #94a3b8; font-weight: 600; margin-top: 10px; }
+
+    @media print {
+      body { background: transparent; padding: 0; }
+      .print-bar { display: none; }
+      .table-card { box-shadow: none; border: none; width: 100%; height: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="print-bar">
+    <button class="btn-print" onclick="window.print()">🖨️ Басып шығару (Печать / PDF)</button>
+  </div>
+
+  <div class="table-card">
+    <div>
+      <div class="ornament-top">✨ 💍 ✨</div>
+      <span class="badge">Құрметті қонақтар!</span>
+      <h1 class="event-title" id="card-title">Жүктелуде...</h1>
+      <p class="event-sub">Біздің қуанышымызға ортақтасқаныңызға рақмет!</p>
+    </div>
+
+    <div class="qr-container" id="qrcode"></div>
+
+    <div class="instruction">
+      <h4>📸 Өз фотоларыңызбен бөлісіңіз!</h4>
+      <p>1. Камераңызды QR-кодқа бағыттаңыз<br>
+         2. Той барысында түсірген сәттеріңізді жүктеңіз<br>
+         3. Жас жұбайларға ақ тілегіңізді қалдырыңыз</p>
+    </div>
+
+    <div class="branding">Powered by ToyDuman • Әрбір сәт есте қалсын</div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://heuqifmvwrzkvtcarrdt.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_cOyPl30aOSb6pdxCRfRNQA_Tn6dBaZg";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const slug = new URLSearchParams(window.location.search).get('slug');
+
+    async function init() {
+      if (!slug) return;
+      const { data } = await supabaseClient.from('events').select('*').eq('slug', slug).single();
+      if (!data) return;
+
+      document.getElementById('card-title').innerText = data.title;
+
+      const guestLink = `${window.location.origin}${window.location.pathname.replace('print-qr.html', '')}event.html?slug=${slug}`;
+
+      new QRCode(document.getElementById('qrcode'), {
+        text: guestLink,
+        width: 200,
+        height: 200,
+        colorDark: "#0f172a",
+        colorLight: "#ffffff"
+      });
+    }
+    init();
+  </script>
+</body>
+</html>
