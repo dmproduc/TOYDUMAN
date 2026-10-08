@@ -31,7 +31,6 @@
       padding: 12px 16px;
     }
 
-    /* Жоғарғы тақырыпша: Аты және статус */
     .header-bar {
       display: flex;
       justify-content: space-between;
@@ -54,12 +53,22 @@
       font-weight: 600;
       padding: 4px 10px;
       border-radius: 20px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
     }
 
-    /* Камераның ортаңғы видоискатель терезесі (Viewfinder) */
+    /* 24 сағат өтіп кеткенде шығатын құлып экраны */
+    .expired-box {
+      background: #181818;
+      border: 1px solid #2a2a2a;
+      border-radius: 24px;
+      padding: 40px 24px;
+      text-align: center;
+      margin-top: 40px;
+      display: none;
+    }
+    .expired-box h3 { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 8px; color: #fff; }
+    .expired-box p { font-size: 0.88rem; color: #888; line-height: 1.5; }
+
+    /* Камера видоискателі */
     .viewfinder-card {
       width: 100%;
       height: 380px;
@@ -119,7 +128,6 @@
       z-index: 10;
     }
 
-    /* Камераның төменгі басқару құралдары */
     .controls-panel {
       display: flex;
       flex-direction: column;
@@ -144,7 +152,6 @@
     }
     .btn-gallery-select input { display: none; }
 
-    /* Ретро санауыш (Film Counter: 10 11 12) */
     .film-counter-strip {
       background: #181818;
       border: 1px solid #282828;
@@ -155,11 +162,7 @@
       gap: 14px;
       font-family: 'Space Mono', monospace;
     }
-    .counter-num {
-      font-size: 0.85rem;
-      color: #555;
-      font-weight: 700;
-    }
+    .counter-num { font-size: 0.85rem; color: #555; font-weight: 700; }
     .counter-current {
       font-size: 1.05rem;
       color: #fff;
@@ -169,7 +172,6 @@
       border: 1px solid #444;
     }
 
-    /* Үлкен дөңгелек түсіру түймесі (Shutter button) */
     .shutter-wrapper {
       display: flex;
       align-items: center;
@@ -200,7 +202,7 @@
       border: 2px solid #000;
     }
 
-    /* Модаль: Сурет түсіргеннен кейінгі есім мен тілек */
+    /* Модаль */
     .caption-modal {
       position: fixed;
       inset: 0;
@@ -251,11 +253,7 @@
       margin-top: 4px;
     }
 
-    /* Төменгі 2 қатарлы эстетикалық фотолента */
-    .feed-section {
-      margin-top: 36px;
-      width: 100%;
-    }
+    .feed-section { margin-top: 36px; width: 100%; }
     .feed-heading {
       font-size: 0.88rem;
       font-weight: 600;
@@ -291,71 +289,69 @@
       flex-direction: column;
       gap: 2px;
     }
-    .feed-author {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: #eee;
-    }
-    .feed-wish {
-      font-size: 0.72rem;
-      color: #999;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+    .feed-author { font-size: 0.75rem; font-weight: 700; color: #eee; }
+    .feed-wish { font-size: 0.72rem; color: #999; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   </style>
 </head>
 <body>
 
   <div class="app-container">
     
-    <!-- Шапка -->
     <div class="header-bar">
       <div class="event-name" id="event-title">Жүктелуде...</div>
       <div class="badge-wrap">
-        <span class="badge-sent" id="shots-badge">✓ 25 кадр</span>
+        <span class="badge-sent" id="shots-badge">✓ Кадрлар</span>
       </div>
     </div>
 
-    <!-- Камераның ортаңғы видоискателі -->
-    <div class="viewfinder-card">
-      <img id="bg-cover" class="hero-bg-preview" src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80" alt="Cover">
-      
-      <div class="camera-frame-overlay">
-        <div style="font-size: 0.68rem; color: rgba(255,255,255,0.4); text-transform: uppercase;">ToyDuman Cam • 35mm</div>
-        <div class="frame-center-cross">+</div>
-        <div class="frame-hint" id="frame-hint">Төмендегі ақ түймені басып фото түсіріңіз</div>
-      </div>
-
-      <img id="preview-img" class="preview-capture" alt="Preview">
+    <!-- 24 сағат өткенде шығатын құлып блогы -->
+    <div class="expired-box" id="expired-box">
+      <div style="font-size: 2.5rem; margin-bottom: 8px;">⏳</div>
+      <h3>Сынақ мерзімі аяқталды</h3>
+      <p>Бұл іс-шараның тегін сынақ мерзімі (24 сағат) аяқталды. Фото жүктеу тоқтатылды.</p>
     </div>
 
-    <!-- Басқару құралдары -->
-    <div class="controls-panel">
-      
-      <!-- Галереядан таңдау түймесі -->
-      <label class="btn-gallery-select">
-        <span>🖼️</span> Галереядан қосу
-        <input type="file" id="file-input" accept="image/*" onchange="handleFile(event)">
-      </label>
+    <!-- Камераның негізгі бөлімі -->
+    <div id="camera-main-section">
+      <div class="viewfinder-card">
+        <img id="bg-cover" class="hero-bg-preview" src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80" alt="Cover">
+        
+        <div class="camera-frame-overlay">
+          <div style="font-size: 0.68rem; color: rgba(255,255,255,0.4); text-transform: uppercase;">ToyDuman Cam • 35mm</div>
+          <div class="frame-center-cross">+</div>
+          <div class="frame-hint" id="frame-hint">Төмендегі ақ түймені басып фото түсіріңіз</div>
+        </div>
 
-      <!-- Ретро лента санауышы (10 - 11 - 12) -->
-      <div class="film-counter-strip">
-        <span class="counter-num" id="cnt-prev">23</span>
-        <span class="counter-current" id="cnt-cur">24</span>
-        <span class="counter-num" id="cnt-next">25</span>
+        <img id="preview-img" class="preview-capture" alt="Preview">
       </div>
 
-      <!-- Камераның негізгі түймесі (Шуттер) -->
-      <div class="shutter-wrapper">
-        <button class="shutter-btn" onclick="triggerCamera()" title="Фото түсіру">
-          <div class="shutter-inner"></div>
-        </button>
-      </div>
+      <div class="controls-panel">
+        
+        <!-- Галереядан таңдау түймесі (файлдық инпут) -->
+        <label class="btn-gallery-select">
+          <span>🖼️</span> Галереядан қосу
+          <input type="file" id="file-input-gallery" accept="image/*" onchange="handleFile(event)">
+        </label>
 
+        <!-- Тікелей артқы камераны ашатын жасырын инпут -->
+        <input type="file" id="file-input-camera" accept="image/*" capture="environment" style="display: none;" onchange="handleFile(event)">
+
+        <div class="film-counter-strip">
+          <span class="counter-num" id="cnt-prev">23</span>
+          <span class="counter-current" id="cnt-cur">24</span>
+          <span class="counter-num" id="cnt-next">25</span>
+        </div>
+
+        <div class="shutter-wrapper">
+          <button class="shutter-btn" onclick="triggerCamera()" title="Фото түсіру">
+            <div class="shutter-inner"></div>
+          </button>
+        </div>
+
+      </div>
     </div>
 
-    <!-- Төменгі 2 қатарлы эстетикалық лента -->
+    <!-- 2 қатарлы лента -->
     <div class="feed-section">
       <div class="feed-heading">
         <span>Түсірілген кадрлар</span>
@@ -366,7 +362,7 @@
 
   </div>
 
-  <!-- Модаль: Түсіргеннен кейін есім мен тілек жазу -->
+  <!-- Модаль: Сақтау алдындағы тілек -->
   <div class="caption-modal" id="caption-modal">
     <div class="caption-box">
       <h4>Кадр түсірілді! 📸</h4>
@@ -386,6 +382,7 @@
     let currentEvent = null;
     let compressedBlob = null;
     let guestLimit = 25;
+    let isExpired = false;
     let myPhotos = [];
 
     try {
@@ -400,6 +397,22 @@
       currentEvent = data;
       document.getElementById('event-title').innerText = currentEvent.title;
       guestLimit = currentEvent.shot_limit || 25;
+
+      // 24 САҒАТТЫҚ ШЕКТЕУДІ ТЕКСЕРУ (Егер тегін тариф болса)
+      if (currentEvent.plan_type !== 'vip') {
+        const createdTime = new Date(currentEvent.created_at).getTime();
+        const now = new Date().getTime();
+        const diffHours = (now - createdTime) / (1000 * 60 * 60);
+
+        if (diffHours >= 24) {
+          isExpired = true;
+          document.getElementById('camera-main-section').style.display = 'none';
+          document.getElementById('expired-box').style.display = 'block';
+          document.getElementById('shots-badge').innerText = 'Уақыты аяқталды';
+          renderFeed();
+          return;
+        }
+      }
 
       if (currentEvent.cover_url) {
         document.getElementById('bg-cover').src = currentEvent.cover_url;
@@ -421,17 +434,18 @@
       }
     }
 
+    // Шуттер түймесін басқанда артқы камераның лезде ашылуы
     function triggerCamera() {
+      if (isExpired) return;
+
       const remain = Math.max(0, guestLimit - myPhotos.length);
       if (remain <= 0 && guestLimit < 999) {
         alert("Сіз барлық кадрларыңызды пайдаландыңыз!");
         return;
       }
-      // Камераны бірден ашу
-      document.getElementById('file-input').click();
+      document.getElementById('file-input-camera').click();
     }
 
-    // Фотоны қысу (Compress)
     function compressImage(file, maxWidth = 1200, quality = 0.82) {
       return new Promise((resolve) => {
         const reader = new FileReader();
@@ -460,7 +474,6 @@
       preview.src = URL.createObjectURL(compressedBlob);
       preview.style.display = 'block';
 
-      // Модальді терезені ашу
       document.getElementById('caption-modal').style.display = 'flex';
     }
 
@@ -490,11 +503,11 @@
         myPhotos.unshift({ photo_url: photoUrl, author_name: author, wishes: wish });
         localStorage.setItem(`td_shots_${slug}`, JSON.stringify(myPhotos));
 
-        // Жабу және тазалау
         document.getElementById('caption-modal').style.display = 'none';
         document.getElementById('preview-img').style.display = 'none';
         document.getElementById('guest-wish').value = '';
-        document.getElementById('file-input').value = '';
+        document.getElementById('file-input-gallery').value = '';
+        document.getElementById('file-input-camera').value = '';
         compressedBlob = null;
 
         updateCounterUI();
