@@ -2,174 +2,378 @@
 <html lang="kk">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Той қонағының парақшасы — ToyDuman</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Цифрлық Камера — ToyDuman</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,400&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
 
   <style>
-    :root {
-      --bg: #faf7f2;
-      --card-bg: #ffffff;
-      --text: #1c1917;
-      --text-muted: #78716c;
-      --accent: #d97706;
-      --border: #e7e5e4;
-      --shadow: 0 10px 25px -5px rgba(0,0,0,0.06);
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-    body { background-color: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 50px; display: flex; flex-direction: column; align-items: center; }
-
-    /* Жас жұбайлардың мұқаба суреті шығатын Hero-баннер */
-    .hero-banner {
-      width: 100%;
-      height: 250px;
-      position: relative;
-      background-position: center;
-      background-size: cover;
-      background-repeat: no-repeat;
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+    
+    body {
+      background-color: #0d0d0d;
+      color: #ffffff;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      justify-content: flex-end;
       align-items: center;
-      padding: 20px;
+      padding-bottom: 50px;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      flex-direction: column;
+      padding: 12px 16px;
+    }
+
+    /* Жоғарғы тақырыпша: Аты және статус */
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 4px 14px 4px;
+    }
+    .event-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      color: #f5f5f5;
+    }
+    .badge-sent {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #e5e5e5;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Камераның ортаңғы видоискатель терезесі (Viewfinder) */
+    .viewfinder-card {
+      width: 100%;
+      height: 380px;
+      background: #1a1a1a;
+      border-radius: 28px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid #2a2a2a;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-bg-preview {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.65);
+    }
+
+    .camera-frame-overlay {
+      position: absolute;
+      inset: 16px;
+      border: 1px dashed rgba(255, 255, 255, 0.25);
+      border-radius: 20px;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 12px;
+    }
+    .frame-center-cross {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: rgba(255, 255, 255, 0.35);
+      font-size: 1.5rem;
+      font-weight: 300;
+    }
+    .frame-hint {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.6);
       text-align: center;
+      margin-top: auto;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.8);
+    }
+
+    .preview-capture {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+      z-index: 10;
+    }
+
+    /* Камераның төменгі басқару құралдары */
+    .controls-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .btn-gallery-select {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 9px 20px;
+      border-radius: 30px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+    }
+    .btn-gallery-select input { display: none; }
+
+    /* Ретро санауыш (Film Counter: 10 11 12) */
+    .film-counter-strip {
+      background: #181818;
+      border: 1px solid #282828;
+      border-radius: 22px;
+      padding: 6px 14px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-family: 'Space Mono', monospace;
+    }
+    .counter-num {
+      font-size: 0.85rem;
+      color: #555;
+      font-weight: 700;
+    }
+    .counter-current {
+      font-size: 1.05rem;
+      color: #fff;
+      background: #2a2a2a;
+      padding: 2px 10px;
+      border-radius: 12px;
+      border: 1px solid #444;
+    }
+
+    /* Үлкен дөңгелек түсіру түймесі (Shutter button) */
+    .shutter-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 4px;
+    }
+    .shutter-btn {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 4px solid #333333;
+      box-shadow: 0 0 0 4px #1a1a1a, 0 10px 24px rgba(0,0,0,0.5);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.1s;
+    }
+    .shutter-btn:active {
+      transform: scale(0.92);
+      background: #e0e0e0;
+    }
+    .shutter-inner {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      border: 2px solid #000;
+    }
+
+    /* Модаль: Сурет түсіргеннен кейінгі есім мен тілек */
+    .caption-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .caption-box {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 24px;
+      width: 100%;
+      max-width: 400px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .caption-box h4 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
       color: #fff;
     }
-    .hero-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.85rem;
-      font-weight: 800;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.7);
+    .caption-input {
+      background: #0d0d0d;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 12px 14px;
+      color: #fff;
+      font-size: 0.9rem;
+      outline: none;
+      width: 100%;
     }
-    .timer-wrap {
-      margin-top: 8px;
-      background: rgba(0,0,0,0.55);
-      backdrop-filter: blur(8px);
-      padding: 6px 14px;
-      border-radius: 30px;
+    .caption-input:focus { border-color: #fff; }
+    .btn-send-final {
+      background: #fff;
+      color: #000;
+      border: none;
+      padding: 14px;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+
+    /* Төменгі 2 қатарлы эстетикалық фотолента */
+    .feed-section {
+      margin-top: 36px;
+      width: 100%;
+    }
+    .feed-heading {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #888;
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .feed-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .feed-card {
+      background: #181818;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #262626;
+      display: flex;
+      flex-direction: column;
+    }
+    .feed-img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      background: #111;
+      display: block;
+    }
+    .feed-meta {
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .feed-author {
       font-size: 0.75rem;
       font-weight: 700;
-      color: #fef3c7;
+      color: #eee;
     }
-
-    .container { width: 100%; max-width: 480px; padding: 0 16px; margin-top: -20px; z-index: 10; display: flex; flex-direction: column; gap: 16px; }
-    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 20px; box-shadow: var(--shadow); }
-    .counter { text-align: center; font-size: 0.88rem; margin-bottom: 12px; color: var(--accent); font-weight: 700; }
-
-    .upload-zone {
-      border: 2px dashed var(--accent);
-      border-radius: 16px;
-      padding: 20px 14px;
-      text-align: center;
-      cursor: pointer;
-      background: rgba(217, 119, 6, 0.04);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
+    .feed-wish {
+      font-size: 0.72rem;
+      color: #999;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    .upload-zone input { display: none; }
-    .preview-img { width: 100%; max-height: 240px; object-fit: contain; border-radius: 12px; display: none; margin-top: 10px; border: 1px solid var(--border); }
-
-    /* Голосовой жазу батырмасы */
-    .audio-recorder-box {
-      margin-top: 12px;
-      background: #fdfaf6;
-      border: 1px dashed var(--border);
-      border-radius: 14px;
-      padding: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .btn-record {
-      background: #ef4444;
-      color: #fff;
-      border: none;
-      padding: 9px 15px;
-      border-radius: 20px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .btn-record.recording { animation: pulse 1s infinite; background: #dc2626; }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-    .audio-status { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; }
-
-    .form-group { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
-    label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
-    input, textarea { background: #faf7f2; border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: var(--text); font-size: 0.9rem; outline: none; width: 100%; }
-
-    .btn { background: var(--accent); color: #fff; border: none; padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; width: 100%; font-size: 0.95rem; margin-top: 14px; }
-    .msg { font-size: 0.85rem; text-align: center; padding: 10px; border-radius: 10px; display: none; margin-top: 12px; }
-    .msg.error { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
-    .msg.success { background: rgba(16, 185, 129, 0.1); color: #10b981; }
-
-    /* Естеліктер лентасы */
-    .feed-title { font-size: 1.2rem; font-weight: 800; color: var(--text); margin-top: 14px; text-align: center; }
-    .feed { display: flex; flex-direction: column; gap: 24px; padding: 10px 4px; }
-    .memory-card { background: #ffffff; padding: 12px 12px 18px 12px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border: 1px solid rgba(0,0,0,0.06); }
-    .memory-img { width: 100%; height: 320px; object-fit: cover; display: block; border-radius: 8px; }
-    .memory-content { padding: 12px 6px 4px 6px; text-align: center; }
-    .memory-wish { font-family: 'Caveat', cursive; font-size: 1.45rem; color: #1e293b; line-height: 1.25; margin-bottom: 6px; }
-    .memory-author { font-size: 0.8rem; font-weight: 700; color: #b45309; text-transform: uppercase; }
-    .audio-player-custom { width: 100%; height: 34px; margin-top: 10px; }
   </style>
 </head>
 <body>
 
-  <!-- Hero Баннер -->
-  <div class="hero-banner" id="hero-banner">
-    <h1 class="hero-title" id="event-title">Жүктелуде...</h1>
-    <div class="timer-wrap" id="timer-box">
-      <span id="timer-val">Есептелуде...</span>
+  <div class="app-container">
+    
+    <!-- Шапка -->
+    <div class="header-bar">
+      <div class="event-name" id="event-title">Жүктелуде...</div>
+      <div class="badge-wrap">
+        <span class="badge-sent" id="shots-badge">✓ 25 кадр</span>
+      </div>
     </div>
+
+    <!-- Камераның ортаңғы видоискателі -->
+    <div class="viewfinder-card">
+      <img id="bg-cover" class="hero-bg-preview" src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80" alt="Cover">
+      
+      <div class="camera-frame-overlay">
+        <div style="font-size: 0.68rem; color: rgba(255,255,255,0.4); text-transform: uppercase;">ToyDuman Cam • 35mm</div>
+        <div class="frame-center-cross">+</div>
+        <div class="frame-hint" id="frame-hint">Төмендегі ақ түймені басып фото түсіріңіз</div>
+      </div>
+
+      <img id="preview-img" class="preview-capture" alt="Preview">
+    </div>
+
+    <!-- Басқару құралдары -->
+    <div class="controls-panel">
+      
+      <!-- Галереядан таңдау түймесі -->
+      <label class="btn-gallery-select">
+        <span>🖼️</span> Галереядан қосу
+        <input type="file" id="file-input" accept="image/*" onchange="handleFile(event)">
+      </label>
+
+      <!-- Ретро лента санауышы (10 - 11 - 12) -->
+      <div class="film-counter-strip">
+        <span class="counter-num" id="cnt-prev">23</span>
+        <span class="counter-current" id="cnt-cur">24</span>
+        <span class="counter-num" id="cnt-next">25</span>
+      </div>
+
+      <!-- Камераның негізгі түймесі (Шуттер) -->
+      <div class="shutter-wrapper">
+        <button class="shutter-btn" onclick="triggerCamera()" title="Фото түсіру">
+          <div class="shutter-inner"></div>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Төменгі 2 қатарлы эстетикалық лента -->
+    <div class="feed-section">
+      <div class="feed-heading">
+        <span>Түсірілген кадрлар</span>
+        <span id="feed-count">0 фото</span>
+      </div>
+      <div class="feed-grid" id="feed-grid"></div>
+    </div>
+
   </div>
 
-  <div class="container">
-    <div class="card" id="form-card">
-      <div class="counter" id="shot-counter">Қалған лимит: есептелуде...</div>
-
-      <div class="upload-zone" onclick="document.getElementById('file-input').click()">
-        <span style="font-size: 2.2rem;">📸</span>
-        <p style="font-weight: 600;">Камерамен түсіру немесе галереядан таңдау</p>
-        <input type="file" id="file-input" accept="image/*" onchange="previewFile(event)">
-      </div>
-      <img id="preview" class="preview-img" alt="Preview">
-
-      <!-- Дауыстық тілек (Голосовое) жазу -->
-      <div class="audio-recorder-box">
-        <button type="button" class="btn-record" id="rec-btn" onclick="toggleRecording()">
-          <span id="rec-icon">🎙️</span> <span id="rec-txt">Дауысты тілек жазу</span>
-        </button>
-        <span class="audio-status" id="rec-status">Жазылмаған</span>
-      </div>
-      <audio id="recorded-audio-preview" controls style="width: 100%; display: none; margin-top: 10px; height: 32px;"></audio>
-
-      <div class="form-group">
-        <label>Сіздің есіміңіз:</label>
-        <input type="text" id="guest-name" placeholder="Мысалы: Бауыржан">
-      </div>
-
-      <div class="form-group">
-        <label>Жас жұбайларға ақ тілек:</label>
-        <textarea id="guest-wish" rows="2" placeholder="Бақытты болыңыздар, мәңгі бірге!"></textarea>
-      </div>
-
-      <button class="btn" id="btn-send" onclick="uploadPhoto()">✨ Естелікті сақтау</button>
-      <div class="msg" id="msg-box"></div>
+  <!-- Модаль: Түсіргеннен кейін есім мен тілек жазу -->
+  <div class="caption-modal" id="caption-modal">
+    <div class="caption-box">
+      <h4>Кадр түсірілді! 📸</h4>
+      <input type="text" id="guest-name" class="caption-input" placeholder="Сіздің есіміңіз (мысалы: Аружан)">
+      <textarea id="guest-wish" class="caption-input" rows="2" placeholder="Ақ тілегіңіз (міндетті емес)"></textarea>
+      <button class="btn-send-final" id="btn-save" onclick="uploadPhoto()">Альбомға жолдау</button>
     </div>
-
-    <!-- Түзетілген қарапайым таза атау -->
-    <div class="feed-title">📸 Мен жүктеген естеліктер</div>
-    <div class="feed" id="feed-list"></div>
   </div>
 
   <script>
@@ -182,68 +386,13 @@
     let currentEvent = null;
     let compressedBlob = null;
     let guestLimit = 25;
+    let myPhotos = [];
 
-    let mediaRecorder = null;
-    let audioChunks = [];
-    let audioBlob = null;
-    let isRecording = false;
-    let selectedMimeType = '';
-
-    let myPhotosList = [];
     try {
-      myPhotosList = JSON.parse(localStorage.getItem(`my_photos_${slug}`)) || [];
-    } catch(e) { myPhotosList = []; }
+      myPhotos = JSON.parse(localStorage.getItem(`td_shots_${slug}`)) || [];
+    } catch(e) { myPhotos = []; }
 
-    function getSupportedMimeType() {
-      const types = ['audio/mp4', 'audio/aac', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg'];
-      for (let t of types) {
-        if (MediaRecorder.isTypeSupported(t)) return t;
-      }
-      return '';
-    }
-
-    async function toggleRecording() {
-      const recBtn = document.getElementById('rec-btn');
-      const recStatus = document.getElementById('rec-status');
-
-      if (!isRecording) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          selectedMimeType = getSupportedMimeType();
-          const options = selectedMimeType ? { mimeType: selectedMimeType } : {};
-          mediaRecorder = new MediaRecorder(stream, options);
-          audioChunks = [];
-
-          mediaRecorder.ondataavailable = e => {
-            if (e.data.size > 0) audioChunks.push(e.data);
-          };
-
-          mediaRecorder.onstop = () => {
-            const mime = selectedMimeType || 'audio/webm';
-            audioBlob = new Blob(audioChunks, { type: mime });
-            const preview = document.getElementById('recorded-audio-preview');
-            preview.src = URL.createObjectURL(audioBlob);
-            preview.style.display = 'block';
-            recStatus.innerText = "✅ Дайын (тыңдап көріңіз)";
-          };
-
-          mediaRecorder.start();
-          isRecording = true;
-          recBtn.classList.add('recording');
-          document.getElementById('rec-txt').innerText = "Тоқтату ⏹️";
-          recStatus.innerText = "🔴 Жазылуда...";
-        } catch (err) {
-          alert("Микрофонға рұқсат беріңіз: " + err.message);
-        }
-      } else {
-        mediaRecorder.stop();
-        isRecording = false;
-        recBtn.classList.remove('recording');
-        document.getElementById('rec-txt').innerText = "Қайта жазу 🎙️";
-      }
-    }
-
-    async function initEvent() {
+    async function init() {
       if (!slug) return;
       const { data, error } = await supabaseClient.from('events').select('*').eq('slug', slug).single();
       if (error || !data) return;
@@ -252,43 +401,38 @@
       document.getElementById('event-title').innerText = currentEvent.title;
       guestLimit = currentEvent.shot_limit || 25;
 
-      const defaultCover = 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80';
-      const finalCover = currentEvent.cover_url || defaultCover;
-      document.getElementById('hero-banner').style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.75)), url('${finalCover}')`;
+      if (currentEvent.cover_url) {
+        document.getElementById('bg-cover').src = currentEvent.cover_url;
+      }
 
-      startTimer(currentEvent.event_date);
-      updateLimitUI();
+      updateCounterUI();
       renderFeed();
     }
 
-    function startTimer(targetDateStr) {
-      if (!targetDateStr) {
-        document.getElementById('timer-box').style.display = 'none';
+    function updateCounterUI() {
+      const remain = Math.max(0, guestLimit - myPhotos.length);
+      document.getElementById('cnt-cur').innerText = remain;
+      document.getElementById('cnt-prev').innerText = Math.max(0, remain - 1);
+      document.getElementById('cnt-next').innerText = remain + 1;
+      document.getElementById('shots-badge').innerText = `✓ ${remain} кадр қалды`;
+
+      if (remain === 0 && guestLimit < 999) {
+        document.getElementById('frame-hint').innerText = "Кадр лимиті аяқталды 😔";
+      }
+    }
+
+    function triggerCamera() {
+      const remain = Math.max(0, guestLimit - myPhotos.length);
+      if (remain <= 0 && guestLimit < 999) {
+        alert("Сіз барлық кадрларыңызды пайдаландыңыз!");
         return;
       }
-      const targetDate = new Date(targetDateStr).getTime();
-      function update() {
-        const diff = targetDate - new Date().getTime();
-        if (diff <= 0) {
-          document.getElementById('timer-val').innerText = "🎉 Мереке басталды! 🎉";
-          return;
-        }
-        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        document.getElementById('timer-val').innerText = `⏳ Тойға дейін: ${d} күн ${h} сағат ${m} мин`;
-      }
-      update();
-      setInterval(update, 60000);
+      // Камераны бірден ашу
+      document.getElementById('file-input').click();
     }
 
-    function updateLimitUI() {
-      const remain = Math.max(0, guestLimit - myPhotosList.length);
-      const el = document.getElementById('shot-counter');
-      el.innerText = guestLimit >= 999 ? "Шектеусіз кадр" : `Қалған лимит: ${remain} / ${guestLimit}`;
-    }
-
-    function compressImage(file, maxWidth = 1200, quality = 0.8) {
+    // Фотоны қысу (Compress)
+    function compressImage(file, maxWidth = 1200, quality = 0.82) {
       return new Promise((resolve) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -307,107 +451,87 @@
       });
     }
 
-    async function previewFile(e) {
+    async function handleFile(e) {
       const file = e.target.files[0];
       if (!file) return;
-      compressedBlob = await compressImage(file, 1200, 0.82);
-      const img = document.getElementById('preview');
-      img.src = URL.createObjectURL(compressedBlob);
-      img.style.display = 'block';
+
+      compressedBlob = await compressImage(file);
+      const preview = document.getElementById('preview-img');
+      preview.src = URL.createObjectURL(compressedBlob);
+      preview.style.display = 'block';
+
+      // Модальді терезені ашу
+      document.getElementById('caption-modal').style.display = 'flex';
     }
 
     async function uploadPhoto() {
-      if (!compressedBlob) { alert("Алдымен фото таңдаңыз!"); return; }
+      if (!compressedBlob) return;
 
-      const btn = document.getElementById('btn-send');
-      const msgBox = document.getElementById('msg-box');
+      const btn = document.getElementById('btn-save');
       btn.disabled = true;
       btn.innerText = "Сақталуда... ⏳";
 
       try {
-        const photoName = `${currentEvent.id}/${Date.now()}_img.jpg`;
-        await supabaseClient.storage.from('photos').upload(photoName, compressedBlob, { contentType: 'image/jpeg' });
-        const { data: urlData } = supabaseClient.storage.from('photos').getPublicUrl(photoName);
+        const fileName = `${currentEvent.id}/${Date.now()}_img.jpg`;
+        await supabaseClient.storage.from('photos').upload(fileName, compressedBlob, { contentType: 'image/jpeg' });
+        const { data: urlData } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
         const photoUrl = urlData.publicUrl;
 
-        let finalAudioUrl = null;
-        if (audioBlob) {
-          const ext = selectedMimeType.includes('mp4') ? 'mp4' : 'webm';
-          const audioName = `${currentEvent.id}/${Date.now()}_voice.${ext}`;
-          await supabaseClient.storage.from('photos').upload(audioName, audioBlob, { 
-            contentType: audioBlob.type || 'audio/webm' 
-          });
-          const { data: audioData } = supabaseClient.storage.from('photos').getPublicUrl(audioName);
-          finalAudioUrl = audioData.publicUrl;
-        }
-
         const author = document.getElementById('guest-name').value.trim() || 'Қонақ';
-        const wish = document.getElementById('guest-wish').value.trim() || 'Бақытты болыңыздар!';
+        const wish = document.getElementById('guest-wish').value.trim() || '';
 
         await supabaseClient.from('event_photos').insert([{
           event_id: currentEvent.id,
           photo_url: photoUrl,
           author_name: author,
-          wishes: wish,
-          audio_url: finalAudioUrl
+          wishes: wish
         }]);
 
-        myPhotosList.unshift({ photo_url: photoUrl, author_name: author, wishes: wish, audio_url: finalAudioUrl });
-        localStorage.setItem(`my_photos_${slug}`, JSON.stringify(myPhotosList));
+        myPhotos.unshift({ photo_url: photoUrl, author_name: author, wishes: wish });
+        localStorage.setItem(`td_shots_${slug}`, JSON.stringify(myPhotos));
 
-        updateLimitUI();
-        renderFeed();
-
-        msgBox.className = 'msg success';
-        msgBox.innerText = "✨ Естелік сәтті сақталды!";
-        msgBox.style.display = 'block';
-
-        document.getElementById('preview').style.display = 'none';
-        document.getElementById('file-input').value = '';
+        // Жабу және тазалау
+        document.getElementById('caption-modal').style.display = 'none';
+        document.getElementById('preview-img').style.display = 'none';
         document.getElementById('guest-wish').value = '';
-        document.getElementById('recorded-audio-preview').style.display = 'none';
-        document.getElementById('rec-status').innerText = 'Жазылмаған';
+        document.getElementById('file-input').value = '';
         compressedBlob = null;
-        audioBlob = null;
 
-        setTimeout(() => msgBox.style.display = 'none', 3000);
+        updateCounterUI();
+        renderFeed();
       } catch (err) {
-        msgBox.className = 'msg error';
-        msgBox.innerText = "Қате: " + err.message;
-        msgBox.style.display = 'block';
+        alert("Қате: " + err.message);
       } finally {
         btn.disabled = false;
-        btn.innerText = "✨ Естелікті сақтау";
+        btn.innerText = "Альбомға жолдау";
       }
     }
 
     function renderFeed() {
-      const feed = document.getElementById('feed-list');
-      feed.innerHTML = '';
-      if (myPhotosList.length === 0) {
-        feed.innerHTML = '<div style="text-align:center; color:#78716c; font-size:0.85rem; padding:20px;">Әзірге фотолар жоқ 📷</div>';
+      const grid = document.getElementById('feed-grid');
+      grid.innerHTML = '';
+      document.getElementById('feed-count').innerText = `${myPhotos.length} фото`;
+
+      if (myPhotos.length === 0) {
+        grid.innerHTML = '<div style="grid-column: span 2; text-align: center; color: #555; padding: 20px; font-size: 0.8rem;">Әзірге түсірілген кадр жоқ</div>';
         return;
       }
-      myPhotosList.forEach(item => {
+
+      myPhotos.forEach(item => {
         const div = document.createElement('div');
-        div.className = 'memory-card';
+        div.className = 'feed-card';
         div.innerHTML = `
-          <img class="memory-img" src="${item.photo_url}" loading="lazy">
-          <div class="memory-content">
-            <div class="memory-wish">"${item.wishes}"</div>
-            <div class="memory-author">❤️ ${item.author_name}</div>
-            ${item.audio_url ? `
-              <audio class="audio-player-custom" controls preload="none">
-                <source src="${item.audio_url}">
-              </audio>
-            ` : ''}
+          <img class="feed-img" src="${item.photo_url}" loading="lazy">
+          <div class="feed-meta">
+            <span class="feed-author">👤 ${item.author_name}</span>
+            ${item.wishes ? `<span class="feed-wish">💬 ${item.wishes}</span>` : ''}
           </div>
         `;
-        feed.appendChild(div);
+        grid.appendChild(div);
       });
     }
 
-    initEvent();
+    init();
   </script>
 </body>
 </html>
