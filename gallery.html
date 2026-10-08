@@ -10,55 +10,112 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Playfair+Display:ital,wght@0,700;1,700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg: #f8fafc;
+      --bg: #faf7f2;
       --card-bg: #ffffff;
-      --text: #0f172a;
-      --text-muted: #64748b;
-      --border: #e2e8f0;
-      --accent: #2563eb;
-      --accent-hover: #1d4ed8;
+      --text: #1c1917;
+      --text-muted: #78716c;
+      --border: #e7e5e4;
+      --accent: #d97706;
+      --accent-hover: #b45309;
       --danger: #ef4444;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow: 0 10px 25px -5px rgba(0,0,0,0.06);
     }
 
     [data-theme="dark"] {
-      --bg: #0b0f17;
-      --card-bg: #151d2a;
-      --text: #f1f5f9;
-      --text-muted: #94a3b8;
-      --border: #263346;
-      --accent: #3b82f6;
-      --accent-hover: #60a5fa;
+      --bg: #0c0a09;
+      --card-bg: #1c1917;
+      --text: #f5f5f4;
+      --text-muted: #a8a29e;
+      --border: #292524;
+      --accent: #f59e0b;
+      --accent-hover: #fbbf24;
       --danger: #f87171;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+      --shadow: 0 10px 25px -5px rgba(0,0,0,0.4);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; transition: background-color 0.2s, color 0.2s; }
-    body { background-color: var(--bg); color: var(--text); min-height: 100vh; padding: 20px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.2s, color 0.2s; }
+    body { background-color: var(--bg); color: var(--text); min-height: 100vh; padding: 24px 16px; }
     .container { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
 
-    .top-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
-    .title-box h1 { font-size: 1.6rem; font-weight: 800; color: var(--text); }
+    .top-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; border-bottom: 1px solid var(--border); padding-bottom: 18px; }
+    .title-box h1 { font-family: 'Playfair Display', serif; font-size: 1.85rem; font-weight: 800; color: var(--text); }
     .title-box p { font-size: 0.88rem; color: var(--text-muted); margin-top: 4px; }
 
-    .action-btns { display: flex; gap: 8px; flex-wrap: wrap; }
-    .btn { background: var(--accent); color: #fff; border: none; padding: 10px 16px; border-radius: 10px; font-weight: 700; cursor: pointer; text-decoration: none; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; }
-    .btn:active { transform: scale(0.98); }
+    .action-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn { background: var(--accent); color: #fff; border: none; padding: 11px 18px; border-radius: 12px; font-weight: 700; cursor: pointer; text-decoration: none; font-size: 0.86rem; display: inline-flex; align-items: center; gap: 6px; }
     .btn-secondary { background: var(--card-bg); color: var(--text); border: 1px solid var(--border); }
     .btn-live { background: #10b981; }
 
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; margin-top: 10px; }
-    .photo-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; position: relative; box-shadow: var(--shadow-sm); }
-    .photo-card img { width: 100%; height: 230px; object-fit: cover; }
-    .info { padding: 12px; display: flex; flex-direction: column; gap: 4px; flex-grow: 1; }
-    .author { font-size: 0.85rem; font-weight: 700; color: var(--accent); }
-    .wish { font-size: 0.82rem; color: var(--text); word-break: break-word; }
-    .footer-card { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 8px; border-top: 1px solid var(--border); }
-    .time { font-size: 0.72rem; color: var(--text-muted); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 22px; margin-top: 12px; }
+    
+    /* Polaroid Card Style */
+    .polaroid-card {
+      background: #ffffff;
+      padding: 12px 12px 18px 12px;
+      border-radius: 4px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      border: 1px solid rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .polaroid-img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      border-radius: 2px;
+      display: block;
+    }
+    .polaroid-info {
+      padding: 12px 4px 4px 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex-grow: 1;
+    }
+    .polaroid-wish {
+      font-family: 'Caveat', cursive;
+      font-size: 1.35rem;
+      color: #1c1917;
+      line-height: 1.25;
+    }
+    .polaroid-author {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Аудио ойнатқыш стилі */
+    .audio-block {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 8px 10px;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .audio-block audio {
+      width: 100%;
+      height: 32px;
+    }
+
+    .footer-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+      padding-top: 10px;
+      border-top: 1px dashed #e2e8f0;
+    }
+    .time { font-size: 0.72rem; color: #94a3b8; }
     .btn-del { background: none; border: none; color: var(--danger); font-size: 0.8rem; font-weight: 700; cursor: pointer; }
 
     .empty-state { text-align: center; padding: 70px 20px; color: var(--text-muted); font-size: 1.1rem; }
@@ -70,18 +127,18 @@
     <div class="top-header">
       <div class="title-box">
         <h1 id="event-title">Жүктелуде...</h1>
-        <p id="event-stats">Фотолар тексерілуде...</p>
+        <p id="event-stats">Естеліктер тексерілуде...</p>
       </div>
       <div class="action-btns">
         <a href="dashboard.html" class="btn btn-secondary">← Кабинетке</a>
         <a id="btn-slideshow" class="btn btn-live" href="#" target="_blank">📺 Слайд-шоу (LED)</a>
-        <button id="btn-wishes" class="btn btn-secondary" onclick="exportWishesTxt()">📝 Тілектерді жүктеу</button>
+        <button class="btn btn-secondary" onclick="exportWishesTxt()">📝 Тілектерді жүктеу</button>
         <button id="btn-zip" class="btn" onclick="downloadAllZip()">📦 ZIP жүктеу</button>
       </div>
     </div>
 
     <div class="grid" id="photos-grid"></div>
-    <div class="empty-state" id="empty-state" style="display: none;">Әзірге фотолар жүктелмеген 📸</div>
+    <div class="empty-state" id="empty-state" style="display: none;">Әзірге фотолар мен аудиолар жүктелмеген 📸</div>
   </div>
 
   <script>
@@ -89,13 +146,11 @@
     const SUPABASE_KEY = "sb_publishable_cOyPl30aOSb6pdxCRfRNQA_Tn6dBaZg";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const slug = urlParams.get('slug');
+    const slug = new URLSearchParams(window.location.search).get('slug');
 
     let currentEvent = null;
     let photoList = [];
 
-    // Түнгі режим
     const savedTheme = localStorage.getItem('toyduman_theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
 
@@ -120,7 +175,7 @@
         .order('created_at', { ascending: false });
 
       photoList = photos || [];
-      document.getElementById('event-stats').innerText = `Жалпы суреттер: ${photoList.length} дана`;
+      document.getElementById('event-stats').innerText = `Жалпы естеліктер: ${photoList.length} дана`;
 
       const grid = document.getElementById('photos-grid');
       const emptyState = document.getElementById('empty-state');
@@ -134,20 +189,32 @@
 
       photoList.forEach(item => {
         const card = document.createElement('div');
-        card.className = 'photo-card';
+        card.className = 'polaroid-card';
         card.id = `card-${item.id}`;
         const timeStr = new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
         card.innerHTML = `
           <a href="${item.photo_url}" target="_blank">
-            <img src="${item.photo_url}" loading="lazy">
+            <img class="polaroid-img" src="${item.photo_url}" loading="lazy">
           </a>
-          <div class="info">
-            <div class="author">👤 ${item.author_name || 'Қонақ'}</div>
-            ${item.wishes ? `<div class="wish">💬 ${item.wishes}</div>` : ''}
+          <div class="polaroid-info">
+            <div class="polaroid-author">❤️ ${item.author_name || 'Қонақ'}</div>
+            ${item.wishes ? `<div class="polaroid-wish">"${item.wishes}"</div>` : ''}
+            
+            ${item.audio_url ? `
+              <div class="audio-block">
+                <span>🎙️</span>
+                <audio controls preload="none">
+                  <source src="${item.audio_url}" type="audio/webm">
+                  <source src="${item.audio_url}" type="audio/mp4">
+                  Браузер аудионы ойната алмады.
+                </audio>
+              </div>
+            ` : ''}
+
             <div class="footer-card">
               <span class="time">🕒 ${timeStr}</span>
-              <button class="btn-del" onclick="deletePhoto('${item.id}', '${item.photo_url}')">🗑️ Өшіру</button>
+              <button class="btn-del" onclick="deletePhoto('${item.id}')">🗑️ Өшіру</button>
             </div>
           </div>
         `;
@@ -155,48 +222,30 @@
       });
     }
 
-    // Фотоны өшіру (Модерация)
-    async function deletePhoto(id, photoUrl) {
-      if (!confirm("Бұл суретті өшіргіңіз келетініне сенімдісіз бе?")) return;
-
+    async function deletePhoto(id) {
+      if (!confirm("Бұл естелікті өшіргіңіз келетініне сенімдісіз бе?")) return;
       try {
         await supabaseClient.from('event_photos').delete().eq('id', id);
-
-        // UI-дан лезде алып тастау
         const card = document.getElementById(`card-${id}`);
         if (card) card.remove();
-
         photoList = photoList.filter(p => p.id !== id);
-        document.getElementById('event-stats').innerText = `Жалпы суреттер: ${photoList.length} дана`;
+        document.getElementById('event-stats').innerText = `Жалпы естеліктер: ${photoList.length} дана`;
       } catch (err) {
         alert("Өшіру қатесі: " + err.message);
       }
     }
 
-    // Тілектер кітабын .txt файлымен жүктеп алу
     function exportWishesTxt() {
       const wishes = photoList.filter(p => p.wishes && p.wishes.trim() !== '');
-      if (wishes.length === 0) {
-        alert("Әзірге қонақтар тілек қалдырмаған!");
-        return;
-      }
-
+      if (wishes.length === 0) { alert("Тілектер жоқ!"); return; }
       let text = `✨ ${currentEvent.title} — ҚОНАҚТАРДЫҢ АҚ ТІЛЕКТЕРІ ✨\n\n`;
-      wishes.forEach((w, i) => {
-        text += `${i + 1}. [${w.author_name}]: "${w.wishes}"\n`;
-      });
-
+      wishes.forEach((w, i) => { text += `${i + 1}. [${w.author_name}]: "${w.wishes}"\n`; });
       const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
       saveAs(blob, `${slug}_tilekter.txt`);
     }
 
-    // ZIP архивпен барлығын жүктеп алу
     async function downloadAllZip() {
-      if (photoList.length === 0) {
-        alert("Жүктейтін сурет жоқ!");
-        return;
-      }
-
+      if (photoList.length === 0) { alert("Суреттер жоқ!"); return; }
       const btn = document.getElementById('btn-zip');
       btn.disabled = true;
       btn.innerText = "Жүктелуде... ⏳";
@@ -204,7 +253,6 @@
       try {
         const zip = new JSZip();
         const folder = zip.folder("toyduman_photos");
-
         for (let i = 0; i < photoList.length; i++) {
           const p = photoList[i];
           btn.innerText = `${i + 1}/${photoList.length}...`;
@@ -213,7 +261,6 @@
           const cleanAuthor = (p.author_name || 'qonaq').replace(/[^a-zA-Z0-9а-яА-ЯёЁ]/g, '_');
           folder.file(`${i + 1}_${cleanAuthor}.jpg`, blob);
         }
-
         btn.innerText = "Қысылуда... 📦";
         const content = await zip.generateAsync({ type: "blob" });
         saveAs(content, `${slug}_photos.zip`);
