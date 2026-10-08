@@ -2,7 +2,7 @@
 <html lang="kk">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Басқару Панелі — ToyDuman Luxury</title>
   
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
@@ -20,7 +20,7 @@
       --accent: #d97706;
       --accent-hover: #b45309;
       --border: #e7e5e4;
-      --header-bg: rgba(250, 247, 242, 0.9);
+      --header-bg: rgba(250, 247, 242, 0.95);
       --pill-bg: #f5f0e8;
       --shadow-sm: 0 4px 20px rgba(0,0,0,0.04);
       --shadow-md: 0 12px 30px rgba(217, 119, 6, 0.12);
@@ -34,14 +34,14 @@
       --accent: #f59e0b;
       --accent-hover: #fbbf24;
       --border: #292524;
-      --header-bg: rgba(12, 10, 9, 0.9);
+      --header-bg: rgba(12, 10, 9, 0.95);
       --pill-bg: #292524;
       --shadow-sm: 0 4px 20px rgba(0,0,0,0.4);
       --shadow-md: 0 12px 30px rgba(0,0,0,0.6);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.2s, color 0.2s; }
-    body { background-color: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 95px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 110px; overflow-x: hidden; }
 
     header {
       background: var(--header-bg);
@@ -50,7 +50,7 @@
       position: sticky;
       top: 0;
       z-index: 40;
-      padding: 16px 20px;
+      padding: 12px 16px;
     }
     .header-inner {
       max-width: 950px;
@@ -58,108 +58,114 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 10px;
     }
     .logo {
       font-family: 'Playfair Display', serif;
-      font-size: 1.55rem;
+      font-size: 1.35rem;
       font-weight: 800;
       letter-spacing: -0.5px;
       color: var(--text);
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
+      white-space: nowrap;
     }
     .logo span { color: var(--accent); }
 
     .header-right {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
     }
 
     .theme-toggle {
       background: var(--pill-bg);
       border: 1px solid var(--border);
       color: var(--text);
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.1rem;
+      font-size: 1rem;
+      flex-shrink: 0;
     }
 
     .user-pill {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 6px;
       background: var(--pill-bg);
-      padding: 6px 16px;
+      padding: 6px 12px;
       border-radius: 30px;
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       font-weight: 600;
       color: var(--text);
       border: 1px solid var(--border);
+      max-width: 170px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .user-email-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .btn-logout {
       background: none;
       border: none;
       color: #ef4444;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       cursor: pointer;
       font-weight: 700;
+      flex-shrink: 0;
     }
 
     .container {
       max-width: 950px;
-      margin: 32px auto;
-      padding: 0 20px;
+      margin: 20px auto;
+      padding: 0 16px;
     }
 
     .section-title-wrap {
-      margin-bottom: 26px;
+      margin-bottom: 18px;
       text-align: left;
     }
     .section-title {
       font-family: 'Playfair Display', serif;
-      font-size: 1.85rem;
+      font-size: 1.55rem;
       font-weight: 800;
       color: var(--text);
     }
     .section-desc {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: var(--text-muted);
-      margin-top: 6px;
+      margin-top: 4px;
     }
 
     .events-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-      gap: 22px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
     }
 
     .event-card {
       background: var(--card-bg);
-      border-radius: 20px;
+      border-radius: 18px;
       border: 1px solid var(--border);
-      padding: 20px;
+      padding: 16px;
       box-shadow: var(--shadow-sm);
       display: flex;
       flex-direction: column;
       position: relative;
-      overflow: hidden;
     }
-    .event-card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-md);
-      border-color: var(--accent);
-    }
-
     .card-cover-preview {
       width: 100%;
-      height: 140px;
+      height: 150px;
       border-radius: 12px;
       object-fit: cover;
       margin-bottom: 12px;
@@ -170,74 +176,83 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
+      gap: 6px;
     }
     .event-badge-free {
       background: #f1f5f9;
       color: #475569;
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       font-weight: 800;
-      padding: 4px 10px;
-      border-radius: 10px;
+      padding: 4px 8px;
+      border-radius: 8px;
       text-transform: uppercase;
     }
     .event-badge-vip {
       background: #fef3c7;
       color: #b45309;
       border: 1px solid #fde68a;
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       font-weight: 800;
-      padding: 4px 10px;
-      border-radius: 10px;
+      padding: 4px 8px;
+      border-radius: 8px;
       text-transform: uppercase;
     }
     .photo-count-badge {
       background: var(--pill-bg);
       color: var(--text);
       border: 1px solid var(--border);
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 12px;
+      padding: 4px 8px;
+      border-radius: 10px;
+      white-space: nowrap;
     }
 
     .event-card-title {
       font-family: 'Playfair Display', serif;
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       font-weight: 800;
       color: var(--text);
-      margin-bottom: 8px;
+      margin-bottom: 6px;
+      word-break: break-word;
     }
     .event-meta {
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
       display: flex;
       flex-direction: column;
-      gap: 5px;
-      margin-bottom: 18px;
+      gap: 4px;
+      margin-bottom: 14px;
     }
     .event-meta b { color: var(--text); }
 
+    /* Кнопкалар тобы — телефонда бір-біріне кедергі келтірмейді */
     .card-actions {
       display: flex;
       flex-direction: column;
       gap: 8px;
       margin-top: auto;
     }
-    .action-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
     .btn-action {
+      width: 100%;
       text-align: center;
-      padding: 10px;
+      padding: 12px;
       border-radius: 10px;
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       font-weight: 700;
       text-decoration: none;
       cursor: pointer;
       border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .action-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
     }
     .btn-action-preview {
       background: #eff6ff;
@@ -246,7 +261,6 @@
     }
     .btn-action-qr { background: var(--pill-bg); color: var(--text); border: 1px solid var(--border); }
     .btn-action-album { background: var(--accent); color: #fff; }
-    
     .btn-vip-upgrade {
       background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
       color: #fff;
@@ -256,47 +270,49 @@
 
     .empty-box {
       text-align: center;
-      padding: 70px 20px;
+      padding: 50px 16px;
       background: var(--card-bg);
-      border-radius: 24px;
+      border-radius: 20px;
       border: 2px dashed var(--border);
     }
 
+    /* Төменгі навигация бары (Mobile Responsive) */
     .bottom-nav {
       position: fixed;
-      bottom: 20px;
+      bottom: 12px;
       left: 50%;
       transform: translateX(-50%);
       background: var(--card-bg);
       backdrop-filter: blur(16px);
       border: 1px solid var(--border);
-      box-shadow: 0 16px 36px rgba(0,0,0,0.14);
+      box-shadow: 0 16px 36px rgba(0,0,0,0.18);
       border-radius: 40px;
-      padding: 6px 18px;
+      padding: 4px 18px;
       display: flex;
       align-items: center;
-      gap: 28px;
+      gap: 20px;
       z-index: 50;
+      max-width: 92%;
     }
     .nav-item {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 3px;
+      gap: 2px;
       background: none;
       border: none;
       color: var(--text-muted);
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       font-weight: 700;
       cursor: pointer;
-      padding: 6px 10px;
+      padding: 6px;
     }
     .nav-item.active { color: var(--accent); }
     .nav-item svg { width: 22px; height: 22px; }
 
     .nav-add-btn {
-      width: 56px;
-      height: 56px;
+      width: 52px;
+      height: 52px;
       background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
       border-radius: 50%;
       border: 3px solid var(--card-bg);
@@ -307,26 +323,26 @@
       box-shadow: 0 8px 20px rgba(217, 119, 6, 0.4);
       cursor: pointer;
     }
-    .nav-add-btn:active { transform: scale(0.92); }
-    .nav-add-btn svg { width: 28px; height: 28px; }
+    .nav-add-btn svg { width: 26px; height: 26px; }
 
+    /* Модаль терезе */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(28, 25, 23, 0.6);
+      background: rgba(28, 25, 23, 0.65);
       backdrop-filter: blur(8px);
       z-index: 100;
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 16px;
     }
     .modal-card {
       background: var(--card-bg);
       width: 100%;
-      max-width: 500px;
-      border-radius: 24px;
-      padding: 26px;
+      max-width: 480px;
+      border-radius: 20px;
+      padding: 22px 18px;
       border: 1px solid var(--border);
       position: relative;
       max-height: 90vh;
@@ -334,8 +350,8 @@
     }
     .modal-close {
       position: absolute;
-      top: 20px;
-      right: 20px;
+      top: 16px;
+      right: 16px;
       background: var(--pill-bg);
       border: 1px solid var(--border);
       width: 32px;
@@ -344,40 +360,28 @@
       cursor: pointer;
       color: var(--text);
     }
-
     .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
-    .form-group label { font-size: 0.82rem; font-weight: 700; color: var(--text); }
+    .form-group label { font-size: 0.8rem; font-weight: 700; color: var(--text); }
     .form-group input {
       background: var(--pill-bg);
       border: 1px solid var(--border);
-      padding: 11px 14px;
+      padding: 12px 14px;
       border-radius: 12px;
       font-size: 0.95rem;
       color: var(--text);
       outline: none;
+      width: 100%;
     }
-    .form-group input:focus { border-color: var(--accent); }
-
     .cover-upload-zone {
       border: 2px dashed var(--accent);
-      border-radius: 14px;
-      padding: 16px;
+      border-radius: 12px;
+      padding: 14px;
       text-align: center;
       cursor: pointer;
       background: rgba(217, 119, 6, 0.04);
-      margin-top: 4px;
     }
     .cover-upload-zone input { display: none; }
-    .cover-preview {
-      width: 100%;
-      height: 140px;
-      object-fit: cover;
-      border-radius: 10px;
-      display: none;
-      margin-top: 10px;
-      border: 1px solid var(--border);
-    }
-
+    .cover-preview { width: 100%; height: 130px; object-fit: cover; border-radius: 10px; display: none; margin-top: 8px; }
     .btn-create {
       background: var(--accent);
       color: #fff;
@@ -392,8 +396,8 @@
     }
 
     .qr-modal-body { text-align: center; display: flex; flex-direction: column; align-items: center; }
-    .qr-box-wrap { background: #fff; padding: 18px; border-radius: 18px; border: 2px solid var(--border); margin: 16px 0; }
-    .link-copy-box { background: var(--pill-bg); padding: 10px 14px; border-radius: 10px; font-size: 0.8rem; color: var(--text); word-break: break-all; border: 1px solid var(--border); width: 100%; margin-bottom: 14px; }
+    .qr-box-wrap { background: #fff; padding: 14px; border-radius: 16px; border: 2px solid var(--border); margin: 14px 0; }
+    .link-copy-box { background: var(--pill-bg); padding: 10px 12px; border-radius: 10px; font-size: 0.75rem; color: var(--text); word-break: break-all; border: 1px solid var(--border); width: 100%; margin-bottom: 12px; }
   </style>
 </head>
 <body>
@@ -404,11 +408,10 @@
         ✨ TOY<span>DUMAN</span>
       </div>
       <div class="header-right">
-        <!-- Тек бас админ кірсе ғана Бас Админка кнопкасы шығады -->
-        <a id="btn-to-admin" href="admin.html" class="user-pill" style="display: none; background: #fef3c7; color: #b45309; text-decoration: none;">👑 Бас Админка</a>
-        <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()" title="Режимді ауыстыру">🌙</button>
+        <a id="btn-to-admin" href="admin.html" class="user-pill" style="display: none; background: #fef3c7; color: #b45309; text-decoration: none;">👑 Админ</a>
+        <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">🌙</button>
         <div class="user-pill">
-          <span id="user-email">Жүктелуде...</span>
+          <span class="user-email-text" id="user-email">Жүктелуде...</span>
           <button class="btn-logout" onclick="logout()">Шығу</button>
         </div>
       </div>
@@ -424,9 +427,9 @@
     <div class="events-grid" id="events-list"></div>
 
     <div class="empty-box" id="empty-state" style="display: none;">
-      <div style="font-size: 3rem;">💍</div>
-      <h3 style="color: var(--text); font-family: 'Playfair Display', serif; margin-top: 10px;">Әзірге ешқандай іс-шара ашылмаған</h3>
-      <p style="color: var(--text-muted); margin-top: 6px;">Төмендегі «+» батырмасын басып, алғашқы мерекеңізді құрыңыз!</p>
+      <div style="font-size: 2.5rem;">💍</div>
+      <h3 style="color: var(--text); font-family: 'Playfair Display', serif; margin-top: 8px;">Әзірге ешқандай іс-шара ашылмаған</h3>
+      <p style="color: var(--text-muted); margin-top: 4px; font-size: 0.85rem;">Төмендегі «+» батырмасын басып, алғашқы мерекеңізді құрыңыз!</p>
     </div>
   </div>
 
@@ -446,12 +449,12 @@
     </button>
   </div>
 
-  <!-- Модаль 1: Жаңа іс-шара құру -->
+  <!-- Модаль: Жаңа той құру -->
   <div class="modal-overlay" id="create-modal">
     <div class="modal-card">
       <button class="modal-close" onclick="closeCreateModal()">✕</button>
-      <h2 style="font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 800; margin-bottom: 4px; color: var(--text);">Жаңа іс-шара құру</h2>
-      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">Мереке атын енгізіңіз (Бастапқыда 25 фото тегін беріледі)</p>
+      <h2 style="font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 800; margin-bottom: 4px; color: var(--text);">Жаңа іс-шара құру</h2>
+      <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 14px;">Мереке атын енгізіңіз (Бастапқыда 25 фото тегін беріледі)</p>
 
       <div class="form-group">
         <label>Іс-шара атауы (Жұптың есімі):</label>
@@ -471,8 +474,8 @@
       <div class="form-group">
         <label>Жас жұбайлардың бас фотосы (Мұқаба):</label>
         <div class="cover-upload-zone" onclick="document.getElementById('cover-file-input').click()">
-          <span style="font-size: 1.5rem;">📸</span>
-          <p style="font-size: 0.82rem; font-weight: 600; color: var(--text); margin-top: 4px;">Жұптың фотосын таңдау</p>
+          <span style="font-size: 1.4rem;">📸</span>
+          <p style="font-size: 0.8rem; font-weight: 600; color: var(--text); margin-top: 4px;">Жұптың фотосын таңдау</p>
           <input type="file" id="cover-file-input" accept="image/*" onchange="previewCoverFile(event)">
         </div>
         <img id="cover-preview-img" class="cover-preview" alt="Cover Preview">
@@ -482,4 +485,262 @@
     </div>
   </div>
 
-  <!-- Мо
+  <!-- Модаль: QR терезесі -->
+  <div class="modal-overlay" id="qr-modal">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeQrModal()">✕</button>
+      <div class="qr-modal-body">
+        <h2 id="modal-qr-title" style="font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 800; color: var(--text);">QR-код</h2>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Қонақтар үстеліне арналған сілтеме</p>
+
+        <div class="qr-box-wrap" id="qrcode-container"></div>
+        <div class="link-copy-box" id="modal-qr-link"></div>
+
+        <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
+          <a id="modal-preview-btn" class="btn-action btn-action-preview" href="#" target="_blank">👁️ Қонақ көзімен көру (Предосмотр)</a>
+          <div class="action-row">
+            <a id="modal-album-btn" class="btn-action btn-action-album" href="#" target="_blank">🖼️ Галерея</a>
+            <button class="btn-action btn-action-qr" onclick="copyLink()">📋 Көшіру</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://heuqifmvwrzkvtcarrdt.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_cOyPl30aOSb6pdxCRfRNQA_Tn6dBaZg";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const MY_WHATSAPP_PHONE = "77067091805"; 
+
+    let currentUser = null;
+    let selectedCoverFile = null;
+
+    function initTheme() {
+      const savedTheme = localStorage.getItem('toyduman_theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      updateThemeBtn(savedTheme);
+    }
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const target = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', target);
+      localStorage.setItem('toyduman_theme', target);
+      updateThemeBtn(target);
+    }
+    function updateThemeBtn(theme) {
+      document.getElementById('theme-btn').innerText = theme === 'dark' ? '☀️' : '🌙';
+    }
+    initTheme();
+
+    async function checkAuth() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) {
+        window.location.href = "auth.html";
+        return;
+      }
+      currentUser = session.user;
+      document.getElementById('user-email').innerText = currentUser.email;
+
+      const { data: settingData } = await supabaseClient
+        .from('app_settings')
+        .select('value')
+        .eq('key', 'admin_email')
+        .single();
+
+      const adminEmail = settingData ? settingData.value : 'guldanaih@gmail.com';
+      if (currentUser.email.toLowerCase() === adminEmail.toLowerCase()) {
+        document.getElementById('btn-to-admin').style.display = 'inline-block';
+      }
+
+      loadMyEvents();
+    }
+
+    async function logout() {
+      await supabaseClient.auth.signOut();
+      window.location.href = "auth.html";
+    }
+
+    function previewCoverFile(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      selectedCoverFile = file;
+      const preview = document.getElementById('cover-preview-img');
+      preview.src = URL.createObjectURL(file);
+      preview.style.display = 'block';
+    }
+
+    function openWhatsAppUpgrade(title) {
+      const text = encodeURIComponent(`Сәлеметсіз бе! Мен ToyDuman-дағы "${title}" іс-шарасына толық VIP қолжетімділік алғым келеді.`);
+      window.open(`https://wa.me/${MY_WHATSAPP_PHONE}?text=${text}`, '_blank');
+    }
+
+    async function loadMyEvents() {
+      const listEl = document.getElementById('events-list');
+      const emptyEl = document.getElementById('empty-state');
+      listEl.innerHTML = '';
+
+      const { data: events, error } = await supabaseClient
+        .from('events')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .order('created_at', { ascending: false });
+
+      if (error || !events || events.length === 0) {
+        emptyEl.style.display = 'block';
+        return;
+      }
+      emptyEl.style.display = 'none';
+
+      const { data: photosData } = await supabaseClient
+        .from('event_photos')
+        .select('event_id');
+
+      const photoCounts = {};
+      if (photosData) {
+        photosData.forEach(p => photoCounts[p.event_id] = (photoCounts[p.event_id] || 0) + 1);
+      }
+
+      const currentOrigin = window.location.origin + window.location.pathname.replace('dashboard.html', '');
+
+      events.forEach(evt => {
+        const count = photoCounts[evt.id] || 0;
+        const isVip = evt.plan_type === 'vip';
+        const guestLink = `${currentOrigin}event.html?slug=${evt.slug}`;
+        const galleryLink = `${currentOrigin}gallery.html?slug=${evt.slug}`;
+        const dateFormatted = evt.event_date ? new Date(evt.event_date).toLocaleDateString('kk-KZ') : 'Күні белгіленбеген';
+
+        const defaultCover = 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80';
+        const coverImg = evt.cover_url || defaultCover;
+
+        const card = document.createElement('div');
+        card.className = 'event-card';
+        card.innerHTML = `
+          <img src="${coverImg}" class="card-cover-preview" alt="Мұқаба">
+          <div class="badge-wrap">
+            <span class="${isVip ? 'event-badge-vip' : 'event-badge-free'}">
+              ${isVip ? '👑 VIP Тариф' : '⏳ Тегін сынақ (25 фото)'}
+            </span>
+            <span class="photo-count-badge">📷 ${count} фото</span>
+          </div>
+          <h3 class="event-card-title">${evt.title}</h3>
+          <div class="event-meta">
+            <span>📅 Күні: <b>${dateFormatted}</b></span>
+            <span>📸 Лимит: <b>${isVip ? 'Шектеусіз (VIP)' : '25 фото'}</b></span>
+            <span>🔗 Код: <b>${evt.slug}</b></span>
+          </div>
+          <div class="card-actions">
+            ${!isVip ? `
+              <button class="btn-action btn-vip-upgrade" onclick="openWhatsAppUpgrade('${evt.title}')">
+                💎 VIP-ке өту (WhatsApp)
+              </button>
+            ` : ''}
+
+            <a class="btn-action btn-action-preview" href="${guestLink}" target="_blank">👁️ Предосмотр (Қонақ көзімен)</a>
+            <div class="action-row">
+              <button class="btn-action btn-action-qr" onclick="showQrModal('${evt.title}', '${guestLink}', '${galleryLink}')">📲 QR</button>
+              <a class="btn-action btn-action-album" href="${galleryLink}" target="_blank">🖼️ Галерея</a>
+            </div>
+          </div>
+        `;
+        listEl.appendChild(card);
+      });
+    }
+
+    function openCreateModal() { document.getElementById('create-modal').style.display = 'flex'; }
+    function closeCreateModal() { document.getElementById('create-modal').style.display = 'none'; }
+    function closeQrModal() { document.getElementById('qr-modal').style.display = 'none'; }
+
+    let currentGuestLink = '';
+    function showQrModal(title, guestLink, galleryLink) {
+      currentGuestLink = guestLink;
+      document.getElementById('modal-qr-title').innerText = title;
+      document.getElementById('modal-qr-link').innerText = guestLink;
+      document.getElementById('modal-album-btn').href = galleryLink;
+      document.getElementById('modal-preview-btn').href = guestLink;
+
+      const qrb = document.getElementById('qrcode-container');
+      qrb.innerHTML = '';
+      new QRCode(qrb, {
+        text: guestLink,
+        width: 180,
+        height: 180,
+        colorDark: "#1c1917",
+        colorLight: "#ffffff"
+      });
+
+      document.getElementById('qr-modal').style.display = 'flex';
+    }
+
+    function copyLink() {
+      navigator.clipboard.writeText(currentGuestLink);
+      alert("Сілтеме көшірілді!");
+    }
+
+    async function submitNewEvent() {
+      const title = document.getElementById('event-title').value.trim();
+      let slug = document.getElementById('event-slug').value.trim().toLowerCase();
+      const date = document.getElementById('event-date').value;
+      const btn = document.getElementById('btn-submit');
+
+      if (!title || !slug) { alert("Атауы мен сілтемені толтырыңыз!"); return; }
+
+      slug = slug.replace(/[^a-z0-9_-]/g, '-');
+      btn.disabled = true;
+      btn.innerText = "Құрылуда... ⏳";
+
+      try {
+        let coverUrl = null;
+
+        if (selectedCoverFile) {
+          const coverName = `covers/${slug}_${Date.now()}.jpg`;
+          const { error: coverErr } = await supabaseClient.storage
+            .from('photos')
+            .upload(coverName, selectedCoverFile, { contentType: 'image/jpeg' });
+
+          if (!coverErr) {
+            const { data: cUrlData } = supabaseClient.storage.from('photos').getPublicUrl(coverName);
+            coverUrl = cUrlData.publicUrl;
+          }
+        }
+
+        const { error } = await supabaseClient.from('events').insert([{
+          user_id: currentUser.id,
+          user_email: currentUser.email,
+          title: title,
+          slug: slug,
+          event_date: date || null,
+          shot_limit: 25,
+          plan_type: 'free',
+          cover_url: coverUrl,
+          default_lang: 'kz'
+        }]);
+
+        if (error) {
+          alert(error.code === '23505' ? "Бұл код бос емес! Басқа сөз жазыңыз." : error.message);
+          return;
+        }
+
+        closeCreateModal();
+        document.getElementById('event-title').value = '';
+        document.getElementById('event-slug').value = '';
+        document.getElementById('cover-preview-img').style.display = 'none';
+        selectedCoverFile = null;
+
+        await loadMyEvents();
+
+        const currentOrigin = window.location.origin + window.location.pathname.replace('dashboard.html', '');
+        showQrModal(title, `${currentOrigin}event.html?slug=${slug}`, `${currentOrigin}gallery.html?slug=${slug}`);
+      } catch (err) {
+        alert("Қате: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "✨ Тегін мерекені ашу & QR жасау";
+      }
+    }
+
+    checkAuth();
+  </script>
+</body>
+</html>
