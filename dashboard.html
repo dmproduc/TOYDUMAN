@@ -5,35 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Басқару Панелі — ToyDuman</title>
   
-  <!-- Supabase және QR кітапханалары -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --primary: #101828;
-      --accent: #2563eb;
-      --accent-hover: #1d4ed8;
       --bg: #f8fafc;
       --card-bg: #ffffff;
       --text: #0f172a;
       --text-muted: #64748b;
       --border: #e2e8f0;
+      --header-bg: rgba(255, 255, 255, 0.85);
+      --pill-bg: #f1f5f9;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --modal-bg: #ffffff;
+      --input-bg: #f8fafc;
       --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-      --shadow-md: 0 10px 25px -5px rgba(0,0,0,0.06), 0 8px 10px -6px rgba(0,0,0,0.04);
-      --shadow-lg: 0 20px 30px -10px rgba(0,0,0,0.1);
+      --shadow-md: 0 10px 25px -5px rgba(0,0,0,0.06);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; }
+    [data-theme="dark"] {
+      --bg: #0b0f17;
+      --card-bg: #151d2a;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #263346;
+      --header-bg: rgba(21, 29, 42, 0.85);
+      --pill-bg: #1e293b;
+      --accent: #3b82f6;
+      --accent-hover: #60a5fa;
+      --modal-bg: #151d2a;
+      --input-bg: #0b0f17;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow-md: 0 10px 25px -5px rgba(0,0,0,0.4);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; transition: background-color 0.2s, color 0.2s, border-color 0.2s; }
     body { background-color: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 90px; }
 
-    /* Жоғарғы шапка */
     header {
-      background: rgba(255, 255, 255, 0.85);
+      background: var(--header-bg);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
       position: sticky;
@@ -52,22 +67,44 @@
       font-size: 1.35rem;
       font-weight: 800;
       letter-spacing: -0.5px;
-      color: #0f172a;
+      color: var(--text);
       display: flex;
       align-items: center;
       gap: 6px;
     }
     .logo span { color: var(--accent); }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .theme-toggle {
+      background: var(--pill-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+
     .user-pill {
       display: flex;
       align-items: center;
       gap: 10px;
-      background: #f1f5f9;
+      background: var(--pill-bg);
       padding: 6px 14px;
       border-radius: 30px;
       font-size: 0.82rem;
       font-weight: 600;
-      color: #334155;
+      color: var(--text);
+      border: 1px solid var(--border);
     }
     .btn-logout {
       background: none;
@@ -79,7 +116,6 @@
       padding-left: 6px;
     }
 
-    /* Басты контейнер */
     .container {
       max-width: 900px;
       margin: 28px auto;
@@ -95,7 +131,7 @@
     .section-title {
       font-size: 1.45rem;
       font-weight: 800;
-      color: #0f172a;
+      color: var(--text);
     }
     .section-desc {
       font-size: 0.88rem;
@@ -103,7 +139,6 @@
       margin-top: 4px;
     }
 
-    /* Іс-шаралар торы (Карточкалар) */
     .events-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -116,7 +151,6 @@
       border: 1px solid var(--border);
       padding: 22px;
       box-shadow: var(--shadow-sm);
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
       flex-direction: column;
       position: relative;
@@ -124,25 +158,40 @@
     .event-card:hover {
       transform: translateY(-4px);
       box-shadow: var(--shadow-md);
-      border-color: #cbd5e1;
+    }
+    .badge-wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
     }
     .event-badge {
-      display: inline-block;
-      align-self: flex-start;
-      background: #eff6ff;
+      background: rgba(37, 99, 235, 0.12);
       color: var(--accent);
       font-size: 0.72rem;
       font-weight: 700;
       padding: 4px 10px;
       border-radius: 8px;
-      margin-bottom: 12px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
+    .photo-count-badge {
+      background: var(--pill-bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
     .event-card-title {
       font-size: 1.2rem;
       font-weight: 700;
-      color: #0f172a;
+      color: var(--text);
       margin-bottom: 8px;
     }
     .event-meta {
@@ -153,6 +202,7 @@
       gap: 5px;
       margin-bottom: 20px;
     }
+    .event-meta b { color: var(--text); }
 
     .card-actions {
       display: grid;
@@ -169,34 +219,28 @@
       text-decoration: none;
       cursor: pointer;
       border: none;
-      transition: 0.15s;
     }
-    .btn-action-qr { background: #f1f5f9; color: #1e293b; }
-    .btn-action-qr:hover { background: #e2e8f0; }
+    .btn-action-qr { background: var(--pill-bg); color: var(--text); border: 1px solid var(--border); }
     .btn-action-album { background: var(--accent); color: #fff; }
     .btn-action-album:hover { background: var(--accent-hover); }
 
-    /* Бос тұрған кездегі күй */
     .empty-box {
       text-align: center;
       padding: 60px 20px;
-      background: #fff;
+      background: var(--card-bg);
       border-radius: 20px;
-      border: 2px dashed #cbd5e1;
+      border: 2px dashed var(--border);
     }
-    .empty-box h3 { font-size: 1.15rem; color: #1e293b; margin-top: 14px; }
-    .empty-box p { font-size: 0.88rem; color: #64748b; margin-top: 6px; }
 
-    /* Төменгі сәнді навигация (Floating Bottom Bar) */
     .bottom-nav {
       position: fixed;
       bottom: 16px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(255, 255, 255, 0.92);
+      background: var(--card-bg);
       backdrop-filter: blur(16px);
-      border: 1px solid rgba(226, 232, 240, 0.8);
-      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
+      border: 1px solid var(--border);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.15);
       border-radius: 40px;
       padding: 6px 14px;
       display: flex;
@@ -211,40 +255,36 @@
       gap: 3px;
       background: none;
       border: none;
-      color: #64748b;
+      color: var(--text-muted);
       font-size: 0.72rem;
       font-weight: 600;
       cursor: pointer;
       padding: 6px 12px;
       border-radius: 20px;
-      transition: 0.2s;
     }
     .nav-item.active { color: var(--accent); }
     .nav-item svg { width: 22px; height: 22px; }
 
-    /* Ортадағы үлкен дөңгелек Плюсик */
     .nav-add-btn {
       width: 54px;
       height: 54px;
       background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
       border-radius: 50%;
-      border: 3px solid #fff;
+      border: 3px solid var(--card-bg);
       color: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
       box-shadow: 0 8px 18px rgba(37, 99, 235, 0.35);
       cursor: pointer;
-      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .nav-add-btn:active { transform: scale(0.92); }
     .nav-add-btn svg { width: 28px; height: 28px; }
 
-    /* Модальді терезе (Жаңа той құру) */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(15, 23, 42, 0.45);
+      background: rgba(15, 23, 42, 0.55);
       backdrop-filter: blur(6px);
       z-index: 100;
       display: none;
@@ -253,31 +293,25 @@
       padding: 20px;
     }
     .modal-card {
-      background: #fff;
+      background: var(--modal-bg);
       width: 100%;
       max-width: 480px;
       border-radius: 24px;
       padding: 28px;
-      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
       position: relative;
-      animation: modalPop 0.25s ease-out;
-    }
-    @keyframes modalPop {
-      from { transform: scale(0.95); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
     }
     .modal-close {
       position: absolute;
       top: 20px;
       right: 20px;
-      background: #f1f5f9;
-      border: none;
+      background: var(--pill-bg);
+      border: 1px solid var(--border);
       width: 32px;
       height: 32px;
       border-radius: 50%;
-      font-size: 1.1rem;
       cursor: pointer;
-      color: #64748b;
+      color: var(--text);
     }
 
     .form-group {
@@ -289,26 +323,23 @@
     .form-group label {
       font-size: 0.82rem;
       font-weight: 600;
-      color: #334155;
+      color: var(--text);
     }
     .form-group input, .form-group select {
-      background: #f8fafc;
-      border: 1px solid #cbd5e1;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
       padding: 12px 14px;
       border-radius: 12px;
       font-size: 0.95rem;
-      color: #0f172a;
+      color: var(--text);
       outline: none;
-      transition: 0.2s;
     }
     .form-group input:focus, .form-group select:focus {
       border-color: var(--accent);
-      background: #fff;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
     }
 
     .btn-create {
-      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      background: var(--accent);
       color: #fff;
       border: none;
       padding: 14px;
@@ -318,10 +349,8 @@
       width: 100%;
       cursor: pointer;
       margin-top: 8px;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
     }
 
-    /* QR Модаль терезесі */
     .qr-modal-body {
       text-align: center;
       display: flex;
@@ -332,18 +361,17 @@
       background: #fff;
       padding: 16px;
       border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-      border: 1px solid #e2e8f0;
+      border: 1px solid var(--border);
       margin: 16px 0;
     }
     .link-copy-box {
-      background: #f8fafc;
+      background: var(--input-bg);
       padding: 10px 14px;
       border-radius: 10px;
       font-size: 0.8rem;
-      color: #334155;
+      color: var(--text);
       word-break: break-all;
-      border: 1px solid #e2e8f0;
+      border: 1px solid var(--border);
       width: 100%;
       margin-bottom: 14px;
     }
@@ -351,20 +379,21 @@
 </head>
 <body>
 
-  <!-- Жоғарғы Навигация -->
   <header>
     <div class="header-inner">
       <div class="logo">
         ✨ TOY<span>DUMAN</span>
       </div>
-      <div class="user-pill">
-        <span id="user-email">Жүктелуде...</span>
-        <button class="btn-logout" onclick="logout()">Шығу</button>
+      <div class="header-right">
+        <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()" title="Режимді ауыстыру">🌙</button>
+        <div class="user-pill">
+          <span id="user-email">Жүктелуде...</span>
+          <button class="btn-logout" onclick="logout()">Шығу</button>
+        </div>
       </div>
     </div>
   </header>
 
-  <!-- Басты парақша -->
   <div class="container">
     <div class="section-title-wrap">
       <div>
@@ -373,25 +402,21 @@
       </div>
     </div>
 
-    <!-- Тойлар карточкалары шығатын тор -->
     <div class="events-grid" id="events-list"></div>
 
-    <!-- Әзірге той жоқ болса -->
     <div class="empty-box" id="empty-state" style="display: none;">
       <div style="font-size: 3rem;">📁</div>
-      <h3>Әзірге ешқандай іс-шара ашылмаған</h3>
-      <p>Төмендегі «+» батырмасын басып, алғашқы тойыңызды немесе мерекеңізді құрыңыз!</p>
+      <h3 style="color: var(--text);">Әзірге ешқандай іс-шара ашылмаған</h3>
+      <p style="color: var(--text-muted); margin-top: 6px;">Төмендегі «+» батырмасын басып, алғашқы мерекеңізді құрыңыз!</p>
     </div>
   </div>
 
-  <!-- Төменгі сәнді Батырмалар Бары -->
   <div class="bottom-nav">
     <button class="nav-item active" onclick="loadMyEvents()">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
       Іс-шаралар
     </button>
 
-    <!-- Ортадағы Плюсик -->
     <button class="nav-add-btn" onclick="openCreateModal()" title="Жаңа той құру">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
     </button>
@@ -402,216 +427,17 @@
     </button>
   </div>
 
-  <!-- Модаль 1: Жаңа той құру терезесі -->
+  <!-- Модаль 1: Жаңа іс-шара құру -->
   <div class="modal-overlay" id="create-modal">
     <div class="modal-card">
       <button class="modal-close" onclick="closeCreateModal()">✕</button>
-      <h2 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 6px;">Жаңа іс-шара құру</h2>
-      <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 20px;">Мереке атын және қонақтарға арналған сілтемені енгізіңіз</p>
+      <h2 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 6px; color: var(--text);">Жаңа іс-шара құру</h2>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">Мереке атын және қонақтарға арналған сілтемені енгізіңіз</p>
 
       <div class="form-group">
         <label>Іс-шара түрі мен атауы:</label>
-        <input type="text" id="event-title" placeholder="Мысалы: Бауыржан & Аружан (Үйлену той)">
+        <input type="text" id="event-title" placeholder="Мысалы: Бауыржан & Аружан">
       </div>
 
       <div class="form-group">
-        <label>Қысқаша сілтеме коды (тек латынша):</label>
-        <input type="text" id="event-slug" placeholder="bauyrzhan-aruzhan">
-      </div>
-
-      <div class="form-group">
-        <label>Мереке өтетін күн:</label>
-        <input type="date" id="event-date">
-      </div>
-
-      <div class="form-group">
-        <label>Бір қонаққа кадр шектеуі:</label>
-        <select id="event-limit">
-          <option value="15">15 кадр</option>
-          <option value="25" selected>25 кадр</option>
-          <option value="50">50 кадр</option>
-          <option value="999">Шектеусіз (Лимитсіз)</option>
-        </select>
-      </div>
-
-      <button class="btn-create" id="btn-submit" onclick="submitNewEvent()">🎉 Мерекені ашу & QR жасау</button>
-    </div>
-  </div>
-
-  <!-- Модаль 2: QR-кодты көрсету терезесі -->
-  <div class="modal-overlay" id="qr-modal">
-    <div class="modal-card">
-      <button class="modal-close" onclick="closeQrModal()">✕</button>
-      <div class="qr-modal-body">
-        <h2 id="modal-qr-title" style="font-size: 1.25rem; font-weight: 800;">QR-код</h2>
-        <p style="font-size: 0.85rem; color: #64748b; margin-top: 4px;">Қонақтар үстеліне қою үшін жүктеңіз немесе басып шығарыңыз</p>
-
-        <div class="qr-box-wrap" id="qrcode-container"></div>
-        <div class="link-copy-box" id="modal-qr-link"></div>
-
-        <div style="display: flex; gap: 8px; width: 100%;">
-          <a id="modal-album-btn" class="btn-action btn-action-album" style="flex: 1; padding: 12px;" href="#" target="_blank">🖼️ Альбомды ашу</a>
-          <button class="btn-action btn-action-qr" style="flex: 1; padding: 12px;" onclick="copyLink()">📋 Сілтемені көшіру</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const SUPABASE_URL = "https://heuqifmvwrzkvtcarrdt.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_cOyPl30aOSb6pdxCRfRNQA_Tn6dBaZg";
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    let currentUser = null;
-
-    // Жүйеге кірген қолданушыны тексеру
-    async function checkAuth() {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (!session) {
-        window.location.href = "auth.html";
-        return;
-      }
-      currentUser = session.user;
-      document.getElementById('user-email').innerText = currentUser.email;
-      loadMyEvents();
-    }
-
-    async function logout() {
-      await supabaseClient.auth.signOut();
-      window.location.href = "auth.html";
-    }
-
-    // Менің тойларымның тізімін базадан жүктеу
-    async function loadMyEvents() {
-      const listEl = document.getElementById('events-list');
-      const emptyEl = document.getElementById('empty-state');
-      listEl.innerHTML = '';
-
-      const { data: events, error } = await supabaseClient
-        .from('events')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error || !events || events.length === 0) {
-        emptyEl.style.display = 'block';
-        return;
-      }
-
-      emptyEl.style.display = 'none';
-
-      const currentOrigin = window.location.origin + window.location.pathname.replace('dashboard.html', '');
-
-      events.forEach(evt => {
-        const guestLink = `${currentOrigin}event.html?slug=${evt.slug}`;
-        const galleryLink = `${currentOrigin}gallery.html?slug=${evt.slug}`;
-        const dateFormatted = evt.event_date ? new Date(evt.event_date).toLocaleDateString('kk-KZ') : 'Күні белгіленбеген';
-
-        const card = document.createElement('div');
-        card.className = 'event-card';
-        card.innerHTML = `
-          <span class="event-badge">✨ Белсенді</span>
-          <h3 class="event-card-title">${evt.title}</h3>
-          <div class="event-meta">
-            <span>📅 Өтетін күні: <b>${dateFormatted}</b></span>
-            <span>📸 Лимит: <b>${evt.shot_limit >= 999 ? 'Шектеусіз' : evt.shot_limit + ' кадр'}</b></span>
-            <span>🔗 Код: <b>${evt.slug}</b></span>
-          </div>
-          <div class="card-actions">
-            <button class="btn-action btn-action-qr" onclick="showQrModal('${evt.title}', '${guestLink}', '${galleryLink}')">📲 QR-код</button>
-            <a class="btn-action btn-action-album" href="${galleryLink}" target="_blank">🖼️ Фотоальбом</a>
-          </div>
-        `;
-        listEl.appendChild(card);
-      });
-    }
-
-    // Модаль терезелерді басқару
-    function openCreateModal() { document.getElementById('create-modal').style.display = 'flex'; }
-    function closeCreateModal() { document.getElementById('create-modal').style.display = 'none'; }
-    function closeQrModal() { document.getElementById('qr-modal').style.display = 'none'; }
-
-    let currentGuestLink = '';
-    function showQrModal(title, guestLink, galleryLink) {
-      currentGuestLink = guestLink;
-      document.getElementById('modal-qr-title').innerText = title;
-      document.getElementById('modal-qr-link').innerText = guestLink;
-      document.getElementById('modal-album-btn').href = galleryLink;
-
-      const qrb = document.getElementById('qrcode-container');
-      qrb.innerHTML = '';
-      new QRCode(qrb, {
-        text: guestLink,
-        width: 190,
-        height: 190,
-        colorDark: "#0f172a",
-        colorLight: "#ffffff"
-      });
-
-      document.getElementById('qr-modal').style.display = 'flex';
-    }
-
-    function copyLink() {
-      navigator.clipboard.writeText(currentGuestLink);
-      alert("Сілтеме көшірілді! Қонақтарға жібере аласыз.");
-    }
-
-    // Жаңа той құру функциясы
-    async function submitNewEvent() {
-      const title = document.getElementById('event-title').value.trim();
-      let slug = document.getElementById('event-slug').value.trim().toLowerCase();
-      const date = document.getElementById('event-date').value;
-      const limit = parseInt(document.getElementById('event-limit').value);
-      const btn = document.getElementById('btn-submit');
-
-      if (!title || !slug) {
-        alert("Той атауы мен қысқаша сілтемені толтырыңыз!");
-        return;
-      }
-
-      slug = slug.replace(/[^a-z0-9_-]/g, '-');
-      btn.disabled = true;
-      btn.innerText = "Құрылуда... ⏳";
-
-      try {
-        const { error } = await supabaseClient
-          .from('events')
-          .insert([{
-            user_id: currentUser ? currentUser.id : null,
-            title: title,
-            slug: slug,
-            event_date: date || null,
-            shot_limit: limit,
-            default_lang: 'kz'
-          }]);
-
-        if (error) {
-          if (error.code === '23505') {
-            alert("Бұл қысқаша код бұрыннан бар! Басқаша сөз ойлап табыңыз.");
-          } else {
-            alert("Қате: " + error.message);
-          }
-          return;
-        }
-
-        closeCreateModal();
-        document.getElementById('event-title').value = '';
-        document.getElementById('event-slug').value = '';
-
-        // Тізімді қайта жаңарту
-        await loadMyEvents();
-
-        const currentOrigin = window.location.origin + window.location.pathname.replace('dashboard.html', '');
-        showQrModal(title, `${currentOrigin}event.html?slug=${slug}`, `${currentOrigin}gallery.html?slug=${slug}`);
-
-      } catch (err) {
-        alert("Жүйелік қате: " + err.message);
-      } finally {
-        btn.disabled = false;
-        btn.innerText = "🎉 Мерекені ашу & QR жасау";
-      }
-    }
-
-    checkAuth();
-  </script>
-</body>
-</html>
+        <label>Қысқаша сі
