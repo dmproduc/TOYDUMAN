@@ -7,7 +7,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
@@ -112,20 +112,20 @@
     .msg.error { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
     .msg.success { background: rgba(16, 185, 129, 0.1); color: #10b981; }
 
-    /* Polaroid естеліктер */
+    /* Естеліктер лентасы */
     .feed-title { font-size: 1.2rem; font-weight: 800; color: var(--text); margin-top: 14px; text-align: center; }
     .feed { display: flex; flex-direction: column; gap: 24px; padding: 10px 4px; }
-    .polaroid-card { background: #ffffff; padding: 12px 12px 18px 12px; border-radius: 4px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border: 1px solid rgba(0,0,0,0.06); }
-    .polaroid-img { width: 100%; height: 300px; object-fit: cover; display: block; border-radius: 2px; }
-    .polaroid-content { padding: 12px 6px 4px 6px; text-align: center; }
-    .polaroid-wish { font-family: 'Caveat', cursive; font-size: 1.45rem; color: #1e293b; line-height: 1.25; margin-bottom: 6px; }
-    .polaroid-author { font-size: 0.8rem; font-weight: 700; color: #b45309; text-transform: uppercase; }
+    .memory-card { background: #ffffff; padding: 12px 12px 18px 12px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border: 1px solid rgba(0,0,0,0.06); }
+    .memory-img { width: 100%; height: 320px; object-fit: cover; display: block; border-radius: 8px; }
+    .memory-content { padding: 12px 6px 4px 6px; text-align: center; }
+    .memory-wish { font-family: 'Caveat', cursive; font-size: 1.45rem; color: #1e293b; line-height: 1.25; margin-bottom: 6px; }
+    .memory-author { font-size: 0.8rem; font-weight: 700; color: #b45309; text-transform: uppercase; }
     .audio-player-custom { width: 100%; height: 34px; margin-top: 10px; }
   </style>
 </head>
 <body>
 
-  <!-- Hero Баннер: мұқаба суреті осында шығады -->
+  <!-- Hero Баннер -->
   <div class="hero-banner" id="hero-banner">
     <h1 class="hero-title" id="event-title">Жүктелуде...</h1>
     <div class="timer-wrap" id="timer-box">
@@ -163,11 +163,12 @@
         <textarea id="guest-wish" rows="2" placeholder="Бақытты болыңыздар, мәңгі бірге!"></textarea>
       </div>
 
-      <button class="btn" id="btn-send" onclick="uploadPhoto()">✨ Естелікті Polaroid етіп сақтау</button>
+      <button class="btn" id="btn-send" onclick="uploadPhoto()">✨ Естелікті сақтау</button>
       <div class="msg" id="msg-box"></div>
     </div>
 
-    <div class="feed-title">🎞️ Менің Polaroid естеліктерім</div>
+    <!-- Түзетілген қарапайым таза атау -->
+    <div class="feed-title">📸 Мен жүктеген естеліктер</div>
     <div class="feed" id="feed-list"></div>
   </div>
 
@@ -182,7 +183,6 @@
     let compressedBlob = null;
     let guestLimit = 25;
 
-    // Дыбыс жазу айнымалылары
     let mediaRecorder = null;
     let audioChunks = [];
     let audioBlob = null;
@@ -194,7 +194,6 @@
       myPhotosList = JSON.parse(localStorage.getItem(`my_photos_${slug}`)) || [];
     } catch(e) { myPhotosList = []; }
 
-    // Телефонның аудио кодегін тексеру
     function getSupportedMimeType() {
       const types = ['audio/mp4', 'audio/aac', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg'];
       for (let t of types) {
@@ -253,14 +252,13 @@
       document.getElementById('event-title').innerText = currentEvent.title;
       guestLimit = currentEvent.shot_limit || 25;
 
-      // МҰҚАБА СУРЕТІН ҚОЮ:
       const defaultCover = 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80';
       const finalCover = currentEvent.cover_url || defaultCover;
       document.getElementById('hero-banner').style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.75)), url('${finalCover}')`;
 
       startTimer(currentEvent.event_date);
       updateLimitUI();
-      renderPolaroidFeed();
+      renderFeed();
     }
 
     function startTimer(targetDateStr) {
@@ -324,10 +322,92 @@
       const btn = document.getElementById('btn-send');
       const msgBox = document.getElementById('msg-box');
       btn.disabled = true;
-      btn.innerText = "Polaroid дайындалуда... ⏳";
+      btn.innerText = "Сақталуда... ⏳";
 
       try {
         const photoName = `${currentEvent.id}/${Date.now()}_img.jpg`;
         await supabaseClient.storage.from('photos').upload(photoName, compressedBlob, { contentType: 'image/jpeg' });
         const { data: urlData } = supabaseClient.storage.from('photos').getPublicUrl(photoName);
-        const photoUrl = url
+        const photoUrl = urlData.publicUrl;
+
+        let finalAudioUrl = null;
+        if (audioBlob) {
+          const ext = selectedMimeType.includes('mp4') ? 'mp4' : 'webm';
+          const audioName = `${currentEvent.id}/${Date.now()}_voice.${ext}`;
+          await supabaseClient.storage.from('photos').upload(audioName, audioBlob, { 
+            contentType: audioBlob.type || 'audio/webm' 
+          });
+          const { data: audioData } = supabaseClient.storage.from('photos').getPublicUrl(audioName);
+          finalAudioUrl = audioData.publicUrl;
+        }
+
+        const author = document.getElementById('guest-name').value.trim() || 'Қонақ';
+        const wish = document.getElementById('guest-wish').value.trim() || 'Бақытты болыңыздар!';
+
+        await supabaseClient.from('event_photos').insert([{
+          event_id: currentEvent.id,
+          photo_url: photoUrl,
+          author_name: author,
+          wishes: wish,
+          audio_url: finalAudioUrl
+        }]);
+
+        myPhotosList.unshift({ photo_url: photoUrl, author_name: author, wishes: wish, audio_url: finalAudioUrl });
+        localStorage.setItem(`my_photos_${slug}`, JSON.stringify(myPhotosList));
+
+        updateLimitUI();
+        renderFeed();
+
+        msgBox.className = 'msg success';
+        msgBox.innerText = "✨ Естелік сәтті сақталды!";
+        msgBox.style.display = 'block';
+
+        document.getElementById('preview').style.display = 'none';
+        document.getElementById('file-input').value = '';
+        document.getElementById('guest-wish').value = '';
+        document.getElementById('recorded-audio-preview').style.display = 'none';
+        document.getElementById('rec-status').innerText = 'Жазылмаған';
+        compressedBlob = null;
+        audioBlob = null;
+
+        setTimeout(() => msgBox.style.display = 'none', 3000);
+      } catch (err) {
+        msgBox.className = 'msg error';
+        msgBox.innerText = "Қате: " + err.message;
+        msgBox.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "✨ Естелікті сақтау";
+      }
+    }
+
+    function renderFeed() {
+      const feed = document.getElementById('feed-list');
+      feed.innerHTML = '';
+      if (myPhotosList.length === 0) {
+        feed.innerHTML = '<div style="text-align:center; color:#78716c; font-size:0.85rem; padding:20px;">Әзірге фотолар жоқ 📷</div>';
+        return;
+      }
+      myPhotosList.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'memory-card';
+        div.innerHTML = `
+          <img class="memory-img" src="${item.photo_url}" loading="lazy">
+          <div class="memory-content">
+            <div class="memory-wish">"${item.wishes}"</div>
+            <div class="memory-author">❤️ ${item.author_name}</div>
+            ${item.audio_url ? `
+              <audio class="audio-player-custom" controls preload="none">
+                <source src="${item.audio_url}">
+              </audio>
+            ` : ''}
+          </div>
+        `;
+        feed.appendChild(div);
+      });
+    }
+
+    initEvent();
+  </script>
+</body>
+</html>
