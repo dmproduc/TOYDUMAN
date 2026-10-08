@@ -15,13 +15,14 @@
   <style>
     :root {
       --bg: #fcfbf9;
-      --card-bg: #ffffff;
+      --card-bg: rgba(255, 255, 255, 0.85);
       --text-main: #121212;
-      --text-muted: #737373;
-      --border: #eae8e4;
+      --text-muted: #6b7280;
+      --border-subtle: rgba(0, 0, 0, 0.08);
+      --glass-btn-bg: rgba(244, 242, 238, 0.8);
+      --glass-btn-border: rgba(0, 0, 0, 0.08);
       --radius-lg: 24px;
-      --radius-md: 16px;
-      --radius-sm: 10px;
+      --radius-md: 14px;
     }
 
     * { 
@@ -31,16 +32,17 @@
       font-family: 'Onest', -apple-system, BlinkMacSystemFont, sans-serif; 
       -webkit-tap-highlight-color: transparent; 
     }
-    body { background-color: var(--bg); color: var(--text-main); min-height: 100vh; padding-bottom: 110px; }
+    body { background-color: var(--bg); color: var(--text-main); min-height: 100vh; padding-bottom: 120px; }
 
     header {
-      background: rgba(252, 251, 249, 0.94);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
+      background: rgba(252, 251, 249, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
       position: sticky;
       top: 0;
       z-index: 50;
-      padding: 14px 20px;
+      padding: 12px 18px;
     }
     .header-inner {
       max-width: 860px;
@@ -48,82 +50,100 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 10px;
     }
     .brand {
       font-family: 'Cormorant Garamond', Georgia, serif;
-      font-size: 1.6rem;
+      font-size: 1.55rem;
       font-weight: 700;
       letter-spacing: -0.5px;
       color: var(--text-main);
       text-decoration: none;
+      white-space: nowrap;
     }
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
+    }
+    .btn-admin-pill {
+      background: #121212;
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 20px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
     }
     .user-tag {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--text-main);
-      background: #f2f0eb;
-      padding: 6px 14px;
+      background: rgba(0, 0, 0, 0.04);
+      padding: 6px 12px;
       border-radius: 20px;
       font-weight: 600;
-      max-width: 220px;
+      max-width: 140px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      border: 1px solid var(--border-subtle);
     }
     .btn-logout {
-      background: #fee2e2;
-      border: 1px solid #fecaca;
-      font-size: 0.82rem;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      font-size: 0.78rem;
       color: #dc2626;
       cursor: pointer;
       font-weight: 700;
-      padding: 6px 14px;
+      padding: 6px 12px;
       border-radius: 20px;
+      transition: all 0.2s;
     }
-    .btn-logout:hover { background: #fca5a5; color: #fff; }
+    .btn-logout:active { transform: scale(0.95); }
 
     .container {
       max-width: 860px;
-      margin: 24px auto;
+      margin: 20px auto;
       padding: 0 16px;
     }
 
-    .hero-title-box { margin-bottom: 24px; }
+    .hero-title-box { margin-bottom: 20px; }
     .hero-title-box h1 {
       font-family: 'Cormorant Garamond', Georgia, serif;
-      font-size: 2.3rem;
+      font-size: 2.2rem;
       font-weight: 700;
-      line-height: 1.2;
+      line-height: 1.15;
       color: var(--text-main);
     }
-    .hero-title-box p { font-size: 0.9rem; color: var(--text-muted); margin-top: 6px; }
+    .hero-title-box p { font-size: 0.88rem; color: var(--text-muted); margin-top: 4px; }
 
     .events-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 20px;
+      gap: 18px;
     }
 
     .event-card {
       background: var(--card-bg);
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-subtle);
       border-radius: var(--radius-lg);
       padding: 16px;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+      backdrop-filter: blur(10px);
     }
     .card-cover {
       width: 100%;
-      height: 190px;
-      border-radius: var(--radius-md);
+      height: 180px;
+      border-radius: 18px;
       object-fit: cover;
       background: #eae8e4;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
     .card-top-info {
       display: flex;
@@ -139,70 +159,106 @@
       padding: 4px 10px;
       border-radius: 20px;
     }
-    .status-free { background: #f2f0eb; color: #666; }
+    .status-free { background: rgba(0, 0, 0, 0.05); color: #4b5563; border: 1px solid var(--border-subtle); }
     .status-vip { background: #121212; color: #fff; }
-    .photo-stat { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
+    .photo-stat { font-size: 0.78rem; font-weight: 600; color: var(--text-muted); }
 
     .card-title {
       font-family: 'Cormorant Garamond', Georgia, serif;
-      font-size: 1.6rem;
+      font-size: 1.55rem;
       font-weight: 700;
       color: var(--text-main);
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
-    .card-date { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 16px; }
+    .card-date { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 14px; }
 
+    /* APPLE GLASS СТИЛІНДЕГІ КНОПКАЛАР ТОРЫ */
     .card-btn-group { display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
     .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
-    .btn-luxury {
-      padding: 11px 16px;
-      border-radius: var(--radius-sm);
-      font-size: 0.84rem;
+    .btn-glass {
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
       font-weight: 600;
       text-align: center;
       text-decoration: none;
       cursor: pointer;
-      border: 1px solid transparent;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1px solid var(--glass-btn-border);
+      background: var(--glass-btn-bg);
+      color: var(--text-main);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
     }
-    .btn-dark { background: #121212; color: #ffffff; }
-    .btn-outline { background: #ffffff; color: #121212; border: 1px solid var(--border); }
-    .btn-upgrade-vip { background: #faf5eb; color: #b45309; border: 1px solid #fde68a; width: 100%; }
-    .btn-slideshow { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+    .btn-glass:active {
+      transform: scale(0.97);
+      background: rgba(230, 228, 222, 0.9);
+    }
+    .btn-glass-primary {
+      background: #121212;
+      color: #ffffff;
+      border-color: #121212;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+    }
+    .btn-glass-primary:active {
+      background: #2a2a2a;
+    }
+    .btn-glass-vip {
+      background: linear-gradient(135deg, rgba(254, 243, 199, 0.9) 0%, rgba(253, 230, 138, 0.9) 100%);
+      color: #92400e;
+      border-color: rgba(245, 158, 11, 0.3);
+      font-weight: 700;
+    }
+    .btn-glass-slideshow {
+      background: rgba(239, 246, 255, 0.9);
+      color: #1d4ed8;
+      border-color: rgba(191, 219, 254, 0.8);
+      font-weight: 700;
+    }
 
+    /* ТӨМЕНГІ БАТЫРМА */
     .bottom-bar {
       position: fixed;
-      bottom: 24px;
+      bottom: 20px;
       left: 0;
       width: 100%;
       display: flex;
       justify-content: center;
       z-index: 60;
+      padding: 0 20px;
     }
-    .btn-add-circle {
-      background: #121212;
+    .btn-add-main {
+      background: rgba(18, 18, 18, 0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       color: #fff;
-      border: none;
-      padding: 16px 32px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 14px 28px;
       border-radius: 40px;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       font-weight: 700;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+      box-shadow: 0 16px 36px rgba(0,0,0,0.22);
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       cursor: pointer;
+      transition: transform 0.15s;
     }
+    .btn-add-main:active { transform: scale(0.96); }
 
+    /* МОДАЛЬ ТЕРЕЗЕ */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.55);
-      backdrop-filter: blur(8px);
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       z-index: 100;
       display: none;
       align-items: center;
@@ -210,58 +266,62 @@
       padding: 16px;
     }
     .modal-window {
-      background: #ffffff;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
       width: 100%;
-      max-width: 440px;
+      max-width: 420px;
       border-radius: var(--radius-lg);
       padding: 24px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      box-shadow: 0 24px 50px rgba(0,0,0,0.18);
+      border: 1px solid var(--border-subtle);
       position: relative;
     }
     .modal-close {
       position: absolute;
       top: 18px;
       right: 18px;
-      background: #f2f0eb;
+      background: rgba(0, 0, 0, 0.05);
       border: none;
       width: 32px;
       height: 32px;
       border-radius: 50%;
+      font-size: 1.1rem;
       cursor: pointer;
+      color: #666;
     }
-
     .modal-window h3 {
       font-family: 'Cormorant Garamond', Georgia, serif;
       font-size: 1.6rem;
       font-weight: 700;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
-    .modal-window p { font-size: 0.84rem; color: var(--text-muted); margin-bottom: 20px; }
+    .modal-window p { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 18px; }
 
-    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
-    .field label { font-size: 0.8rem; font-weight: 600; color: #555; }
+    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    .field label { font-size: 0.78rem; font-weight: 600; color: #4b5563; }
     .field input {
-      background: #faf9f7;
-      border: 1px solid var(--border);
+      background: rgba(244, 242, 238, 0.8);
+      border: 1px solid var(--border-subtle);
       padding: 12px 14px;
-      border-radius: var(--radius-sm);
-      font-size: 0.92rem;
+      border-radius: 12px;
+      font-size: 0.9rem;
       outline: none;
     }
+    .field input:focus { border-color: #121212; background: #fff; }
     .file-drop {
-      border: 1px dashed var(--border);
-      background: #faf9f7;
-      border-radius: var(--radius-sm);
-      padding: 16px;
+      border: 1px dashed rgba(0,0,0,0.2);
+      background: rgba(244, 242, 238, 0.5);
+      border-radius: 12px;
+      padding: 14px;
       text-align: center;
       cursor: pointer;
     }
     .file-drop input { display: none; }
-    .preview-box { width: 100%; height: 120px; object-fit: cover; border-radius: var(--radius-sm); display: none; margin-top: 10px; }
+    .preview-box { width: 100%; height: 110px; object-fit: cover; border-radius: 10px; display: none; margin-top: 8px; }
 
     .qr-center { text-align: center; display: flex; flex-direction: column; align-items: center; }
-    .qr-frame { background: #fff; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius-md); margin: 16px 0; }
-    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+    .qr-frame { background: #fff; padding: 14px; border: 1px solid var(--border-subtle); border-radius: 18px; margin: 14px 0; }
+    .empty-state { text-align: center; padding: 70px 20px; color: var(--text-muted); }
   </style>
 </head>
 <body>
@@ -270,7 +330,7 @@
     <div class="header-inner">
       <a href="dashboard.html" class="brand">ToyDuman</a>
       <div class="header-actions">
-        <a id="btn-admin-link" href="admin.html" style="display: none; font-size: 0.78rem; color: #b45309; font-weight: 700; text-decoration: none;">👑 Админ</a>
+        <a id="btn-admin-link" href="admin.html" class="btn-admin-pill" style="display: none;">👑 Админ</a>
         <div class="user-tag" id="user-email">...</div>
         <button class="btn-logout" onclick="window.logout()">Шығу</button>
       </div>
@@ -292,12 +352,12 @@
   </div>
 
   <div class="bottom-bar">
-    <button class="btn-add-circle" onclick="window.openCreateModal()">
+    <button class="btn-add-main" onclick="window.openCreateModal()">
       <span>＋</span> Жаңа альбом ашу
     </button>
   </div>
 
-  <!-- Модаль: Той ашу -->
+  <!-- Модаль: Жаңа той -->
   <div class="modal-overlay" id="create-modal">
     <div class="modal-window">
       <button class="modal-close" onclick="window.closeCreateModal()">✕</button>
@@ -322,19 +382,19 @@
       <div class="field">
         <label>Басты мұқаба суреті:</label>
         <div class="file-drop" onclick="document.getElementById('cover-file-input').click()">
-          <span style="font-size: 0.85rem; color: #777;">📷 Фото таңдау</span>
+          <span style="font-size: 0.82rem; color: #666;">📷 Фото таңдау</span>
           <input type="file" id="cover-file-input" accept="image/*" onchange="window.previewCoverFile(event)">
         </div>
         <img id="cover-preview-img" class="preview-box" alt="Cover">
       </div>
 
-      <button class="btn-luxury btn-dark" style="width: 100%; margin-top: 12px; padding: 13px;" id="btn-submit" onclick="window.submitNewEvent()">
+      <button class="btn-glass btn-glass-primary" style="width: 100%; margin-top: 10px; padding: 13px;" id="btn-submit" onclick="window.submitNewEvent()">
         Альбомды құру
       </button>
     </div>
   </div>
 
-  <!-- Модаль: QR көрсету -->
+  <!-- Модаль: QR -->
   <div class="modal-overlay" id="qr-modal">
     <div class="modal-window">
       <button class="modal-close" onclick="window.closeQrModal()">✕</button>
@@ -345,8 +405,8 @@
         <div class="qr-frame" id="qrcode-container"></div>
 
         <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
-          <a id="modal-preview-btn" class="btn-luxury btn-dark" href="#" target="_blank">👁️ Қонақ көзімен қарау</a>
-          <button class="btn-luxury btn-outline" onclick="window.copyLink()">📋 Сілтемені көшіру</button>
+          <a id="modal-preview-btn" class="btn-glass btn-glass-primary" href="#" target="_blank">👁️ Қонақ көзімен қарау</a>
+          <button class="btn-glass" onclick="window.copyLink()">📋 Сілтемені көшіру</button>
         </div>
       </div>
     </div>
@@ -358,6 +418,7 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const MY_WHATSAPP_PHONE = "77067091805";
+    const DEFAULT_ADMIN = "guldanaih@gmail.com";
 
     let currentUser = null;
     let selectedCoverFile = null;
@@ -369,17 +430,9 @@
       window.location.href = "auth.html";
     };
 
-    window.openCreateModal = function() {
-      document.getElementById('create-modal').style.display = 'flex';
-    };
-
-    window.closeCreateModal = function() {
-      document.getElementById('create-modal').style.display = 'none';
-    };
-
-    window.closeQrModal = function() {
-      document.getElementById('qr-modal').style.display = 'none';
-    };
+    window.openCreateModal = function() { document.getElementById('create-modal').style.display = 'flex'; };
+    window.closeCreateModal = function() { document.getElementById('create-modal').style.display = 'none'; };
+    window.closeQrModal = function() { document.getElementById('qr-modal').style.display = 'none'; };
 
     window.previewCoverFile = function(e) {
       const file = e.target.files[0];
@@ -431,11 +484,25 @@
       return null;
     }
 
-    async function start() {
+    function verifyAdmin(email) {
+      if (!email) return;
+      if (email.toLowerCase() === DEFAULT_ADMIN.toLowerCase()) {
+        document.getElementById('btn-admin-link').style.display = 'inline-flex';
+      }
+      supabaseClient.from('app_settings').select('value').eq('key', 'admin_email').maybeSingle()
+        .then(({ data }) => {
+          if (data && data.value && email.toLowerCase() === data.value.toLowerCase()) {
+            document.getElementById('btn-admin-link').style.display = 'inline-flex';
+          }
+        }).catch(() => {});
+    }
+
+    async function init() {
       const cached = getLocalUser();
       if (cached) {
         currentUser = cached;
         document.getElementById('user-email').innerText = currentUser.email;
+        verifyAdmin(currentUser.email);
         loadMyEvents();
       }
 
@@ -448,11 +515,8 @@
       if (session && session.user) {
         currentUser = session.user;
         document.getElementById('user-email').innerText = currentUser.email;
+        verifyAdmin(currentUser.email);
         if (!cached) loadMyEvents();
-      }
-
-      if (currentUser && currentUser.email && currentUser.email.toLowerCase() === 'guldanaih@gmail.com') {
-        document.getElementById('btn-admin-link').style.display = 'inline-block';
       }
     }
 
@@ -474,10 +538,7 @@
       }
       emptyEl.style.display = 'none';
 
-      const { data: photosData } = await supabaseClient
-        .from('event_photos')
-        .select('event_id');
-
+      const { data: photosData } = await supabaseClient.from('event_photos').select('event_id');
       const photoCounts = {};
       if (photosData) {
         photosData.forEach(p => photoCounts[p.event_id] = (photoCounts[p.event_id] || 0) + 1);
@@ -512,29 +573,29 @@
 
           <div class="card-btn-group">
             ${!isVip ? `
-              <button class="btn-luxury btn-upgrade-vip" onclick="window.openWhatsAppUpgrade('${evt.title}')">
+              <button class="btn-glass btn-glass-vip" onclick="window.openWhatsAppUpgrade('${evt.title}')">
                 💎 VIP-ке көшіру (WhatsApp)
               </button>
             ` : `
-              <a class="btn-luxury btn-slideshow" href="${slideLink}" target="_blank">
+              <a class="btn-glass btn-glass-slideshow" href="${slideLink}" target="_blank">
                 📺 Экранға Live Слайд-шоу
               </a>
             `}
             
-            <a class="btn-luxury btn-dark" href="${guestLink}" target="_blank">
+            <a class="btn-glass btn-glass-primary" href="${guestLink}" target="_blank">
               👁️ Қонақ көзімен қарау
             </a>
 
             <div class="btn-row">
-              <button class="btn-luxury btn-outline" onclick="window.showQrModal('${evt.title}', '${guestLink}')">
+              <button class="btn-glass" onclick="window.showQrModal('${evt.title}', '${guestLink}')">
                 📲 QR-код
               </button>
-              <a class="btn-luxury btn-outline" href="${galleryLink}" target="_blank">
+              <a class="btn-glass" href="${galleryLink}" target="_blank">
                 🖼️ Галерея
               </a>
             </div>
 
-            <a class="btn-luxury btn-outline" href="${printLink}" target="_blank" style="width: 100%;">
+            <a class="btn-glass" href="${printLink}" target="_blank" style="width: 100%;">
               🖨️ A5 Карточка басу (Печать)
             </a>
           </div>
@@ -543,23 +604,14 @@
       });
     }
 
-    // НАҚТЫ ЖӘНЕ ҚАТЕСІЗ БАЗАҒА ЖАЗУ
     window.submitNewEvent = async function() {
       const title = document.getElementById('event-title').value.trim();
       let slug = document.getElementById('event-slug').value.trim().toLowerCase();
       const date = document.getElementById('event-date').value;
       const btn = document.getElementById('btn-submit');
 
-      if (!title || !slug) { 
-        alert("Атауы мен сілтеме кодын толтырыңыз!"); 
-        return; 
-      }
-
-      if (!currentUser) {
-        alert("Қайта кіріңіз, сессия табылмады!");
-        window.location.href = "auth.html";
-        return;
-      }
+      if (!title || !slug) { alert("Атауы мен сілтеме кодын толтырыңыз!"); return; }
+      if (!currentUser) { alert("Қайта кіріңіз!"); window.location.href = "auth.html"; return; }
 
       slug = slug.replace(/[^a-z0-9_-]/g, '-');
       btn.disabled = true;
@@ -567,20 +619,15 @@
 
       try {
         let coverUrl = null;
-
         if (selectedCoverFile) {
           const coverName = `covers/${slug}_${Date.now()}.jpg`;
-          const { error: coverErr } = await supabaseClient.storage
-            .from('photos')
-            .upload(coverName, selectedCoverFile, { contentType: 'image/jpeg' });
-
+          const { error: coverErr } = await supabaseClient.storage.from('photos').upload(coverName, selectedCoverFile, { contentType: 'image/jpeg' });
           if (!coverErr) {
             const { data: cUrlData } = supabaseClient.storage.from('photos').getPublicUrl(coverName);
             coverUrl = cUrlData.publicUrl;
           }
         }
 
-        // Базаға тікелей енгізу
         const { error } = await supabaseClient.from('events').insert([{
           user_id: currentUser.id,
           user_email: currentUser.email,
@@ -594,8 +641,7 @@
         }]);
 
         if (error) {
-          console.error("Supabase Error:", error);
-          alert("База қатесі: " + error.message);
+          alert("Қате: " + error.message);
           return;
         }
 
@@ -606,17 +652,15 @@
         selectedCoverFile = null;
 
         await loadMyEvents();
-        alert("✅ Жаңа альбом сәтті ашылды!");
       } catch (err) {
-        console.error("Catch Error:", err);
-        alert("Жүйелік қате: " + err.message);
+        alert("Қате: " + err.message);
       } finally {
         btn.disabled = false;
         btn.innerText = "Альбомды құру";
       }
     };
 
-    start();
+    init();
   </script>
 </body>
 </html>
